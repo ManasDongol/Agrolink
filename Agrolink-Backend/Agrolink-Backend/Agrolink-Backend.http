@@ -1,0 +1,6 @@
+@Agrolink_backend_HostAddress = http://localhost:5239
+
+GET {{Agrolink_backend_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
