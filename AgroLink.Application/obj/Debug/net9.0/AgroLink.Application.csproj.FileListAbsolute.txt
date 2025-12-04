@@ -1,0 +1,16 @@
+X:\Agrolink\Agrolink.Application\bin\Debug\net9.0\AgroLink.Application.deps.json
+X:\Agrolink\Agrolink.Application\bin\Debug\net9.0\AgroLink.Application.dll
+X:\Agrolink\Agrolink.Application\bin\Debug\net9.0\AgroLink.Application.pdb
+X:\Agrolink\Agrolink.Application\bin\Debug\net9.0\AgroLink.Domain.dll
+X:\Agrolink\Agrolink.Application\bin\Debug\net9.0\AgroLink.Domain.pdb
+X:\Agrolink\Agrolink.Application\obj\Debug\net9.0\AgroLink.Application.csproj.AssemblyReference.cache
+X:\Agrolink\Agrolink.Application\obj\Debug\net9.0\AgroLink.Application.GeneratedMSBuildEditorConfig.editorconfig
+X:\Agrolink\Agrolink.Application\obj\Debug\net9.0\AgroLink.Application.AssemblyInfoInputs.cache
+X:\Agrolink\Agrolink.Application\obj\Debug\net9.0\AgroLink.Application.AssemblyInfo.cs
+X:\Agrolink\Agrolink.Application\obj\Debug\net9.0\AgroLink.Application.csproj.CoreCompileInputs.cache
+X:\Agrolink\Agrolink.Application\obj\Debug\net9.0\AgroLink.Application.sourcelink.json
+X:\Agrolink\Agrolink.Application\obj\Debug\net9.0\AgroLink.9875B6AA.Up2Date
+X:\Agrolink\Agrolink.Application\obj\Debug\net9.0\AgroLink.Application.dll
+X:\Agrolink\Agrolink.Application\obj\Debug\net9.0\refint\AgroLink.Application.dll
+X:\Agrolink\Agrolink.Application\obj\Debug\net9.0\AgroLink.Application.pdb
+X:\Agrolink\Agrolink.Application\obj\Debug\net9.0\ref\AgroLink.Application.dll

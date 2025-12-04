@@ -1,11 +1,30 @@
 {
   "version": 3,
   "targets": {
-    "net9.0": {}
+    "net9.0": {
+      "AgroLink.Domain/1.0.0": {
+        "type": "project",
+        "framework": ".NETCoreApp,Version=v9.0",
+        "compile": {
+          "bin/placeholder/AgroLink.Domain.dll": {}
+        },
+        "runtime": {
+          "bin/placeholder/AgroLink.Domain.dll": {}
+        }
+      }
+    }
   },
-  "libraries": {},
+  "libraries": {
+    "AgroLink.Domain/1.0.0": {
+      "type": "project",
+      "path": "../Agrolink.Domain/AgroLink.Domain.csproj",
+      "msbuildProject": "../Agrolink.Domain/AgroLink.Domain.csproj"
+    }
+  },
   "projectFileDependencyGroups": {
-    "net9.0": []
+    "net9.0": [
+      "AgroLink.Domain >= 1.0.0"
+    ]
   },
   "packageFolders": {
     "C:\\Users\\Lenovo\\.nuget\\packages\\": {}
@@ -13,11 +32,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "X:\\Agrolink\\AgroLink.Application\\AgroLink.Application.csproj",
+      "projectUniqueName": "X:\\Agrolink\\Agrolink.Application\\AgroLink.Application.csproj",
       "projectName": "AgroLink.Application",
-      "projectPath": "X:\\Agrolink\\AgroLink.Application\\AgroLink.Application.csproj",
+      "projectPath": "X:\\Agrolink\\Agrolink.Application\\AgroLink.Application.csproj",
       "packagesPath": "C:\\Users\\Lenovo\\.nuget\\packages\\",
-      "outputPath": "X:\\Agrolink\\AgroLink.Application\\obj\\",
+      "outputPath": "X:\\Agrolink\\Agrolink.Application\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
         "C:\\Users\\Lenovo\\AppData\\Roaming\\NuGet\\NuGet.Config"
@@ -31,7 +50,11 @@
       "frameworks": {
         "net9.0": {
           "targetAlias": "net9.0",
-          "projectReferences": {}
+          "projectReferences": {
+            "X:\\Agrolink\\Agrolink.Domain\\AgroLink.Domain.csproj": {
+              "projectPath": "X:\\Agrolink\\Agrolink.Domain\\AgroLink.Domain.csproj"
+            }
+          }
         }
       },
       "warningProperties": {

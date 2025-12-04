@@ -1,3 +1,5 @@
+using AgroLink.Infrastructure.Data;
+using Microsoft.EntityFrameworkCore;
 using Scalar.AspNetCore;
 
 
@@ -6,6 +8,11 @@ builder.Services.AddControllers();
 // Add services to the container.
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
+
+builder.Services.AddDbContext<AgroLinkDbContext>(
+    options=>options.UseNpgsql(builder.Configuration.GetConnectionString("AgroLinkDb"))
+    
+    );
 
 var app = builder.Build();
 

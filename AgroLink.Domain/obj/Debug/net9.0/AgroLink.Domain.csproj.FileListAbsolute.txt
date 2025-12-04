@@ -1,0 +1,12 @@
+X:\Agrolink\Agrolink.Domain\bin\Debug\net9.0\AgroLink.Domain.deps.json
+X:\Agrolink\Agrolink.Domain\bin\Debug\net9.0\AgroLink.Domain.dll
+X:\Agrolink\Agrolink.Domain\bin\Debug\net9.0\AgroLink.Domain.pdb
+X:\Agrolink\Agrolink.Domain\obj\Debug\net9.0\AgroLink.Domain.GeneratedMSBuildEditorConfig.editorconfig
+X:\Agrolink\Agrolink.Domain\obj\Debug\net9.0\AgroLink.Domain.AssemblyInfoInputs.cache
+X:\Agrolink\Agrolink.Domain\obj\Debug\net9.0\AgroLink.Domain.AssemblyInfo.cs
+X:\Agrolink\Agrolink.Domain\obj\Debug\net9.0\AgroLink.Domain.csproj.CoreCompileInputs.cache
+X:\Agrolink\Agrolink.Domain\obj\Debug\net9.0\AgroLink.Domain.sourcelink.json
+X:\Agrolink\Agrolink.Domain\obj\Debug\net9.0\AgroLink.Domain.dll
+X:\Agrolink\Agrolink.Domain\obj\Debug\net9.0\refint\AgroLink.Domain.dll
+X:\Agrolink\Agrolink.Domain\obj\Debug\net9.0\AgroLink.Domain.pdb
+X:\Agrolink\Agrolink.Domain\obj\Debug\net9.0\ref\AgroLink.Domain.dll
