@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "X:\\Agrolink\\AgroLink.API\\AgroLink.API.csproj": {}
+    "X:\\Agrolink\\Agrolink.api\\AgroLink.API.csproj": {}
   },
   "projects": {
-    "X:\\Agrolink\\AgroLink.API\\AgroLink.API.csproj": {
+    "X:\\Agrolink\\Agrolink.api\\AgroLink.API.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "X:\\Agrolink\\AgroLink.API\\AgroLink.API.csproj",
+        "projectUniqueName": "X:\\Agrolink\\Agrolink.api\\AgroLink.API.csproj",
         "projectName": "AgroLink.API",
-        "projectPath": "X:\\Agrolink\\AgroLink.API\\AgroLink.API.csproj",
+        "projectPath": "X:\\Agrolink\\Agrolink.api\\AgroLink.API.csproj",
         "packagesPath": "C:\\Users\\Lenovo\\.nuget\\packages\\",
-        "outputPath": "X:\\Agrolink\\AgroLink.API\\obj\\",
+        "outputPath": "X:\\Agrolink\\Agrolink.api\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\Lenovo\\AppData\\Roaming\\NuGet\\NuGet.Config"
@@ -44,9 +44,21 @@
         "net9.0": {
           "targetAlias": "net9.0",
           "dependencies": {
+            "Microsoft.AspNetCore.Mvc": {
+              "target": "Package",
+              "version": "[2.3.0, )"
+            },
             "Microsoft.AspNetCore.OpenApi": {
               "target": "Package",
               "version": "[9.0.8, )"
+            },
+            "Scalar.AspNetCore": {
+              "target": "Package",
+              "version": "[2.11.0, )"
+            },
+            "System.Net.Http": {
+              "target": "Package",
+              "version": "[4.3.4, )"
             }
           },
           "imports": [
