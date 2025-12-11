@@ -1,4 +1,5 @@
 using AgroLink.Infrastructure.Data;
+
 using Microsoft.EntityFrameworkCore;
 using Scalar.AspNetCore;
 
@@ -26,9 +27,6 @@ if (app.Environment.IsDevelopment())
 app.MapControllers();
 
 app.UseHttpsRedirection();
-
-
-
 app.Run();
 
 

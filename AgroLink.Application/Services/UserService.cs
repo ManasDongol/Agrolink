@@ -1,6 +1,12 @@
-﻿namespace AgroLink.Application.Services;
+﻿using AgroLink.Application.Interfaces;
+using AgroLink.Domain.Entities;
 
-public class UserService
+namespace AgroLink.Application.Services;
+
+public class UserService :IUserService
 {
-    
+    public User GetUser()
+    {
+        return null;
+    }
 }

@@ -1,1 +1,23 @@
 /* You can add global styles to this file, and also import other style files */
+body,html{
+    padding: 0%;
+    margin: 0%;
+}
+@font-face {
+  font-family: 'outfit-medium';
+  src: url('./assets/fonts/Outfit-Medium.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+@font-face {
+  font-family: 'outfit-bold';
+  src: url('./assets/fonts/Outfit-Bold.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+@font-face {
+  font-family: 'outfit-semibold';
+  src: url('./assets/fonts/Outfit-SemiBold.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}

@@ -1,0 +1,52 @@
+
+.logo{
+    padding: 19px;
+    font-family: "outfit-medium";
+    font-size: 25px;
+    display: flex;
+    align-items: center;
+ 
+}
+.navbar-card{
+    margin: 0px;
+    width: 100%;
+    height: 50px;
+    background-color: #F2F0E0;
+    display: flex;
+    box-shadow:  0.1px 1px 10px black;
+    position: fixed;
+}
+.navbar-nav{
+    margin-left: auto;
+    width: 100%;
+    display: flex;
+    justify-content: flex-end;
+    
+ 
+}
+#navbar-list{
+  
+    list-style: none;
+}  
+
+
+ul li{
+     float: left;
+    padding-left: 10px;
+     margin-right: 50px;
+  
+     font-family: "outfit-medium";
+ 
+    
+}
+#navbar-list  :hover{
+    color: rgb(63, 111, 54);
+    font-size: 17px;
+    transition: 0.3s;
+}
+#navbar-list a{
+    text-decoration: none;
+    display: flex;
+    color: black;
+   
+}

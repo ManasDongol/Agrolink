@@ -1,6 +1,9 @@
-﻿namespace AgroLink.Application.Interfaces;
+﻿using AgroLink.Domain.Entities;
 
-public class IUserService
+namespace AgroLink.Application.Interfaces;
+
+public interface IUserService
 {
+    public User GetUser();
     
 }

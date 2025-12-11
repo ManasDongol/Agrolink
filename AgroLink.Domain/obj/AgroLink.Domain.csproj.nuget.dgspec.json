@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "X:\\Agrolink\\Agrolink.Domain\\AgroLink.Domain.csproj": {}
+    "D:\\Agrolink\\AgroLink.Domain\\AgroLink.Domain.csproj": {}
   },
   "projects": {
-    "X:\\Agrolink\\Agrolink.Domain\\AgroLink.Domain.csproj": {
+    "D:\\Agrolink\\AgroLink.Domain\\AgroLink.Domain.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "X:\\Agrolink\\Agrolink.Domain\\AgroLink.Domain.csproj",
+        "projectUniqueName": "D:\\Agrolink\\AgroLink.Domain\\AgroLink.Domain.csproj",
         "projectName": "AgroLink.Domain",
-        "projectPath": "X:\\Agrolink\\Agrolink.Domain\\AgroLink.Domain.csproj",
+        "projectPath": "D:\\Agrolink\\AgroLink.Domain\\AgroLink.Domain.csproj",
         "packagesPath": "C:\\Users\\Lenovo\\.nuget\\packages\\",
-        "outputPath": "X:\\Agrolink\\Agrolink.Domain\\obj\\",
+        "outputPath": "D:\\Agrolink\\AgroLink.Domain\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\Lenovo\\AppData\\Roaming\\NuGet\\NuGet.Config"
@@ -20,6 +20,7 @@
           "net9.0"
         ],
         "sources": {
+          "C:\\Program Files\\dotnet\\library-packs": {},
           "https://api.nuget.org/v3/index.json": {}
         },
         "frameworks": {
