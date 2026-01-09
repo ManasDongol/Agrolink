@@ -30,3 +30,5 @@ D:\Agrolink\Agrolink.Application\obj\Debug\net9.0\AgroLink.Application.dll
 D:\Agrolink\Agrolink.Application\obj\Debug\net9.0\refint\AgroLink.Application.dll
 D:\Agrolink\Agrolink.Application\obj\Debug\net9.0\AgroLink.Application.pdb
 D:\Agrolink\Agrolink.Application\obj\Debug\net9.0\ref\AgroLink.Application.dll
+D:\Agrolink\Agrolink.Application\bin\Debug\net9.0\AgroLink.Infrastructure.dll
+D:\Agrolink\Agrolink.Application\bin\Debug\net9.0\AgroLink.Infrastructure.pdb

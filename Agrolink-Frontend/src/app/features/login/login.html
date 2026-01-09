@@ -1,5 +1,47 @@
 
-<label>username:</label>
-<input type="text" >
-<label>password:</label>
-<input type="text">
+
+<div class="login-page">
+  <!-- LEFT -->
+  <div class="login-left">
+    <h1 class="title">Welcome Back</h1>
+    <div class="divider"></div>
+
+    <form [formGroup]="loginForm" class="login-form">
+      <label>Username:</label>
+      <input type="text" formControlName="username" placeholder="AgroLinkUser....." />
+      
+      @if(this.loginForm.controls['username']?.touched && this.loginForm.controls['username']?.errors?.['required']){
+           <p class="error"> username is required</p>
+      }
+      
+     @if(this.loginForm.controls['username']?.touched && this.loginForm.controls['username']?.errors?.['minlength']){
+          <p class="error">username must be at least 8 characters
+      </p>
+    }
+      <label>Password :</label>
+      <input type="password" formControlName="password" placeholder="agrolink@123....." />
+      
+      @if(this.loginForm.controls['password']?.touched && this.loginForm.controls['password']?.errors?.['required']){
+           <p class="error"> Password is required</p>
+      }
+      
+     @if(this.loginForm.controls['password']?.touched && this.loginForm.controls['password']?.errors?.['minlength']){
+          <p class="error">Password must be at least 8 characters
+      </p>
+     }
+
+        
+
+      <button class="login-btn" (click)="onlogin()" type="submit" [disabled]="loginForm.invalid">log in</button>
+    </form>
+
+    <p class="signup-text">
+      dont have an account?
+      <span class="signup-link"><a routerLink="/signup">sign up</a></span>
+     
+    </p>
+  </div>
+
+  <!-- RIGHT -->
+  <div class="login-right"></div>
+</div>

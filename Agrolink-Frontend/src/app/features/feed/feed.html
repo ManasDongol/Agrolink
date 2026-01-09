@@ -1,1 +1,27 @@
 <app-navbar></app-navbar>
+<div class="feed-page">
+  <!-- Left 70% scrollable feed -->
+  <div class="feed-left">
+    <div class="feed-card">
+      <h2>Feed</h2>
+      <div class="posts-container">
+        @for (post of posts; track post.title){
+                 <div class="post-card">
+                    <h3>{{ post.title }}</h3>
+                    <p>{{ post.content }}</p>
+                    </div>
+        }
+       
+      </div>
+    </div>
+  </div>
+
+  <!-- Right 30% stationary card -->
+  <div class="feed-right">
+    <div class="sidebar-card">
+      <h3>Sidebar</h3>
+      <p>Stationary content here, like profile info, ads, or notifications.</p>
+      <a routerLink="/login">login</a>
+    </div>
+  </div>
+</div>

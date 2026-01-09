@@ -1,3 +1,7 @@
 ﻿namespace AgroLink.Application.DTOs;
 
-public record AuthResponseDto();
+public record AuthResponseDto(
+    String AccessToken,
+    String RefreshToken
+    
+    );

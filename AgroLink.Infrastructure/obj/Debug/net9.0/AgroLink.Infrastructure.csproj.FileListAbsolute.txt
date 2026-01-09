@@ -22,10 +22,8 @@ D:\Agrolink\Agrolink.Infrastructure\bin\Debug\net9.0\AgroLink.Infrastructure.dep
 D:\Agrolink\Agrolink.Infrastructure\bin\Debug\net9.0\AgroLink.Infrastructure.runtimeconfig.json
 D:\Agrolink\Agrolink.Infrastructure\bin\Debug\net9.0\AgroLink.Infrastructure.dll
 D:\Agrolink\Agrolink.Infrastructure\bin\Debug\net9.0\AgroLink.Infrastructure.pdb
-D:\Agrolink\Agrolink.Infrastructure\bin\Debug\net9.0\AgroLink.Application.dll
 D:\Agrolink\Agrolink.Infrastructure\bin\Debug\net9.0\AgroLink.Domain.dll
 D:\Agrolink\Agrolink.Infrastructure\bin\Debug\net9.0\AgroLink.Domain.pdb
-D:\Agrolink\Agrolink.Infrastructure\bin\Debug\net9.0\AgroLink.Application.pdb
 D:\Agrolink\Agrolink.Infrastructure\obj\Debug\net9.0\AgroLink.Infrastructure.csproj.AssemblyReference.cache
 D:\Agrolink\Agrolink.Infrastructure\obj\Debug\net9.0\AgroLink.Infrastructure.GeneratedMSBuildEditorConfig.editorconfig
 D:\Agrolink\Agrolink.Infrastructure\obj\Debug\net9.0\AgroLink.Infrastructure.AssemblyInfoInputs.cache

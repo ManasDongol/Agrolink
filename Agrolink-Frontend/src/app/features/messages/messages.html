@@ -1,0 +1,36 @@
+<app-navbar></app-navbar>
+<div class="messages-card">
+  <!-- Left: recent chats -->
+  <div class="recent-chats">
+    <h3>Chats</h3>
+    <div class="chat-list">
+      @for(chat of recentChats;track chat.name){
+          <div  class="chat-card">
+        <strong>{{ chat.name }}</strong>
+        <p>{{ chat.lastMessage }}</p>
+      </div>
+      }
+    
+    </div>
+  </div>
+
+  <!-- Right: opened chat -->
+  <div class="opened-chat">
+    <h3>Chat with Friend</h3>
+    <div class="messages-list">
+      @for(msg of openedChatMessages;track msg.sender){
+            <div 
+           [class.you]="msg.sender === 'You'" 
+           class="message-card">
+        <p>{{ msg.content }}</p>
+      </div>
+      }
+    
+    </div>
+    <!-- Message input box -->
+    <div class="chat-input">
+      <input type="text" placeholder="Type a message..." />
+      <button>Send</button>
+    </div>
+  </div>
+</div>

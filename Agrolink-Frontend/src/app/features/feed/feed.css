@@ -1,0 +1,69 @@
+.feed-page {
+  display: flex;
+  gap: 16px;
+  height: 100vh; /* full viewport height */
+  padding: 16px;
+  box-sizing: border-box;
+  background-color: #19321C;
+  
+}
+
+/* Left: scrollable feed */
+.feed-left {
+  flex: 7; /* 70% */
+  overflow-y: auto;
+}
+
+.feed-card {
+  background: #ffffff;
+  border-radius: 12px;
+  padding: 16px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.posts-container {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 12px;
+}
+
+/* Each post inside feed */
+.post-card {
+  background: #f8f8f8;
+  padding: 12px;
+  border-radius: 8px;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.05);
+}
+
+/* Right: stationary sidebar */
+.feed-right {
+  flex: 3; /* 30% */
+  position: sticky;
+  top: 16px; /* sticks to top while scrolling feed */
+  margin-top:9px;
+  height: fit-content;
+  padding: 0%;
+}
+
+.sidebar-card {
+  background: #ffffff;
+  border-radius: 12px;
+  padding: 16px;
+  margin-top:45px;
+  min-height: 400px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+@media (max-width: 768px) {
+  .feed-page {
+    flex-direction: column;
+  }
+  .feed-left, .feed-right {
+    flex: 1 1 100%;
+  }
+}
+
+body{
+    background-color: #19321C;
+}

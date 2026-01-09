@@ -1,0 +1,77 @@
+
+.profile-container {
+  background: #173c1f;
+  min-height: 100vh;
+  padding: 40px;
+}
+
+/* Card */
+.profile-card {
+  background: #fff;
+  border-radius: 16px;
+  overflow: hidden;
+  max-width: 1100px;
+  margin: auto;
+}
+
+/* Cover */
+.cover img {
+  width: 100%;
+  height: 260px;
+  object-fit: cover;
+}
+
+/* Header */
+.profile-header {
+  display: flex;
+  align-items: center;
+  padding: 20px 40px;
+  position: relative;
+}
+
+.avatar {
+  margin-top: -80px;
+}
+
+.avatar img {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  border: 6px solid white;
+  object-fit: cover;
+}
+
+.user-info {
+  margin-left: 20px;
+}
+
+.user-info h2 {
+  margin: 0;
+}
+
+.username {
+  color: #666;
+}
+
+/* Connections */
+.connections {
+  margin-left: auto;
+  text-align: right;
+}
+
+.connections span {
+  font-weight: bold;
+  font-size: 18px;
+}
+
+/* Body */
+.profile-body {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 40px;
+  padding: 30px 40px 40px;
+}
+
+.section h3 {
+  margin-bottom: 10px;
+}

@@ -1,18 +1,35 @@
-<label>First Name:</label>
-<input type="text" >
-<label>Last Name:</label>
-<input type="text">
+<div class="signup-page">
+  <!-- LEFT -->
+  <div class="signup-left">
+    <h1 class="title">Create Account</h1>
+    <div class="divider"></div>
+
+    <form [formGroup]="signupForm" class="signup-form">
+      <label>Username:</label>
+      <input type="text" placeholder="example....." formControlName="Username" />
+
+      <label>Email:</label>
+      <input type="email" placeholder="example@email.com" formControlName="Email"  />
+
+      <label>Password:</label>
+      <input type="password" placeholder="********" formControlName="Password" />
+
+      <label>Confirm Password:</label>
+      <input type="password" placeholder="********" formControlName="SecondPassword"/>
+      
+        <p *ngIf="Password && SecondPassword && Password !== SecondPassword" 
+   style="color: red; font-size: 10px;">
+  Passwords don't match!
+</p>
+      <button class="signup-btn" type="submit" (click)="register()">sign up</button>
+    </form>
+
+    <p class="login-text">
+      already have an account?
+      <span class="login-link"><a routerLink="/login">log in</a></span>
+    </p>
+  </div>
 
 
-<label>username:</label>
-<input type="text" >
-<label>Password:</label>
-<input type="text">
-
-
-
-
-<label>:</label>
-<input type="text" >
-<label>password:</label>
-<input type="text">
+  <div class="signup-right"></div>
+</div>

@@ -1,0 +1,99 @@
+* {
+  box-sizing: border-box;
+}
+
+/* PAGE */
+.profile-page {
+  display: flex;
+  height: 100vh;
+  width: 100%;
+}
+
+/* LEFT */
+.profile-left {
+  width: 50%;
+  padding: 70px 90px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.title {
+  font-family: 'Outfit-Semibold';
+  font-size: 36px;
+  color: #2f7d1f;
+  margin-bottom: 8px;
+}
+
+.divider {
+  width: 300px;
+  height: 1px;
+  background-color: #9acb8f;
+  margin-bottom: 32px;
+}
+
+/* FORM */
+.profile-form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+label {
+  font-family: 'Outfit-Medium';
+  font-size: 15px;
+  color: #2f7d1f;
+}
+
+input {
+  height: 36px;
+  border-radius: 6px;
+  border: 1px solid #bdbdbd;
+  padding: 0 12px;
+  font-family: 'Outfit-Medium';
+  outline: none;
+}
+
+textarea {
+  min-height: 70px;
+  resize: none;
+  border-radius: 6px;
+  border: 1px solid #bdbdbd;
+  padding: 10px 12px;
+  font-family: 'Outfit-Medium';
+  outline: none;
+}
+
+input::placeholder,
+textarea::placeholder {
+  color: #b5b5b5;
+}
+
+/* BUTTON */
+.profile-btn {
+  margin-top: 15px;
+  height: 42px;
+  border-radius: 10px;
+  border: none;
+  background-color: #6fd23b;
+  color: white;
+  font-family: 'Outfit-Semibold';
+  cursor: pointer;
+}
+
+.profile-btn:hover {
+  background-color: #63c133;
+}
+
+/* RIGHT IMAGE */
+.profile-right {
+  width: 50%;
+  background-image:
+    linear-gradient(
+      rgba(0, 80, 0, 0.6),
+      rgba(0, 80, 0, 0.6)
+    ),
+    url("../../../assets/images/loginpage.jpg");
+  background-size: cover;
+  background-position: center;
+}

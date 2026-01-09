@@ -1,75 +1,135 @@
-.bg-img{
-    height: 700px; /* Or min-height: 100vh for a full-page background */
-    width: 100%;
+/* GLOBAL */
+html, body {
+    margin: 0;
+    padding: 0;
+    background-color: #F2F0E0;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 24px;
+}
+
+/* HERO */
+.bg-img {
+    height: 700px;
     background-image: url('../../../assets/images/hero-background-img.jpg');
     background-size: cover;
     background-position: center bottom;
     display: flex;
-    justify-content: center;
     align-items: center;
-
 }
-.grow-img{
-     height:350px; /* Or min-height: 100vh for a full-page background */
-    width: 100%;
+
+.hero-content {
+    color: #fff;
+}
+
+.hero-main-text {
+    font-family: 'outfit-semibold';
+    font-size: 90px;
+    color: #FDEF98;
+    margin-bottom: 20px;
+}
+
+.hero-subtext {
+    font-size: 18px;
+    max-width: 500px;
+    margin-bottom: 30px;
+}
+
+.primary-btn {
+    background-color: #66D136;
+    border: none;
+    padding: 14px 28px;
+    border-radius: 30px;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+/* GROW */
+.grow-img {
+    height: 350px;
     background-image: url('../../../assets/images/grow.png');
     background-size: cover;
-   
     display: flex;
-    justify-content: center;
     align-items: center;
 }
-.main-text{
-    font-family: 'outfit-semibold';
-    font-size: 100px;
+
+.main-text {
+    font-family: 'outfit-medium';
+    font-size: 80px;
     color: #ffffff;
 }
-body,html{
-    padding: 0%;
-    margin: 0%;
-    background-color: #F2F0E0;
+
+/* EXPERTS */
+.experts {
+    padding: 80px 0;
 }
-.hero-main-text{
-    font-family: 'outfit-medium';
-    font-size: 100px;
-    color: #FDEF98;
-    
-}
-.secondary-text{
-    font-family: 'outfit-medium';
+
+.secondary-text {
     font-size: 40px;
-    color: #000000;
-}
-.experts{
-    height: 600px;
-}
-.Ai-section{
-    height: 600px;
-    background-color: #8B9271;
-}
-.price-section{
-
- height: 600px;
-    background-color: #2D4128;
+    margin-bottom: 40px;
 }
 
-.expert-div{
+.expert-div {
     display: flex;
-    margin-top: 40px;
-    overflow: auto;
+    gap: 30px;
 }
 
-.experts-card{
+.experts-card {
+    flex: 1;
     height: 400px;
-    min-width: 330px;
-    background-color: #2D4128;
+    background-color: #66D136;
     border-radius: 20px;
-    margin: 30px;
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    padding-bottom: 30px;
 }
- 
-.expert-div::-webkit-scrollbar { display: none; } 
 
+.connect-btn {
+    background-color: #1E3A1A;
+    color: #fff;
+    border: none;
+    padding: 10px 26px;
+    border-radius: 20px;
+    cursor: pointer;
+}
 
-::-webkit-scrollbar{
+/* AI SECTION */
+.Ai-section {
+    background-color: #1E3A1A;
+    padding: 100px 0;
+    color: #66D136;
+    text-align: center;
+}
+
+/* PRICE SECTION */
+.price-section {
+    padding: 80px 0;
+}
+
+.price-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 30px;
+}
+
+.price-card {
+    background: #fff;
+    border-radius: 20px;
+    padding: 30px;
+    text-align: center;
+    font-size: 20px;
+}
+
+.price-card span {
+    color: #66D136;
+    font-weight: bold;
+}
+
+/* SCROLLBAR OFF */
+::-webkit-scrollbar {
     display: none;
 }

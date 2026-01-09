@@ -2,6 +2,11 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Agrolink.Domain\AgroLink.Domain.csproj" />
+    <ProjectReference Include="..\AgroLink.Infrastructure\AgroLink.Infrastructure.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="8.15.0" />
   </ItemGroup>
 
   <PropertyGroup>

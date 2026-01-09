@@ -4,8 +4,8 @@ import { Footer } from "../../shared/footer/footer";
 
 @Component({
   selector: 'app-home',
-  imports: [Navbar, Footer],
   standalone:true,
+  imports: [Navbar, Footer],
   templateUrl: './home.html',
   styleUrl: './home.css'
 })

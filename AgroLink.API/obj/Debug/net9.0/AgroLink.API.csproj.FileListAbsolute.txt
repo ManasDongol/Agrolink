@@ -151,16 +151,12 @@ D:\Agrolink\AgroLink.API\bin\Debug\net9.0\AgroLink.API.runtimeconfig.json
 D:\Agrolink\AgroLink.API\bin\Debug\net9.0\AgroLink.API.dll
 D:\Agrolink\AgroLink.API\bin\Debug\net9.0\AgroLink.API.pdb
 D:\Agrolink\AgroLink.API\bin\Debug\net9.0\Humanizer.dll
-D:\Agrolink\AgroLink.API\bin\Debug\net9.0\Microsoft.AspNetCore.JsonPatch.dll
-D:\Agrolink\AgroLink.API\bin\Debug\net9.0\Microsoft.AspNetCore.Mvc.Razor.Extensions.dll
 D:\Agrolink\AgroLink.API\bin\Debug\net9.0\Microsoft.AspNetCore.OpenApi.dll
-D:\Agrolink\AgroLink.API\bin\Debug\net9.0\Microsoft.AspNetCore.Razor.Language.dll
 D:\Agrolink\AgroLink.API\bin\Debug\net9.0\Microsoft.Bcl.AsyncInterfaces.dll
 D:\Agrolink\AgroLink.API\bin\Debug\net9.0\Microsoft.Build.Locator.dll
 D:\Agrolink\AgroLink.API\bin\Debug\net9.0\Microsoft.CodeAnalysis.dll
 D:\Agrolink\AgroLink.API\bin\Debug\net9.0\Microsoft.CodeAnalysis.CSharp.dll
 D:\Agrolink\AgroLink.API\bin\Debug\net9.0\Microsoft.CodeAnalysis.CSharp.Workspaces.dll
-D:\Agrolink\AgroLink.API\bin\Debug\net9.0\Microsoft.CodeAnalysis.Razor.dll
 D:\Agrolink\AgroLink.API\bin\Debug\net9.0\Microsoft.CodeAnalysis.Workspaces.dll
 D:\Agrolink\AgroLink.API\bin\Debug\net9.0\Microsoft.CodeAnalysis.Workspaces.MSBuild.BuildHost.dll
 D:\Agrolink\AgroLink.API\bin\Debug\net9.0\Microsoft.CodeAnalysis.Workspaces.MSBuild.dll
@@ -180,8 +176,6 @@ D:\Agrolink\AgroLink.API\bin\Debug\net9.0\Microsoft.Extensions.Options.dll
 D:\Agrolink\AgroLink.API\bin\Debug\net9.0\Microsoft.Extensions.Primitives.dll
 D:\Agrolink\AgroLink.API\bin\Debug\net9.0\Microsoft.OpenApi.dll
 D:\Agrolink\AgroLink.API\bin\Debug\net9.0\Mono.TextTemplating.dll
-D:\Agrolink\AgroLink.API\bin\Debug\net9.0\Newtonsoft.Json.dll
-D:\Agrolink\AgroLink.API\bin\Debug\net9.0\Newtonsoft.Json.Bson.dll
 D:\Agrolink\AgroLink.API\bin\Debug\net9.0\Npgsql.dll
 D:\Agrolink\AgroLink.API\bin\Debug\net9.0\Npgsql.EntityFrameworkCore.PostgreSQL.dll
 D:\Agrolink\AgroLink.API\bin\Debug\net9.0\Scalar.AspNetCore.dll
@@ -286,3 +280,11 @@ D:\Agrolink\AgroLink.API\obj\Debug\net9.0\refint\AgroLink.API.dll
 D:\Agrolink\AgroLink.API\obj\Debug\net9.0\AgroLink.API.pdb
 D:\Agrolink\AgroLink.API\obj\Debug\net9.0\AgroLink.API.genruntimeconfig.cache
 D:\Agrolink\AgroLink.API\obj\Debug\net9.0\ref\AgroLink.API.dll
+D:\Agrolink\AgroLink.API\bin\Debug\net9.0\Microsoft.AspNetCore.Authentication.JwtBearer.dll
+D:\Agrolink\AgroLink.API\bin\Debug\net9.0\Microsoft.IdentityModel.Abstractions.dll
+D:\Agrolink\AgroLink.API\bin\Debug\net9.0\Microsoft.IdentityModel.JsonWebTokens.dll
+D:\Agrolink\AgroLink.API\bin\Debug\net9.0\Microsoft.IdentityModel.Logging.dll
+D:\Agrolink\AgroLink.API\bin\Debug\net9.0\Microsoft.IdentityModel.Protocols.dll
+D:\Agrolink\AgroLink.API\bin\Debug\net9.0\Microsoft.IdentityModel.Protocols.OpenIdConnect.dll
+D:\Agrolink\AgroLink.API\bin\Debug\net9.0\Microsoft.IdentityModel.Tokens.dll
+D:\Agrolink\AgroLink.API\bin\Debug\net9.0\System.IdentityModel.Tokens.Jwt.dll

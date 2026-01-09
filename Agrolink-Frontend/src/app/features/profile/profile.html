@@ -1,1 +1,46 @@
-<p>profile works!</p>
+<div class="profile-page">
+  <!-- LEFT -->
+  <div class="profile-left">
+    <h1 class="title">Build Your Profile</h1>
+    <div class="divider"></div>
+
+    <form  [formGroup]="profileForm" class="profile-form">
+      <div style="display:flex;">
+        <div>
+            <label>First Name:</label>
+            <input formControlName="firstname" type="text" placeholder="John" />
+
+        </div>
+        <div>
+              <label>Last Name:</label>
+      <input formControlName="lastname" type="text" placeholder="Doe" />
+        </div>
+          
+    
+      </div>
+    
+
+      <label>Profile Image URL:</label>
+      <input formControlName="profileimage" type="file" placeholder="https://example.com/image.jpg" />
+
+      <label>Profile Background Image URL:</label>
+      <input formControlName="profilebackgroundimage" type="file" placeholder="https://example.com/image.jpg" />
+
+
+      <label>Role:</label>
+      <input formControlName="role" type="text"  formControlName="role" placeholder="Farmer / Agronomist / Researcher" />
+
+      <label>Description:</label>
+      <textarea formControlName="description" placeholder="Tell us about yourself..."></textarea>
+
+      <label>Achievements:</label>
+      <textarea formControlName="achievements" placeholder="Awards, experience, milestones..."></textarea>
+
+      <button class="profile-btn"  type="submit">save profile</button>
+    </form>
+  </div>
+
+  <!-- RIGHT -->
+  <div class="profile-right"></div>
+</div>
+
