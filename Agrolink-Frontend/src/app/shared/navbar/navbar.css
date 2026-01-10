@@ -62,8 +62,12 @@ ul li{
      padding:10px;
      margin: 10px;
      box-shadow: none;
-    border-style: solid;
-
+     border-style: solid;
+     font-family: "outfit-medium";
+     cursor: pointer;
+}
+.signupbutton:hover {
+    background-color: #5ab82d;
 }
 .loginbutton{
     background-color: #ffffff;
@@ -74,7 +78,13 @@ ul li{
      border-radius: 20px;
      text-decoration: none;
      padding: 10px;
+     margin: 10px;
      border-style: solid;
+     font-family: "outfit-medium";
+     cursor: pointer;
+}
+.loginbutton:hover {
+    background-color: #f0f0f0;
 }
 a{
     font-family: "outfit-medium";

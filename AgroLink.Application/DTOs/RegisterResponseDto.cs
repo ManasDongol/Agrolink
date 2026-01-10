@@ -2,5 +2,6 @@
 
 public record RegisterResponseDto(
     RegisterRequestDto RegisterRequest,
+    Guid userID,
     string Message
     );

@@ -8,6 +8,17 @@ public class AgroLinkDbContext(DbContextOptions<AgroLinkDbContext> options) : Db
 
     public DbSet<User> Users { get; set; }
     public DbSet<Profile> Profiles { get; set; }
+    
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
+    {
+        modelBuilder.Entity<User>()
+            .HasOne(u => u.Profile)
+            .WithOne(p => p.User)
+            .HasForeignKey<Profile>(p => p.UserId);
+
+        base.OnModelCreating(modelBuilder);
+    }
+
 }
 
    

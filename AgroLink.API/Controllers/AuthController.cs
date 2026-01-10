@@ -15,8 +15,8 @@ public class AuthController(IAuthService authService, UserRepo UserRepo, Hashing
     [HttpPost("login")]
     public async Task<ActionResult<LoginResponseDto>> LoginUser([FromBody] LoginRequestDto dto)
     {
-        var result = await  authService.LoginUser(dto);
-        if (result == null)
+        LoginResponseDto? result = await  authService.LoginUser(dto);
+        if (result == null || result.token == null)
         {
             return Unauthorized(new { message = "Invalid username or password" });
         }
@@ -26,11 +26,11 @@ public class AuthController(IAuthService authService, UserRepo UserRepo, Hashing
     [HttpPost("signup")]
     public async Task<IActionResult> SignupUser([FromBody] RegisterRequestDto dto)
     {
-        RegisterRequestDto? result = await authService.RegisterUser(dto);
+        RegisterResponseDto? result = await authService.RegisterUser(dto);
 
         if (result == null)
             return BadRequest(new { message = "Username or email already exists" });
 
-        return Ok(new { message = "Signup successful" });
+        return Ok(new { message = "Signup successful" ,userid = result.userID});
     }
 }

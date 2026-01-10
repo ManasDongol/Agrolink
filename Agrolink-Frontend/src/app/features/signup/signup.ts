@@ -28,6 +28,7 @@ export class Signup implements OnInit{
   Email: string ="";
   Password:string = "";
   SecondPassword:string ="";
+  UserType: string = "user"
 
   constructor(private fb: FormBuilder,private auth: Auth, private router : Router){
   }
@@ -35,10 +36,14 @@ export class Signup implements OnInit{
       let dto = new SignupRequestDto();
       dto.Username = this.signupForm.value.Username;
       dto.Email = this.signupForm.value.Email;
-      dto.Password = this.signupForm.value.Password
+      dto.Password = this.signupForm.value.Password;
+      dto.UserType = "user";
 
       this.auth.signup(dto).subscribe({
         next: res =>{
+          let currentUserID = res.userID;
+          console.log(currentUserID);
+          localStorage.setItem("userID","someid");
           console.log("no error")
           this.router.navigate(['/buildProfile']);
         }, 

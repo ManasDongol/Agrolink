@@ -3,5 +3,6 @@
 public record RegisterRequestDto(
     string Username,
     string Password,
-    string Email
+    string Email,
+    string UserType
     );

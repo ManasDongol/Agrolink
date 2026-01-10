@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "+4v+yqu54H4=",
+  "dgSpecHash": "2zkSvwU6s0s=",
   "success": true,
-  "projectFilePath": "D:\\Agrolink\\agrolink.infrastructure\\AgroLink.Infrastructure.csproj",
+  "projectFilePath": "D:\\Agrolink\\Agrolink.infrastructure\\AgroLink.Infrastructure.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\Lenovo\\.nuget\\packages\\humanizer.core\\2.14.1\\humanizer.core.2.14.1.nupkg.sha512",
     "C:\\Users\\Lenovo\\.nuget\\packages\\microsoft.aspnetcore.authentication.jwtbearer\\9.0.11\\microsoft.aspnetcore.authentication.jwtbearer.9.0.11.nupkg.sha512",

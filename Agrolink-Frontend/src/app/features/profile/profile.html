@@ -4,31 +4,62 @@
     <h1 class="title">Build Your Profile</h1>
     <div class="divider"></div>
 
-    <form  [formGroup]="profileForm" class="profile-form">
+    <form  [formGroup]="profileForm" class="profile-form" (ngSubmit)="profilebuilder()">
       <div style="display:flex;">
         <div>
-            <label>First Name:</label>
+            <label>First Name: <span *ngIf="profileForm.get('firstname')?.invalid && profileForm.get('firstname')?.touched" class="error">*</span></label>
             <input formControlName="firstname" type="text" placeholder="John" />
-
+            <div *ngIf="profileForm.get('firstname')?.invalid && profileForm.get('firstname')?.touched" class="error-message">
+              First name is required
+            </div>
         </div>
         <div>
-              <label>Last Name:</label>
-      <input formControlName="lastname" type="text" placeholder="Doe" />
+              <label>Last Name: <span *ngIf="profileForm.get('lastname')?.invalid && profileForm.get('lastname')?.touched" class="error">*</span></label>
+              <input formControlName="lastname" type="text" placeholder="Doe" />
+              <div *ngIf="profileForm.get('lastname')?.invalid && profileForm.get('lastname')?.touched" class="error-message">
+                Last name is required
+              </div>
         </div>
-          
-    
       </div>
+
+      <label>Address:</label>
+      <input formControlName="address" type="text" placeholder="Your address" />
+
+      <label>Phone Number:</label>
+      <input formControlName="phone" type="tel" placeholder="Your phone number" />
     
 
-      <label>Profile Image URL:</label>
-      <input formControlName="profileimage" type="file" placeholder="https://example.com/image.jpg" />
+      <div>
+        <label>Profile Image:</label>
+        <input 
+          type="file" 
+          accept="image/*" 
+          (change)="onProfileImageChange($event)" 
+          #profileImageInput />
+        <div *ngIf="profileImagePreview" class="image-preview">
+          <img [src]="profileImagePreview" alt="Profile Image Preview" />
+          <button type="button" (click)="profileImageInput.value = ''; profileImagePreview = null; profileForm.patchValue({profileimage: ''})">Remove</button>
+        </div>
+      </div>
 
-      <label>Profile Background Image URL:</label>
-      <input formControlName="profilebackgroundimage" type="file" placeholder="https://example.com/image.jpg" />
+      <div>
+        <label>Profile Background Image:</label>
+        <input 
+          type="file" 
+          accept="image/*" 
+          (change)="onBackgroundImageChange($event)" 
+          #backgroundImageInput />
+        <div *ngIf="backgroundImagePreview" class="image-preview">
+          <img [src]="backgroundImagePreview" alt="Background Image Preview" />
+          <button type="button" (click)="backgroundImageInput.value = ''; backgroundImagePreview = null; profileForm.patchValue({profilebackgroundimage: ''})">Remove</button>
+        </div>
+      </div>
 
-
-      <label>Role:</label>
-      <input formControlName="role" type="text"  formControlName="role" placeholder="Farmer / Agronomist / Researcher" />
+      <label>Role: <span *ngIf="profileForm.get('role')?.invalid && profileForm.get('role')?.touched" class="error">*</span></label>
+      <input formControlName="role" type="text" placeholder="Farmer / Agronomist / Researcher" />
+      <div *ngIf="profileForm.get('role')?.invalid && profileForm.get('role')?.touched" class="error-message">
+        Role is required
+      </div>
 
       <label>Description:</label>
       <textarea formControlName="description" placeholder="Tell us about yourself..."></textarea>
@@ -36,7 +67,8 @@
       <label>Achievements:</label>
       <textarea formControlName="achievements" placeholder="Awards, experience, milestones..."></textarea>
 
-      <button class="profile-btn"  type="submit">save profile</button>
+    
+      <button class="profile-btn" type="submit" [disabled]="profileForm.invalid">save profile</button>
     </form>
   </div>
 

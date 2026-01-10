@@ -26,6 +26,10 @@ export class Login implements OnInit {
     });
   }
 
+  clearTextfields(){
+    this.loginForm.reset();
+  }
+
   onlogin(){
     if (this.loginForm.invalid) {
       this.loginForm.markAllAsTouched();
@@ -40,13 +44,16 @@ export class Login implements OnInit {
 
     this.auth.login(dto).subscribe({
       next: res => {
+
         localStorage.setItem('token', res.token);
-        this.router.navigate(['/feed'])
-        
-        
+        this.auth.updateAuthState();
+        this.router.navigate(['/feed']);
       },
       error: err => {
+        alert("unable to login!");
+        this.clearTextfields();
         console.error(err);
+
       }
     });
   }

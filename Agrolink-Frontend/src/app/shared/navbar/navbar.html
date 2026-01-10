@@ -3,23 +3,46 @@
     <div class="logo">Agrolink</div>
     <div class="navbar-nav">
         <ul id="navbar-list">
-            <li>
-                <a routerLink="/">Home</a>
-            </li>
-            <li>
+        
+
+           @if(isAuthenticated){
+                 <li >
                 <a routerLink="/feed">Feed</a>
             </li>
-            <li>
+            <li >
                 <a routerLink="/network">My Network</a>
             </li>
-              <li>
+            <li >
                 <a routerLink="/messages">Messages</a>
             </li>
-             
+           }
+       
+           
         </ul>
         <div>
-            <button class="loginbutton" type="submit"><a style="color:#66D136;" routerLink="/login">log in</a></button>
-            <button class="signupbutton" type="submit"><a routerLink="/signup">create your account</a></button>
+          @if(!isAuthenticated){
+
+         
+            <ng-container >
+                <button class="loginbutton" type="button">
+                    <a style="color:#66D136;" routerLink="/login">log in</a>
+                </button>
+                <button class="signupbutton" type="button">
+                    <a routerLink="/signup">create your account</a>
+                </button>
+            </ng-container>
+        } @else {
+
+      
+            <ng-container >
+                <button class="loginbutton" type="button">
+                    <a style="color:#66D136;" routerLink="/userProfile">Profile</a>
+                </button>
+                <button class="signupbutton" type="button" (click)="logout()">
+                    Logout
+                </button>
+            </ng-container>
+        }
         </div>
     </div>
 </div>

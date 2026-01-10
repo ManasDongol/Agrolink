@@ -1,7 +1,7 @@
 {
   "format": 1,
   "restore": {
-    "D:\\Agrolink\\agrolink.infrastructure\\AgroLink.Infrastructure.csproj": {}
+    "D:\\Agrolink\\Agrolink.infrastructure\\AgroLink.Infrastructure.csproj": {}
   },
   "projects": {
     "D:\\Agrolink\\Agrolink.Domain\\AgroLink.Domain.csproj": {
@@ -84,14 +84,14 @@
         }
       }
     },
-    "D:\\Agrolink\\agrolink.infrastructure\\AgroLink.Infrastructure.csproj": {
+    "D:\\Agrolink\\Agrolink.infrastructure\\AgroLink.Infrastructure.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "D:\\Agrolink\\agrolink.infrastructure\\AgroLink.Infrastructure.csproj",
+        "projectUniqueName": "D:\\Agrolink\\Agrolink.infrastructure\\AgroLink.Infrastructure.csproj",
         "projectName": "AgroLink.Infrastructure",
-        "projectPath": "D:\\Agrolink\\agrolink.infrastructure\\AgroLink.Infrastructure.csproj",
+        "projectPath": "D:\\Agrolink\\Agrolink.infrastructure\\AgroLink.Infrastructure.csproj",
         "packagesPath": "C:\\Users\\Lenovo\\.nuget\\packages\\",
-        "outputPath": "D:\\Agrolink\\agrolink.infrastructure\\obj\\",
+        "outputPath": "D:\\Agrolink\\Agrolink.infrastructure\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"

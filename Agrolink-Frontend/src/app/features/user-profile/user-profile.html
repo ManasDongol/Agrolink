@@ -1,49 +1,65 @@
 <app-navbar></app-navbar>
 <!-- Profile Card -->
 <div class="profile-container">
-  <div class="profile-card">
+  <div *ngIf="loading" class="loading">
+    <p>Loading profile...</p>
+  </div>
 
+  <div *ngIf="error && !loading" class="error-message">
+    <p>{{ error }}</p>
+    <button class="edit-btn" (click)="navigateToEditProfile()">Create Profile</button>
+  </div>
+
+  <div *ngIf="profile && !loading" class="profile-card">
     <!-- Cover Image -->
-    <div class="cover">
-      <img src="image.png" alt="cover" />
+    <div class="cover" [style.background-image]="profile.profileBackground ? 'url(' + profile.profileBackground + ')' : 'none'">
+      <div *ngIf="!profile.profileBackground" class="cover-placeholder">
+        <p>No background image</p>
+      </div>
     </div>
 
     <!-- Profile Header -->
     <div class="profile-header">
       <div class="avatar">
-        <img src="image.png" alt="avatar" />
+        <img 
+          [src]="profile.profilePicture || 'assets/images/default-avatar.png'" 
+          [alt]="profile.firstName + ' ' + profile.lastName" 
+          onerror="this.src='assets/images/default-avatar.png'"
+        />
       </div>
 
       <div class="user-info">
-        <h2>Morgan J. Smith</h2>
-        <p class="username">@morganjayjay</p>
+        <h2>{{ profile.firstName }} {{ profile.lastName }}</h2>
+        <p class="username">@{{ profile.firstName.toLowerCase() }}{{ profile.lastName.toLowerCase() }}</p>
+        <p class="role" *ngIf="profile.role">{{ profile.role }}</p>
+        <p class="address" *ngIf="profile.address">{{ profile.address }}</p>
       </div>
 
-      <div class="connections">
-        <span>12</span>
-        <small>connections</small>
+      <div class="header-actions">
+        <div class="connections">
+          <span>{{ connections }}</span>
+          <small>connections</small>
+        </div>
+        <button class="edit-btn" (click)="navigateToEditProfile()">Edit Profile</button>
       </div>
     </div>
 
     <!-- Profile Body -->
     <div class="profile-body">
-      <div class="section">
+      <div class="section" *ngIf="profile.description">
         <h3>Description</h3>
-        <p>asdasdasdasdasdasd</p>
-        <p>asd</p>
-        <p>asdasdasd</p>
-        <p>asd</p>
-        <p>asdasdasdasdads</p>
+        <p>{{ profile.description }}</p>
       </div>
 
-      <div class="section">
-        <h3>Experience</h3>
-        <p>asdasdasdasdasdasd</p>
-        <p>asd</p>
-        <p>asdasdasd</p>
-        <p>asd</p>
-        <p>asdasdasdasdads</p>
+      <div class="section" *ngIf="profile.achievement">
+        <h3>Achievements</h3>
+        <p>{{ profile.achievement }}</p>
       </div>
+    </div>
+
+    <!-- Show message if no description or achievements -->
+    <div *ngIf="!profile.description && !profile.achievement" class="empty-state">
+      <p>No description or achievements yet. <button class="link-btn" (click)="navigateToEditProfile()">Add them now</button></p>
     </div>
 
   </div>

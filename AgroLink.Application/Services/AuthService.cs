@@ -42,7 +42,7 @@ public class AuthService(UserRepo userRepo, HashingService hashingService,TokenS
     
     
     // no tokens generated during registration i nneed to redirect to login
-    public async Task<RegisterRequestDto> RegisterUser(RegisterRequestDto  registerDto)
+    public async Task<RegisterResponseDto> RegisterUser(RegisterRequestDto  registerDto)
     {
         var username=registerDto.Username;
         var email=registerDto.Email;
@@ -50,18 +50,21 @@ public class AuthService(UserRepo userRepo, HashingService hashingService,TokenS
         var Hashresponse = hashingService.hash(registerDto.Username,registerDto.Password);
 
         var password = Hashresponse.hashedPassword;
-        var storedSalt = Hashresponse.salt;
+       var storedSalt = Hashresponse.salt;
+       
+     
         var user = new User
         {
             Username = registerDto.Username,
             Email = registerDto.Email,
             Password = password,
-            salt = storedSalt
+            salt = storedSalt,
+            UserType = registerDto.UserType
         };
         var result = await userRepo.RegisterUser(user);
         if (result != null)
         {
-            return registerDto;
+            return new RegisterResponseDto(registerDto,result.UserId,"User created successfully!");
         }
 
         return null;

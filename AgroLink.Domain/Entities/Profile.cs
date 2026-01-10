@@ -19,7 +19,8 @@ public class Profile
     public string Role { get; set; }
     public string ProfilePicture { get; set; }
     public string ProfileBackground { get; set; }
-    
+    public string Description { get; set; }
+    public string Achievement { get; set; }
     //nav properties 
     public User User { get; set; }
 }

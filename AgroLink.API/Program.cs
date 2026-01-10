@@ -52,9 +52,11 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 
 
 builder.Services.AddAuthorization();
-builder.Services.AddScoped<UserRepo>( );
-builder.Services.AddScoped<TokenService>( );
+builder.Services.AddScoped<UserRepo>();
+builder.Services.AddScoped<ProfileRepo>();
+builder.Services.AddScoped<TokenService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
+builder.Services.AddScoped<ProfileService>();
 var app = builder.Build();
 
 

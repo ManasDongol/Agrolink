@@ -16,6 +16,8 @@
 
       <label>Confirm Password:</label>
       <input type="password" placeholder="********" formControlName="SecondPassword"/>
+
+      <input type="hidden" formControlName="UserType"/>
       
         <p *ngIf="Password && SecondPassword && Password !== SecondPassword" 
    style="color: red; font-size: 10px;">
