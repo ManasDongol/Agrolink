@@ -16,6 +16,7 @@
     box-shadow:  0.1px 1px 10px black;
     position: fixed;
     align-items: center;
+    z-index: 1000;
 }
 .navbar-nav{
     margin-left: auto;

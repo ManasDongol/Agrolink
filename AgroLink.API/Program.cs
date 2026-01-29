@@ -59,6 +59,13 @@ builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<ProfileService>();
 var app = builder.Build();
 
+app.Lifetime.ApplicationStarted.Register(async () =>
+{
+    using var scope = app.Services.CreateScope();
+    var db = scope.ServiceProvider.GetRequiredService<AgroLinkDbContext>();
+    await db.Database.CanConnectAsync();
+});
+
 
 app.UseCors("AllowAngularApp");
 // Configure the HTTP request pipeline.
