@@ -1,0 +1,15 @@
+# Build outputs
+**/bin/
+**/obj/
+
+# Rider / JetBrains
+.idea/
+*.iml
+
+# User-specific
+*.user
+*.suo
+*.cache
+
+# HTTP client
+/httpRequests/
