@@ -3,6 +3,7 @@ import { Navbar } from "../../shared/navbar/navbar";
 import { FormBuilder, ReactiveFormsModule, FormGroup, Validators } from "@angular/forms";
 import { CropService } from '../../core/Services/CropService/crop-service';
 import { PredictionRequestDto } from '../../core/Dtos/PredictionRequestDto';
+import { WebscraperDataDto } from '../../core/Dtos/WebscraperDataDto';
 @Component({
   selector: 'app-crop',
   standalone: true,
@@ -14,6 +15,7 @@ export class Crop implements OnInit {
 
   crop: string = "";
   fertilizer: string ="";
+  priceList : WebscraperDataDto[] = [];
 
   RecomendationForm!: FormGroup;
 
@@ -32,6 +34,12 @@ export class Crop implements OnInit {
       Temperature: ['', Validators.required],
       Rainfall: ['', Validators.required],
       pH: ['', Validators.required],
+    });
+
+    this.cropService.Prices().subscribe({
+      next:(res) =>{
+        this.priceList = res;
+      }
     });
 
   }

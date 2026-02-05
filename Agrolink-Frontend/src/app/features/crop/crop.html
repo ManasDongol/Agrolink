@@ -120,6 +120,7 @@
       <table class="crop-table">
 
         <thead>
+          
           <tr>
             <th>Commodity</th>
             <th>Unit</th>
@@ -130,13 +131,16 @@
         </thead>
 
         <tbody>
-          <tr>
-            <td>Tomato Big (Nepali)</td>
-            <td>Kg</td>
-            <td>90</td>
-            <td>100</td>
-            <td>95</td>
+          @for(crops of priceList;track crops){
+            <tr>
+              <td>{{crops.commodity}}</td>
+              <td>{{crops.unit}}</td>
+              <td>{{crops.minimum}}</td>
+              <td>{{crops.maximum}}</td>
+              <td>{{crops.average}}</td>
           </tr>
+          }
+         
 
           <tr>
             <td>Potato Red</td>

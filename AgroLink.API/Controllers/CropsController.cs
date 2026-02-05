@@ -1,5 +1,6 @@
 ﻿using AgroLink.Application.DTOs;
 using AgroLink.Application.Interfaces;
+using AgroLink.Application.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -12,10 +13,19 @@ public class CropsController : ControllerBase
 {
     private readonly HttpClient _httpClient;
     private ICropService _cropService;
-    public CropsController(HttpClient httpClient, ICropService cropService)
+    private WebscraperService _webscraperService;
+    public CropsController(HttpClient httpClient, ICropService cropService,WebscraperService webscraperService)
     {
         _httpClient = httpClient;
         _cropService = cropService;
+        _webscraperService = webscraperService;
+    }
+
+    [HttpGet("prices")]
+    public async Task<List<WebscraperDataDto>> GetPrices()
+    {
+        var prices = await _webscraperService.webscraper();
+        return prices;
     }
     
     [HttpPost("predict")]

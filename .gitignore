@@ -13,3 +13,21 @@
 
 # HTTP client
 /httpRequests/
+
+# ===== .NET =====
+**/bin/
+**/obj/
+
+# ===== Node / Angular =====
+node_modules/
+dist/
+.angular/
+
+# ===== IDE =====
+.vs/
+.vscode/
+.idea/
+
+# ===== OS =====
+Thumbs.db
+.DS_Store

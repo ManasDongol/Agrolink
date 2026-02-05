@@ -60,6 +60,7 @@ builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<ProfileService>();
 builder.Services.AddScoped<HttpClient>();
 builder.Services.AddScoped<ICropService, CropService>();
+builder.Services.AddScoped<WebscraperService>();
 var app = builder.Build();
 
 app.Lifetime.ApplicationStarted.Register(async () =>
