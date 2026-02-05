@@ -1,5 +1,5 @@
 import { Injectable,inject } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { LoginRequestDto } from '../../Dtos/LoginRequestDto';
 import { SignupRequestDto } from '../../Dtos/SignupRequestDto';
 import { Observable, BehaviorSubject } from 'rxjs';
@@ -29,13 +29,21 @@ export class Auth {
     return this.http.post(`${this.baseUrl}/signup`, dto);
   }
 
+
+  public getAuthHeaders(): HttpHeaders {
+    const token = localStorage.getItem('token');
+    return new HttpHeaders({
+      'Content-Type': 'application/json',
+      'Authorization': token ? `Bearer ${token}` : ''
+    });
+  }
   isLoggedIn(): boolean {
     const token = localStorage.getItem('token');
     if (!token) {
       return false;
     }
     
-    // Basic token validation - check if token exists and is not expired
+    
     try {
       const payload = JSON.parse(atob(token.split('.')[1]));
       const exp = payload.exp;

@@ -1,0 +1,29 @@
+/* ================= Table ================= */
+
+.crop-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.crop-table th {
+  background: var(--yellow-color);
+  padding: 12px;
+  text-align: left;
+}
+
+.crop-table td {
+  padding: 10px;
+  border-top: 1px solid var(--border-color);
+}
+
+.crop-table tr:hover {
+  background: var(--hover-color, rgba(0,0,0,0.03));
+}
+
+/* ================= Page Wrapper ================= */
+
+.crops-page {
+  padding: var(--space-lg);
+  background: var(--darkgreen-color);
+  min-height: 100vh;
+}

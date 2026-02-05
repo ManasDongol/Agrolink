@@ -1,1 +1,157 @@
-<p>crop works!</p>
+<app-navbar></app-navbar>
+<div class="crops-page">
+
+  <!-- ================= Crop Recommendation Card ================= -->
+
+  <form  class="card crop-recommend-card"
+      [formGroup]="RecomendationForm"
+      (ngSubmit)="submit()">
+
+    <h2 class="card-title">Crop recommendation system</h2>
+
+    <div class="form-grid">
+
+      <div class="input-group">
+        <label>Nitrogen</label>
+        <input type="number" formControlName = "Nitrogen" />
+      </div>
+      @if (RecomendationForm.get('Nitrogen')?.invalid && (RecomendationForm.get('Nitrogen')?.dirty || RecomendationForm.get('Nitrogen')?.touched)) {
+  <div>
+    Nitrogen value is required.
+  </div>
+}
+
+      <div class="input-group">
+        <label>Phosphorus</label>
+        <input type="number" formControlName = "Phosphorus" />
+      </div>
+   @if (RecomendationForm.get('Phosphorus')?.invalid && (RecomendationForm.get('Phosphorus')?.dirty || RecomendationForm.get('Phosphorus')?.touched)) {
+  <div>
+    Phosphorus is required.
+  </div>
+}
+      <div class="input-group">
+        <label>Humidity</label>
+        <input type="number" formControlName = "Humidity"   />
+      </div>
+
+   @if (RecomendationForm.get('Humidity')?.invalid && (RecomendationForm.get('Humidity')?.dirty || RecomendationForm.get('Humidity')?.touched)) {
+  <div>
+    Humidity is required.
+  </div>
+}
+      <div class="input-group">
+        <label>Temperature</label>
+        <input type="number" formControlName = "Temperature"  />
+      </div>
+   @if (RecomendationForm.get('Temperature')?.invalid && (RecomendationForm.get('Temperature')?.dirty || RecomendationForm.get('Temperature')?.touched)) {
+  <div>
+    Temperature is required.
+  </div>
+}
+      <div class="input-group">
+        <label>Potassium</label>
+        <input type="number" formControlName = "Potassium"  />
+      </div>
+   @if (RecomendationForm.get('Potassium')?.invalid && (RecomendationForm.get('Potassium')?.dirty || RecomendationForm.get('Potassium')?.touched)) {
+  <div>
+    Potassium is required.
+  </div>
+}
+      <div class="input-group">
+        <label>Rainfall</label>
+        <input type="number"  formControlName = "Rainfall" />
+      </div>
+
+  @if (RecomendationForm.get('Rainfall')?.invalid && (RecomendationForm.get('Rainfall')?.dirty || RecomendationForm.get('Rainfall')?.touched)) {
+  <div>
+    Rainfall is required.
+  </div>
+}
+  
+      <div class="input-group">
+        <label>pH</label>
+        <input type="number"  formControlName = "pH" />
+      </div>
+@if (RecomendationForm.get('pH')?.invalid && (RecomendationForm.get('pH')?.dirty || RecomendationForm.get('pH')?.touched)) {
+  <div>
+    pH is required.
+  </div>
+}
+    </div>
+
+    <div class="recommend-footer">
+
+      <div class="recommend-result">
+        <h4>Recommendation :</h4>
+        <p><strong>Crop :</strong> {{ crop }}</p>
+        <p><strong>Fertilizer :</strong> {{ fertilizer }}</p>
+      </div>
+
+      <button class="btn btn-primary" (click)="submit()">
+        Generate Recommendation
+      </button>
+
+    </div>
+
+  </form>
+
+
+  <!-- ================= Crop Prices Card ================= -->
+
+  <div class="card crop-price-card">
+
+    <div class="card-header">
+
+      <div>
+        <h2 class="card-title">Latest Crop Prices</h2>
+        <span class="muted-text">last updated on : 20/12/2025</span>
+      </div>
+
+      <div class="search-box">
+        <input type="text" placeholder="Search crop..." />
+        <button class="btn btn-primary">Search</button>
+      </div>
+
+    </div>
+
+    <div class="table-wrapper">
+
+      <table class="crop-table">
+
+        <thead>
+          <tr>
+            <th>Commodity</th>
+            <th>Unit</th>
+            <th>Minimum</th>
+            <th>Maximum</th>
+            <th>Average</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          <tr>
+            <td>Tomato Big (Nepali)</td>
+            <td>Kg</td>
+            <td>90</td>
+            <td>100</td>
+            <td>95</td>
+          </tr>
+
+          <tr>
+            <td>Potato Red</td>
+            <td>Kg</td>
+            <td>32</td>
+            <td>40</td>
+            <td>36</td>
+          </tr>
+
+        </tbody>
+
+      </table>
+
+    </div>
+
+  </div>
+
+</div>

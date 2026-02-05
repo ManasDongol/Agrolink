@@ -1,4 +1,5 @@
 using System.Text;
+using AgroLink.Application.Interfaces;
 using AgroLink.Application.Services;
 using AgroLink.Infrastructure.Data;
 using AgroLink.Infrastructure.Repositories;
@@ -57,6 +58,8 @@ builder.Services.AddScoped<ProfileRepo>();
 builder.Services.AddScoped<TokenService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<ProfileService>();
+builder.Services.AddScoped<HttpClient>();
+builder.Services.AddScoped<ICropService, CropService>();
 var app = builder.Build();
 
 app.Lifetime.ApplicationStarted.Register(async () =>

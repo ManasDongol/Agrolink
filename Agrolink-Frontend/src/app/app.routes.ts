@@ -7,6 +7,7 @@ import { Signup } from './features/signup/signup';
 import { Messages } from './features/messages/messages';
 import { Profile } from './features/profile/profile';
 import { UserProfile } from './features/user-profile/user-profile';
+import { Crop } from './features/crop/crop';
 
 export const routes: Routes = [
     {path:"feed",component:Feed},
@@ -16,6 +17,7 @@ export const routes: Routes = [
     {path: "messages",component:Messages},
     {path: "buildProfile",component:Profile},
     {path: "userProfile",component:UserProfile},
+    {path: "crop",component:Crop},
     {path:"",component:Home}
     
 ];

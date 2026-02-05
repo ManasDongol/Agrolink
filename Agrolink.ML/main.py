@@ -1,23 +1,27 @@
 from fastapi import FastAPI
-from typing import Annotated
-from pydantic import BaseModel, Field
-from predict import predict_crop
+from pydantic import BaseModel
+from typing import List
+from predict import predict_crop, predict_fertilizer
 
-app = FastAPI(
-    title="AgroLink ML Service",
-    description="Crop recommendation model for AgroLink",
-    version="1.0.0"
-)
+app = FastAPI()
 
 
 class CropRequest(BaseModel):
-    features: Annotated[list[float], Field(min_items=1)]
+    features: List[float]
 
 
-class CropResponse(BaseModel):
-    prediction: int
+class PredictionResponse(BaseModel):
+    crop: int
+    fertilizer: int
 
-@app.post("/predict", response_model=CropResponse)
+
+@app.post("/predict", response_model=PredictionResponse)
 def predict(data: CropRequest):
-    result = predict_crop(data.features)
-    return {"prediction": result}
+
+    crop_id = predict_crop(data.features)
+    fert_id = predict_fertilizer(data.features, crop_id)
+
+    return {
+        "crop": crop_id,
+        "fertilizer": fert_id
+    }
