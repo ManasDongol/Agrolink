@@ -1,7 +1,7 @@
 <app-navbar></app-navbar>
 <div class="crops-page">
 
-  <!-- ================= Crop Recommendation Card ================= -->
+
 
   <form  class="card crop-recommend-card"
       [formGroup]="RecomendationForm"
@@ -97,7 +97,6 @@
   </form>
 
 
-  <!-- ================= Crop Prices Card ================= -->
 
   <div class="card crop-price-card">
 
@@ -109,8 +108,10 @@
       </div>
 
       <div class="search-box">
-        <input type="text" placeholder="Search crop..." />
-        <button class="btn btn-primary">Search</button>
+        <input type="text"  class="search-input"
+  placeholder="Search crops / markets..."
+  [formControl]="SearchControl" />
+        <button class="btn btn-primary" (click)="searchCrop()">Search</button>
       </div>
 
     </div>
@@ -123,10 +124,10 @@
           
           <tr>
             <th>Commodity</th>
-            <th>Unit</th>
-            <th>Minimum</th>
-            <th>Maximum</th>
-            <th>Average</th>
+            <th>Unit (Per)</th>
+            <th>Minimum (Nrs/रु)</th>
+            <th>Maximum (Nrs/रु)</th>
+            <th>Average (Nrs/रु)</th>
           </tr>
         </thead>
 
@@ -142,13 +143,7 @@
           }
          
 
-          <tr>
-            <td>Potato Red</td>
-            <td>Kg</td>
-            <td>32</td>
-            <td>40</td>
-            <td>36</td>
-          </tr>
+         
 
         </tbody>
 

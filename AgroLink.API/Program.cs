@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.IdentityModel.Tokens.Experimental;
 using Scalar.AspNetCore;
-
+using StackExchange.Redis;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers();
@@ -61,6 +61,12 @@ builder.Services.AddScoped<ProfileService>();
 builder.Services.AddScoped<HttpClient>();
 builder.Services.AddScoped<ICropService, CropService>();
 builder.Services.AddScoped<WebscraperService>();
+builder.Services.AddStackExchangeRedisCache(options =>
+{
+    options.Configuration = "localhost:6379";
+    options.InstanceName = "AgroLink:";
+});
+
 var app = builder.Build();
 
 app.Lifetime.ApplicationStarted.Register(async () =>

@@ -1,9 +1,11 @@
 ﻿using AgroLink.Application.ENUMS;
 using AgroLink.Application.Interfaces;
+using Microsoft.Extensions.Caching.Distributed;
 
 namespace AgroLink.Application.Services;
 
-public class CropService :  ICropService
+
+public class CropService(IDistributedCache _cache) :  ICropService
 {
     public string cropName(int value)
     {
@@ -24,4 +26,6 @@ public class CropService :  ICropService
         
         return((FertilizerMappingEnum)value).ToString();
     }
+
+    
 }

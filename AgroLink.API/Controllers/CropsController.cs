@@ -27,6 +27,13 @@ public class CropsController : ControllerBase
         var prices = await _webscraperService.webscraper();
         return prices;
     }
+
+    [HttpGet("cropName")]
+    public async Task<List<WebscraperDataDto>> GetCrop([FromQuery] string name)
+    {
+        var prices = await _webscraperService.FindCrop(name);
+        return prices;
+    }
     
     [HttpPost("predict")]
     public async Task<IActionResult> Predict([FromBody] CropRequestDto request)

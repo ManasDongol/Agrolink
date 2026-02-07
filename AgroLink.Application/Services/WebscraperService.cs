@@ -1,16 +1,18 @@
 ﻿using System.Text;
 using HtmlAgilityPack;
 using AgroLink.Application.DTOs;
+using Microsoft.Extensions.Caching.Distributed;
+using System.Text.Json;
 
 namespace AgroLink.Application.Services;
 
-public class WebscraperService
+public class WebscraperService(IDistributedCache _cache)
 {
     public List<WebscraperDataDto> WebscraperData { get; set; }=  new List<WebscraperDataDto>();
     public async Task<List<WebscraperDataDto>>  webscraper()
     {
         Console.OutputEncoding = Encoding.UTF8;
-
+        const string key = "vegetable-prices";
         var url = "https://ramropatro.com/vegetable";
         var client = new HttpClient();
         var html = await client.GetStringAsync(url);
@@ -26,6 +28,17 @@ public class WebscraperService
         if (table == null)
         {
             Console.WriteLine("Could not find table!");
+           
+            var cachedJson = await _cache.GetStringAsync(key);
+
+            if (cachedJson != null)
+            {
+                var prices =
+                    JsonSerializer.Deserialize<List<WebscraperDataDto>>(cachedJson);
+
+                return prices!;
+            }
+            
             return WebscraperData;
         }
 
@@ -55,9 +68,33 @@ public class WebscraperService
             
             }
         }
+        var json = JsonSerializer.Serialize(WebscraperData);
+        var options = new DistributedCacheEntryOptions
+        {
+            AbsoluteExpirationRelativeToNow = TimeSpan.FromHours(2)
+        };
+
+        await _cache.SetStringAsync(key, json, options);
         
-        Console.WriteLine("Done");
         return WebscraperData;
         
     }
+    
+    
+    public async Task<List<WebscraperDataDto>> FindCrop(string value)
+    {
+        var cachedList = await webscraper()?? new List<WebscraperDataDto>();
+
+        if (string.IsNullOrWhiteSpace(value))
+            return cachedList;
+
+        var newList = cachedList
+            .Where(x =>
+                !string.IsNullOrEmpty(x.Commodity) &&
+                x.Commodity.Contains(value, StringComparison.OrdinalIgnoreCase))
+            .ToList();
+
+        return newList;
+    }
+
 }

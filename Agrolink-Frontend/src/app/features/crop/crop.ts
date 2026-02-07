@@ -1,9 +1,12 @@
 import { Component, OnInit } from '@angular/core';
 import { Navbar } from "../../shared/navbar/navbar";
-import { FormBuilder, ReactiveFormsModule, FormGroup, Validators } from "@angular/forms";
+import { FormBuilder, ReactiveFormsModule, FormGroup, Validators,FormControl } from "@angular/forms";
 import { CropService } from '../../core/Services/CropService/crop-service';
 import { PredictionRequestDto } from '../../core/Dtos/PredictionRequestDto';
 import { WebscraperDataDto } from '../../core/Dtos/WebscraperDataDto';
+
+
+
 @Component({
   selector: 'app-crop',
   standalone: true,
@@ -18,6 +21,9 @@ export class Crop implements OnInit {
   priceList : WebscraperDataDto[] = [];
 
   RecomendationForm!: FormGroup;
+  SearchControl !: FormControl;
+  loading:Boolean = false;
+  results: any[] = [];
 
   constructor(
     private fb: FormBuilder,
@@ -25,6 +31,9 @@ export class Crop implements OnInit {
   ) {}
 
   ngOnInit(): void {
+
+    this.SearchControl = new FormControl('');
+
 
     this.RecomendationForm = this.fb.group({
       Nitrogen: ['', Validators.required],
@@ -39,10 +48,34 @@ export class Crop implements OnInit {
     this.cropService.Prices().subscribe({
       next:(res) =>{
         this.priceList = res;
+      },
+      error:(err)=>{
+        console.log("sorry");
       }
     });
 
+   
+
   }
+
+  searchCrop(): void {
+  const query = this.SearchControl.value;
+
+  if (!query || query.length < 2) return;
+
+  this.loading = true;
+
+  this.cropService.search(query).subscribe({
+    next: (res) => {
+      this.priceList = res;
+      this.loading = false;
+    },
+    error: () => {
+      this.loading = false;
+    },
+  });
+}
+
 
   submit(): void {
 
