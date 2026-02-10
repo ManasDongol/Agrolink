@@ -24,7 +24,7 @@ public class WebscraperService(IDistributedCache _cache)
         var table = doc.DocumentNode.SelectSingleNode(
             "//table[.//th[contains(., 'Commodity')] and .//th[contains(., 'Minimum')]]"
         );
-
+/*
         if (table == null)
         {
             Console.WriteLine("Could not find table!");
@@ -40,7 +40,7 @@ public class WebscraperService(IDistributedCache _cache)
             }
             
             return WebscraperData;
-        }
+        }*/
 
         var rows = table.SelectNodes(".//tr");
         if (rows == null)
@@ -63,19 +63,27 @@ public class WebscraperService(IDistributedCache _cache)
                     Unit = cols[1].InnerText.Trim()
                 };
                 WebscraperData.Add(currentrow);
-                Console.WriteLine(
-                    $"{cols[0].InnerText.Trim()} | {cols[1].InnerText.Trim()} | {cols[2].InnerText.Trim()} | {cols[3].InnerText.Trim()} | {cols[4].InnerText.Trim()}");
-            
+             
             }
         }
-        var json = JsonSerializer.Serialize(WebscraperData);
-        var options = new DistributedCacheEntryOptions
+/*
+        try
         {
-            AbsoluteExpirationRelativeToNow = TimeSpan.FromHours(2)
-        };
+            var json = JsonSerializer.Serialize(WebscraperData);
+            var options = new DistributedCacheEntryOptions
+            {
+                AbsoluteExpirationRelativeToNow = TimeSpan.FromHours(2)
+            };
 
-        await _cache.SetStringAsync(key, json, options);
+            await _cache.SetStringAsync(key, json, options);
+        }
+        catch(Exception e )
+        {
+            Console.WriteLine("errorororor");
+            return WebscraperData;
+        }
         
+        */
         return WebscraperData;
         
     }

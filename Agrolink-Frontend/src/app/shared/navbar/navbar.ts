@@ -1,5 +1,5 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
-import { RouterLink, Router, NavigationEnd } from "@angular/router";
+import { RouterLink, Router, NavigationEnd, RouterLinkActive } from "@angular/router";
 import { CommonModule } from '@angular/common';
 import { Auth } from '../../core/Services/Auth/auth';
 import { Subscription, filter } from 'rxjs';
@@ -7,14 +7,14 @@ import { Subscription, filter } from 'rxjs';
 @Component({
   selector: 'app-navbar',
   standalone: true,   
-  imports: [RouterLink, CommonModule],
+  imports: [RouterLink, CommonModule, RouterLinkActive],
   templateUrl: './navbar.html',
   styleUrl: './navbar.css',
 })
-export class Navbar implements OnInit, OnDestroy {
+export class Navbar implements OnInit {
   isAuthenticated: boolean = false;
   private authSubscription?: Subscription;
-  private routerSubscription?: Subscription;
+  
 
   constructor(
     private auth: Auth,
@@ -22,33 +22,26 @@ export class Navbar implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit(): void {
-    // Check initial authentication state
-    this.isAuthenticated = this.auth.isLoggedIn();
     
-    // Subscribe to authentication state changes
     this.authSubscription = this.auth.isAuthenticated$.subscribe(isAuth => {
       this.isAuthenticated = isAuth;
     });
 
-    // Update auth state on route changes (in case token is set/removed)
-    this.routerSubscription = this.router.events
-      .pipe(filter(event => event instanceof NavigationEnd))
-      .subscribe(() => {
-        this.auth.updateAuthState();
-      });
+   
+  this.auth.checkAuth().subscribe({
+    next: () => this.auth.setAuthenticated(true),
+    error: () => this.auth.setAuthenticated(false)
+  });
   }
 
-  ngOnDestroy(): void {
-    this.authSubscription?.unsubscribe();
-    this.routerSubscription?.unsubscribe();
-  }
 
   logout(): void {
-    this.auth.logout();
+  this.auth.logout().subscribe(() => {
+    this.auth.setAuthenticated(false);
     this.router.navigate(['/']);
-  }
+  });
+}
 
-  selectedPage() {
-    var page=document.getElementById("");
-  }
+
+  
 }

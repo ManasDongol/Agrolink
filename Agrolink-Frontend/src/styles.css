@@ -91,6 +91,10 @@ body[data-theme="dark"] {
     --accent-color: #7aa2ff;
 }
 
+.activePage {
+    color:aqua;
+    size: 200px;;
+}
 
 /* ================= Page Wrapper ================= */
 

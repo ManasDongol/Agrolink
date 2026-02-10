@@ -3,17 +3,23 @@
     <div class="logo">Agrolink</div>
     <div class="navbar-nav">
         <ul id="navbar-list">
-        
+         <li  routerLinkActive="activePage">
+                <a routerLink="/feed">Feed</a>
+        </li>
 
            @if(isAuthenticated){
-                 <li >
-                <a routerLink="/feed">Feed</a>
+                 <li  routerLinkActive="activePage">
+                <a routerLink="/feed"
+               >Feed</a>
             </li>
-            <li >
+            <li routerLinkActive="activePage">
                 <a routerLink="/network">My Network</a>
             </li>
-            <li >
+            <li routerLinkActive="activePage">
                 <a routerLink="/messages">Messages</a>
+            </li>
+             <li routerLinkActive="activePage">
+                <a routerLink="/crop">Crop</a>
             </li>
            }
        

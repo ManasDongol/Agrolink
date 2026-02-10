@@ -92,3 +92,12 @@ a{
     text-decoration: none;
     color: #ffffff;
 }
+
+.currentpage{
+    color:aqua;
+    size: 200px;;
+}
+
+#navbar-list li a.currentpage {
+    color: #66D136; /* keep active color on hover */
+}

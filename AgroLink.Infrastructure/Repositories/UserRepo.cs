@@ -60,5 +60,11 @@ public class UserRepo(AgroLinkDbContext dbContext)
         return result.salt;
         
     }
+
+    public User GetUserByIdAsync(string userID)
+    {
+        var result =  dbContext.Users.FirstOrDefault(x => x.UserId.ToString() == userID);
+        return result;
+    }
   
 }
