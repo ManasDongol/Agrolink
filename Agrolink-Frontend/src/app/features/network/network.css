@@ -1,0 +1,282 @@
+.network-page {
+  display: flex;
+  gap: 2rem;
+  padding: 2rem;
+  background-color: #1a3e2e; /* Dark green background */
+  min-height: 100vh;
+  color: #333;
+}
+
+.main-content {
+  flex: 3;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.sidebar {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  min-width: 300px;
+}
+
+/* Search Section */
+.search-section {
+  display: flex;
+  gap: 1rem;
+  background: white;
+  padding: 1rem;
+  border-radius: 12px;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+}
+
+.search-input {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: #f0f2f5;
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+}
+
+.search-input input {
+  border: none;
+  background: transparent;
+  outline: none;
+  width: 100%;
+  font-size: 1rem;
+}
+
+.search-btn {
+  background: #4CAF50;
+  color: white;
+  border: none;
+  padding: 0.5rem 1.5rem;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+/* Grid */
+.users-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 1.5rem;
+}
+
+.user-card {
+  background: white;
+  border-radius: 12px;
+  padding: 1.5rem;
+  text-align: center;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+  transition: transform 0.2s;
+}
+
+.user-card:hover {
+  transform: translateY(-5px);
+}
+
+.card-avatar img {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  object-fit: cover;
+  margin-bottom: 1rem;
+}
+
+.user-card h3 {
+  margin: 0;
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+
+.user-role {
+  color: #666;
+  font-size: 0.9rem;
+  margin: 0.25rem 0;
+}
+
+.connections-count {
+  font-size: 0.8rem;
+  color: #888;
+  margin-bottom: 1rem;
+}
+
+.connect-btn {
+  background: #66cc33; /* Bright green */
+  color: white;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 20px;
+  cursor: pointer;
+  width: 100%;
+  font-weight: bold;
+  transition: background 0.2s;
+}
+
+.connect-btn:hover:not(:disabled) {
+  background: #55b32a;
+}
+
+.connect-btn.connected {
+  background: #ccc;
+  cursor: default;
+}
+
+.connect-btn.pending {
+  background: #ffcc00;
+  color: #333;
+}
+
+/* Sidebar Cards */
+.sidebar-card {
+  background: white;
+  border-radius: 12px;
+  padding: 1.5rem;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+}
+
+.profile-top {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.profile-top img {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.profile-info h3 {
+  margin: 0;
+  font-size: 1.1rem;
+}
+
+.profile-stats {
+  display: flex;
+  justify-content: space-around;
+  margin-bottom: 1.5rem;
+}
+
+.stat {
+  text-align: center;
+}
+
+.stat-value {
+  display: block;
+  font-size: 1.2rem;
+  font-weight: bold;
+  color: #1a3e2e;
+}
+
+.stat-label {
+  font-size: 0.8rem;
+  color: #666;
+}
+
+.view-profile-btn {
+  width: 100%;
+  background: #ccc;
+  border: none;
+  padding: 0.75rem;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+/* Requests */
+.requests-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.request-item {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.5rem;
+  border-bottom: 1px solid #eee;
+}
+
+.request-item img {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+}
+
+.request-details {
+  flex: 1;
+}
+
+.request-details h4 {
+  margin: 0;
+  font-size: 1rem;
+}
+
+.request-details p {
+  margin: 0;
+  font-size: 0.8rem;
+  color: #666;
+}
+
+.accept-btn {
+  background: #4CAF50;
+  color: white;
+  border: none;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Loading */
+.spinner-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 200px;
+}
+.spinner {
+    border: 4px solid #f3f3f3;
+    border-top: 4px solid #3498db;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    animation: spin 1s linear infinite;
+}
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 1rem;
+    margin-top: 2rem;
+    color: white;
+}
+.pagination button {
+    background: white;
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: 4px;
+    cursor: pointer;
+}
+.pagination button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}

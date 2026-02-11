@@ -1,2 +1,86 @@
-<p>network works!</p>
-<img src="images/loginpage.jpg" style="width: 500px; height: 500px;">
+<div class="network-page">
+  <div class="main-content">
+    <div class="search-section">
+      <div class="search-input">
+        <i class="fas fa-search"></i>
+        <input type="text" [(ngModel)]="searchUsername" (keyup.enter)="onSearch()" placeholder="Search by username">
+      </div>
+      <div class="search-input">
+        <i class="fas fa-briefcase"></i>
+        <input type="text" [(ngModel)]="searchRole" (keyup.enter)="onSearch()" placeholder="Filter by role">
+      </div>
+      <button class="search-btn" (click)="onSearch()">Search</button>
+    </div>
+
+    <div class="users-grid" *ngIf="!loading; else spinner">
+      <div class="user-card" *ngFor="let user of users">
+        <div class="card-avatar">
+            <img [src]="user.profilePicture || 'assets/default-avatar.png'" alt="User Avatar">
+        </div>
+        <h3>{{ user.username }}</h3>
+        <p class="user-role">{{ user.role }}</p>
+        <p class="connections-count">{{ user.connectionCount }} connections</p>
+        
+        <button class="connect-btn" 
+                [disabled]="user.isConnected || user.isRequestSent"
+                [class.connected]="user.isConnected"
+                [class.pending]="user.isRequestSent"
+                (click)="connect(user)">
+          {{ user.isConnected ? 'Connected' : (user.isRequestSent ? 'Pending' : 'Connect') }}
+        </button>
+      </div>
+    </div>
+
+    <div class="pagination" *ngIf="totalPages > 1">
+      <button (click)="onPageChange(currentPage - 1)" [disabled]="currentPage === 1"><i class="fas fa-chevron-left"></i></button>
+      <span>{{ currentPage }} / {{ totalPages }}</span>
+      <button (click)="onPageChange(currentPage + 1)" [disabled]="currentPage === totalPages"><i class="fas fa-chevron-right"></i></button>
+    </div>
+  </div>
+
+  <div class="sidebar">
+    <div class="sidebar-card profile-card" *ngIf="myProfile">
+      <div class="profile-top">
+        <img [src]="myProfile.profilePicture || 'assets/default-avatar.png'" alt="My Avatar">
+        <div class="profile-info">
+          <h3>{{ myProfile.name }}</h3>
+          <p>{{ myProfile.role }}</p>
+        </div>
+      </div>
+      <div class="profile-stats">
+        <div class="stat">
+          <span class="stat-value">{{ myProfile.connectionCount }}</span>
+          <span class="stat-label">Connections</span>
+        </div>
+        <div class="stat">
+            <span class="stat-value">{{ myProfile.requestCount }}</span>
+            <span class="stat-label">Requests</span>
+          </div>
+      </div>
+      <button class="view-profile-btn">View Profile</button>
+    </div>
+
+    <div class="sidebar-card requests-card">
+      <h3>Requests</h3>
+      <div class="requests-list">
+        <div class="request-item" *ngFor="let req of requests">
+            <img [src]="req.fromUserProfilePicture || 'assets/default-avatar.png'" alt="Requester">
+            <div class="request-details">
+                <h4>{{ req.fromUserName }}</h4>
+                <p>{{ req.fromUserRole }}</p>
+            </div>
+            <button class="accept-btn" (click)="accept(req)"><i class="fas fa-check"></i></button>
+        </div>
+        <div class="no-requests" *ngIf="requests.length === 0">
+            <p>No pending requests.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<ng-template #spinner>
+    <div class="spinner-container">
+        <div class="spinner"></div>
+    </div>
+</ng-template>

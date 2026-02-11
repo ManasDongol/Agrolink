@@ -8,6 +8,8 @@ public class AgroLinkDbContext(DbContextOptions<AgroLinkDbContext> options) : Db
 
     public DbSet<User> Users { get; set; }
     public DbSet<Profile> Profiles { get; set; }
+    public DbSet<ConnectionRequests>   ConnectionRequests { get; set; }
+    public DbSet<Connections> Connections { get; set; }
     
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
