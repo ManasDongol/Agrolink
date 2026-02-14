@@ -91,7 +91,7 @@ public class AuthController(IAuthService authService, UserRepo UserRepo, Hashing
             if (user == null)
                 return NotFound(new { message = "User not found" });
 
-           
+           Console.WriteLine("token returned successfully");
             return Ok(new UserDto(user.UserId.ToString(),user.Username,user.Email));
         }
         catch

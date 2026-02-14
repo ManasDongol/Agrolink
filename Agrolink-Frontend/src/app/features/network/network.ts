@@ -4,10 +4,12 @@ import { FormsModule } from '@angular/forms';
 import { NetworkService } from '../../core/Services/Network/network';
 import { NetworkPageDto, NetworkUserDto, ConnectionRequestDto, ProfileStatsDto } from '../../core/Dtos/NetworkDtos';
 
+import { Navbar } from "../../shared/navbar/navbar";
+
 @Component({
   selector: 'app-network',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [Navbar,CommonModule, FormsModule],
   templateUrl: './network.html',
   styleUrl: './network.css'
 })
