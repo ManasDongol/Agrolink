@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { Navbar } from "../../shared/navbar/navbar";
+
 import { FormBuilder, ReactiveFormsModule, FormGroup, Validators,FormControl } from "@angular/forms";
 import { CropService } from '../../core/Services/CropService/crop-service';
 import { PredictionRequestDto } from '../../core/Dtos/PredictionRequestDto';
@@ -10,7 +10,7 @@ import { WebscraperDataDto } from '../../core/Dtos/WebscraperDataDto';
 @Component({
   selector: 'app-crop',
   standalone: true,
-  imports: [Navbar, ReactiveFormsModule],
+  imports: [ ReactiveFormsModule],
   templateUrl: './crop.html',
   styleUrl: './crop.css',
 })

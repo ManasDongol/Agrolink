@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterLink } from '@angular/router';
-import { Navbar } from "../../shared/navbar/navbar";
+
 import { ProfileService } from '../../core/Services/ProfileService/profileService';
 import { ProfileResponseDto } from '../../core/Dtos/ProfileResponseDto';
 import { Auth } from '../../core/Services/Auth/auth';
@@ -10,7 +10,7 @@ import { Observable,map } from 'rxjs';
 @Component({
   selector: 'app-user-profile',
   standalone: true,
-  imports: [Navbar, CommonModule],
+  imports: [CommonModule],
   templateUrl: './user-profile.html',
   styleUrl: './user-profile.css',
 })

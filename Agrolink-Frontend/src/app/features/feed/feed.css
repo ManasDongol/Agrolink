@@ -19,6 +19,7 @@
   border-radius: 12px;
   padding: 16px;
   box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  margin-top:50px;
 }
 
 .posts-container {
@@ -26,6 +27,10 @@
   flex-direction: column;
   gap: 12px;
   margin-top: 12px;
+}
+
+.floatingcard{
+  z-index: 1000;
 }
 
 /* Each post inside feed */
@@ -54,6 +59,22 @@
   min-height: 400px;
   box-shadow: 0 2px 8px rgba(0,0,0,0.1);
 }
+
+
+.translucent-background {
+  position: fixed; /* cover entire viewport */
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: rgba(0, 0, 0, 0.5); /* semi-transparent only */
+  z-index: 999;
+}
+
+
 
 @media (max-width: 768px) {
   .feed-page {

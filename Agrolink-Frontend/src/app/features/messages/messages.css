@@ -1,8 +1,10 @@
 body{
+ 
     background-color: #19321C;
 }
 .messages-card {
   display: flex;
+  margin-top:20px;
   gap: 16px;
   height: 90vh; /* almost full viewport */
   background: #f0f2f5;

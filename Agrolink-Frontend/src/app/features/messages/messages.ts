@@ -1,9 +1,8 @@
 import { Component } from '@angular/core';
-import { Navbar } from "../../shared/navbar/navbar";
 
 @Component({
   selector: 'app-messages',
-  imports: [Navbar],
+  imports: [],
   templateUrl: './messages.html',
   styleUrl: './messages.css',
 })

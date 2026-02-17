@@ -1,9 +1,32 @@
-<app-navbar></app-navbar>
+
+ @if(toggleNewPost){
+   
+    <div class="translucent-background">
+     <div class="card floatingcard">
+       <button class="btn-primary" (click)="togglePost()">back</button>
+      <span>heloooo</span>
+      </div>
+    </div>
+  }
 <div class="feed-page">
+ 
+ 
   <!-- Left 70% scrollable feed -->
   <div class="feed-left">
     <div class="feed-card">
-      <h2>Feed</h2>
+      <div style="display: flex;">
+         <h2>Feed</h2>
+        <div>
+          <button class="btn">All posts</button>
+          <button class="btn">My posts</button>
+        
+        </div>
+        <div>
+            <button class="btn" (click)="togglePost()">Create post</button>
+        </div>
+
+      </div>
+     
       <div class="posts-container">
         @for (post of posts; track post.title){
                  <div class="post-card">

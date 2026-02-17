@@ -91,6 +91,10 @@ body[data-theme="dark"] {
     --accent-color: #7aa2ff;
 }
 
+::-webkit-scrollbar {
+    display: none;
+}
+
 .activePage {
     color:aqua;
     size: 200px;;
@@ -185,7 +189,8 @@ body[data-theme="dark"] {
 
 .btn-primary {
   background: var(--mainbutton-color);
-  color: black;
+  color: white;
+  border: none;
 }
 
 .btn-primary:hover {
