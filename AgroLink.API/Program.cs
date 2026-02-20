@@ -3,6 +3,8 @@ using AgroLink.Application.Interfaces;
 using AgroLink.Application.Services;
 using AgroLink.Infrastructure.Data;
 using AgroLink.Infrastructure.Repositories;
+using AgroLink.Infrastructure.Repositories.Posts;
+using AgroLink.Application.Interfaces.Posts;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -75,6 +77,8 @@ builder.Services.AddScoped<HttpClient>();
 builder.Services.AddScoped<ICropService, CropService>();
 builder.Services.AddScoped<WebscraperService>();
 builder.Services.AddScoped<NetworkService>();
+builder.Services.AddScoped<PostRepo>();
+builder.Services.AddScoped<IPostService, PostService>();
 builder.Services.AddStackExchangeRedisCache(options =>
 {
     options.Configuration = "localhost:6379";

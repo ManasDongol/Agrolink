@@ -1,5 +1,5 @@
-<app-navbar></app-navbar>
-<div>hahaha</div>
+
+
 <div class="network-page">
   <div class="main-content">
     <div class="search-section">
@@ -8,13 +8,13 @@
         <input type="text" [(ngModel)]="searchUsername" (keyup.enter)="onSearch()" placeholder="Search by username">
       </div>
       <div class="search-input">
-        <i class="fas fa-briefcase"></i>
+         <i class="fas fa-search"></i>
         <input type="text" [(ngModel)]="searchRole" (keyup.enter)="onSearch()" placeholder="Filter by role">
       </div>
       <button class="search-btn" (click)="onSearch()">Search</button>
     </div>
 
-    <div class="users-grid" *ngIf="!loading; else spinner">
+    <div class="card users-grid" *ngIf="!loading; else spinner">
       <div class="user-card" *ngFor="let user of users">
         <div class="card-avatar">
             <img [src]="user.profilePicture || 'assets/default-avatar.png'" alt="User Avatar">
@@ -86,3 +86,4 @@
         <div class="spinner"></div>
     </div>
 </ng-template>
+

@@ -3,13 +3,13 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { NetworkService } from '../../core/Services/Network/network';
 import { NetworkPageDto, NetworkUserDto, ConnectionRequestDto, ProfileStatsDto } from '../../core/Dtos/NetworkDtos';
+import { Auth } from '../../core/Services/Auth/auth';
 
-import { Navbar } from "../../shared/navbar/navbar";
 
 @Component({
   selector: 'app-network',
   standalone: true,
-  imports: [Navbar,CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule],
   templateUrl: './network.html',
   styleUrl: './network.css'
 })

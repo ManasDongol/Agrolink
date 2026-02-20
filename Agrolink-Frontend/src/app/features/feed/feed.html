@@ -1,50 +1,149 @@
 
- @if(toggleNewPost){
-   
-    <div class="translucent-background">
-     <div class="card floatingcard">
-       <button class="btn-primary" (click)="togglePost()">back</button>
-      <span>heloooo</span>
-      </div>
+@if(toggleNewPost){
+<div class="translucent-background">
+  <div class="card floatingcard create-post-card">
+    <div class="card-header">
+      <h3>Create New Post</h3>
+      <button class="btn-close" (click)="togglePostForm()">&#10005;</button>
     </div>
-  }
+
+    <form [formGroup]="postForm" (ngSubmit)="submitPost()">
+      <div class="form-group">
+        <label for="title">Title</label>
+        <input type="text" id="title" formControlName="title" class="form-control" placeholder="Enter post title">
+        @if(postForm.get('title')?.invalid && postForm.get('title')?.touched) {
+        <small class="error-text">Title is required (min 5 chars).</small>
+        }
+      </div>
+
+      <div class="form-group">
+        <label for="content">Content</label>
+        <textarea id="content" formControlName="content" class="form-control" rows="4"
+          placeholder="What's on your mind?"></textarea>
+        @if(postForm.get('content')?.invalid && postForm.get('content')?.touched) {
+        <small class="error-text">Content is required (min 10 chars).</small>
+        }
+      </div>
+
+      <div class="form-group">
+        <label for="tag">Tag</label>
+        <select id="tag" formControlName="tagId" class="form-control">
+          <option value="" disabled>Select a tag</option>
+          @for(tag of tags; track tag.tagId) {
+          <option [value]="tag.tagId">{{ tag.name }}</option>
+          }
+        </select>
+        @if(postForm.get('tagId')?.invalid && postForm.get('tagId')?.touched) {
+        <small class="error-text">Please select a tag.</small>
+        }
+      </div>
+
+      <div class="form-group">
+        <label for="image">Image (Optional)</label>
+        <input type="file" id="image" (change)="onFileSelected($event)" accept="image/*" class="form-control-file">
+        @if(imagePreview) {
+        <div class="image-preview">
+          <img [src]="imagePreview" alt="Preview">
+        </div>
+        }
+      </div>
+
+      <div class="form-actions">
+        <button type="button" class="btn-secondary" (click)="togglePostForm()">Cancel</button>
+        <button type="submit" class="btn-primary" [disabled]="postForm.invalid || isLoading">
+          {{ isLoading ? 'Posting...' : 'Post' }}
+        </button>
+      </div>
+
+      @if(successMessage) {
+      <div class="success-message">{{ successMessage }}</div>
+      }
+    </form>
+  </div>
+</div>
+}
+
 <div class="feed-page">
- 
- 
   <!-- Left 70% scrollable feed -->
   <div class="feed-left">
     <div class="feed-card">
-      <div style="display: flex;">
-         <h2>Feed</h2>
-        <div>
-          <button class="btn">All posts</button>
-          <button class="btn">My posts</button>
-        
+      <div class="feed-header">
+        <h2>Feed</h2>
+        <div class="feed-controls">
+          <div class="view-toggles">
+            <button class="btn-toggle" [class.active]="currentView === 'all'" (click)="changeView('all')">General
+              Posts</button>
+            <button class="btn-toggle" [class.active]="currentView === 'my'" (click)="changeView('my')">My
+              Posts</button>
+          </div>
+          <button class="btn-create" (click)="togglePostForm()">Create Post</button>
         </div>
-        <div>
-            <button class="btn" (click)="togglePost()">Create post</button>
-        </div>
+      </div>
 
-      </div>
-     
       <div class="posts-container">
-        @for (post of posts; track post.title){
-                 <div class="post-card">
-                    <h3>{{ post.title }}</h3>
-                    <p>{{ post.content }}</p>
-                    </div>
+        @if(isLoading && !posts.length) {
+        <div class="loading-state">Loading posts...</div>
         }
-       
+
+        @if(!isLoading && posts.length === 0) {
+        <div class="empty-state">
+          <p>No posts found. Be the first to share something!</p>
+        </div>
+        }
+
+        @for (post of posts; track post.postId){
+        <div class="post-card">
+          <div class="post-header">
+            <div class="post-user-info">
+              <img [src]="post.author.profilePictureUrl || 'assets/default-avatar.png'" alt="User" class="user-avatar">
+              <div class="post-meta">
+                <span class="user-name">{{ post.author.username || 'Unknown User' }}</span>
+                <span class="post-date">{{ post.created | date:'mediumDate' }}</span>
+              </div>
+            </div>
+            <button class="view-profile-btn" (click)="viewUserProfile(post.author.userId)">View Profile</button>
+          </div>
+
+          <h3 class="post-title">{{ post.title }}</h3>
+
+          @if(post.imagePath) {
+          <div class="post-image-container">
+            <img [src]="post.imagePath" alt="Post Image" class="post-image">
+          </div>
+          }
+
+          <p class="post-content">{{ post.content }}</p>
+
+          <div class="post-footer">
+            <div class="post-tags">
+              @for(tag of post.tags; track tag.tagId) {
+              <span class="tag-badge">{{ tag.name }}</span>
+              }
+            </div>
+          </div>
+        </div>
+        }
       </div>
+
+      @if(posts.length > 0) {
+      <div class="pagination-controls">
+        <button class="btn-page" (click)="prevPage()" [disabled]="currentPage === 1">Previous</button>
+        <span class="page-info">Page {{ currentPage }} of {{ totalPages }}</span>
+        <button class="btn-page" (click)="nextPage()" [disabled]="currentPage === totalPages">Next</button>
+      </div>
+      }
     </div>
   </div>
 
   <!-- Right 30% stationary card -->
   <div class="feed-right">
     <div class="sidebar-card">
-      <h3>Sidebar</h3>
-      <p>Stationary content here, like profile info, ads, or notifications.</p>
-      <a routerLink="/login">login</a>
+      <h3>Quick Actions</h3>
+      <p>Connect with other farmers, discover new market trends, and grow your network.</p>
+      <div class="sidebar-links">
+        <a routerLink="/network" class="sidebar-link">Find Connections</a>
+        <a routerLink="/profile" class="sidebar-link">View Profile</a>
+      </div>
     </div>
   </div>
 </div>

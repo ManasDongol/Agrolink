@@ -11,13 +11,12 @@ public class Posts
     
     public string Title { get; set; }
     public string Content { get; set; }
-    public bool? IsDeleted { get; set; }
     public DateTime Created { get; set; }
     public DateTime? Modified { get; set; }
-    public DateTime? Deleted { get; set; }
     public bool? hasImage { get; set; }
     public string ImagePath { get; set; }
     
+    public ICollection<Tag> Tags { get; set; } = new List<Tag>();
     //nav properties
     
     public User User { get; set; }

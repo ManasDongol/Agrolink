@@ -6,6 +6,9 @@ body,html{
 }
 
 
+
+
+
 :root {
   --lightgreen-color: #66D136;
   --darkgreen-color : #19321C;
@@ -39,12 +42,12 @@ body,html{
     --negative-color: #ff145f;
     --negative-hover: #4f2835;
 
-  
 
-  
 }
 
-
+h2{
+   font-family: 'Outfit-Medium'
+}
 
 @font-face {
   font-family: 'outfit-medium';
@@ -61,6 +64,12 @@ body,html{
 @font-face {
   font-family: 'outfit-semibold';
   src: url('./assets/fonts/Outfit-SemiBold.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+@font-face {
+  font-family: 'outfit-light';
+  src: url('./assets/fonts/Outfit-Light.ttf') format('truetype');
   font-weight: normal;
   font-style: normal;
 }

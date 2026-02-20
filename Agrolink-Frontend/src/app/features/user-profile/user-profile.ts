@@ -6,11 +6,14 @@ import { ProfileService } from '../../core/Services/ProfileService/profileServic
 import { ProfileResponseDto } from '../../core/Dtos/ProfileResponseDto';
 import { Auth } from '../../core/Services/Auth/auth';
 import { Observable,map } from 'rxjs';
+import { Navbar } from '../../shared/navbar/navbar';
+import { Footer } from '../../shared/footer/footer';
+
 
 @Component({
   selector: 'app-user-profile',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule,Navbar,Footer],
   templateUrl: './user-profile.html',
   styleUrl: './user-profile.css',
 })

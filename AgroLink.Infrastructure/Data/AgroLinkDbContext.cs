@@ -10,6 +10,8 @@ public class AgroLinkDbContext(DbContextOptions<AgroLinkDbContext> options) : Db
     public DbSet<Profile> Profiles { get; set; }
     public DbSet<ConnectionRequests>   ConnectionRequests { get; set; }
     public DbSet<Connections> Connections { get; set; }
+    public DbSet<Posts> Posts { get; set; }
+    public DbSet<Tag> Tags { get; set; }
     
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
