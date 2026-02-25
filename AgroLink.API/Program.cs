@@ -109,6 +109,7 @@ app.UseAuthorization();
 app.MapControllers();
 
 app.UseHttpsRedirection();
+app.UseStaticFiles();
 app.Run();
 
 

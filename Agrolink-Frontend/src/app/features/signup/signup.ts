@@ -41,11 +41,11 @@ export class Signup implements OnInit{
 
       this.auth.signup(dto).subscribe({
         next: res =>{
-          let currentUserID = res.userID;
+          let currentUserID = res.userid;
           console.log(currentUserID);
-          localStorage.setItem("userID","someid");
-          console.log("no error")
-          this.router.navigate(['/buildProfile']);
+          console.log("confirm");
+          console.log("okayy")
+          this.router.navigate(['/buildProfile',currentUserID]);
         }, 
         error: err=>{
           console.log(err);

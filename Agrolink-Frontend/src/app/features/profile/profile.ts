@@ -5,6 +5,7 @@ import { CommonModule } from '@angular/common';
 import { ProfileRequestDto } from '../../core/Dtos/ProfileRequestDto';
 import { ProfileResponseDto } from '../../core/Dtos/ProfileResponseDto';
 import { ProfileService } from '../../core/Services/ProfileService/profileService';
+import { ActivatedRoute } from '@angular/router';
 
 @Component({
   selector: 'app-profile',
@@ -17,7 +18,8 @@ export class Profile implements OnInit{
   constructor(
     private profile : ProfileService,
     private router: Router,
-    private fb: FormBuilder
+    private fb: FormBuilder,
+    private route: ActivatedRoute
   ){}
 
   profileForm!: FormGroup;
@@ -35,8 +37,6 @@ export class Profile implements OnInit{
       phone: [''],
       description: [''],
       achievements: [''],
-      profileimage: [''], // Will store base64 string
-      profilebackgroundimage: [''] // Will store base64 string
     });
     
     // Load existing profile if editing
@@ -60,17 +60,17 @@ export class Profile implements OnInit{
           phone: profileData.phoneNumber || '',
           description: profileData.description || '',
           achievements: profileData.achievement || '',
-          profileimage: profileData.profilePicture || '',
-          profilebackgroundimage: profileData.profileBackground || ''
+          
         });
 
+
         // Set image previews if images exist
-        if (profileData.profilePicture) {
+      
           this.profileImagePreview = profileData.profilePicture;
-        }
-        if (profileData.profileBackground) {
+        
+       
           this.backgroundImagePreview = profileData.profileBackground;
-        }
+        
       },
       error: (err) => {
         // Profile doesn't exist yet, that's fine - user is creating new profile
@@ -90,17 +90,16 @@ export class Profile implements OnInit{
         return;
       }
 
-      // Validate file size (max 5MB)
+      
       if (this.profileImageFile.size > 5 * 1024 * 1024) {
         alert('Image size should be less than 5MB');
         return;
       }
-
+  
+      
       this.convertToBase64(this.profileImageFile, (base64: string) => {
         this.profileImagePreview = base64;
-        this.profileForm.patchValue({
-          profileimage: base64
-        });
+        
       });
     }
   }
@@ -124,9 +123,7 @@ export class Profile implements OnInit{
 
       this.convertToBase64(this.backgroundImageFile, (base64: string) => {
         this.backgroundImagePreview = base64;
-        this.profileForm.patchValue({
-          profilebackgroundimage: base64
-        });
+    
       });
     }
   }
@@ -144,76 +141,63 @@ export class Profile implements OnInit{
   }
 
   private getUserIdFromToken(): string | null {
-    const token = localStorage.getItem('token');
-    if (!token) {
+     const id = this.route.snapshot.paramMap.get('id')
+    if (!id) {
+    
       console.error('No token found in localStorage');
       return null;
     }
-    try {
-    
-      const payload = JSON.parse(atob(token.split('.')[1]));
-      console.log('Decoded token payload:', payload);
-      
-      // Try different possible claim names
-      const userId = payload['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier'] 
-        || payload['nameid'] 
-        || payload['NameIdentifier']
-        || payload['sub']
-        || null;
-      
-      console.log('Extracted UserID:', userId);
-      return userId;
-    } catch (error) {
-      console.error('Error decoding token:', error);
-      return null;
-    }
+    return id;
+  
   }
 
-  profilebuilder(event?: Event): void {
-    if (event) {
-      event.preventDefault();
-    }
+ updateProfile(event?: Event): void {
+  if (event) {
+    event.preventDefault();
+  }
 
-    if (this.profileForm.invalid) {
-      // Mark all fields as touched to show validation errors
-      Object.keys(this.profileForm.controls).forEach(key => {
-        this.profileForm.get(key)?.markAsTouched();
-      });
-      return;
-    }
-
-    const userId = this.getUserIdFromToken();
-    console.log('Extracted UserID from token:', userId);
-    
-    if (!userId) {
-      alert('Please login to create a profile');
-      this.router.navigate(['/login']);
-      return;
-    }
-
-    let profileDto = new ProfileRequestDto();
-
-    profileDto.UserID = userId;
-    console.log('Profile DTO being sent:', profileDto);
-    profileDto.FirstName = this.profileForm.value.firstname;
-    profileDto.LastName = this.profileForm.value.lastname;
-    profileDto.Role = this.profileForm.value.role;
-    profileDto.Address = this.profileForm.value.address || '';
-    profileDto.PhoneNumber = this.profileForm.value.phone || '';
-    profileDto.Achievement = this.profileForm.value.achievements || '';
-    profileDto.ProfilePicture = this.profileForm.value.profileimage || '';
-    profileDto.ProfileBackgroundPicture = this.profileForm.value.profilebackgroundimage || '';
-    profileDto.Description = this.profileForm.value.description || '';
-
-    this.profile.BuildProfile(profileDto).subscribe({
-      next: res => {
-        // Navigate to user profile page to see the updated profile
-        this.router.navigate(['/userProfile']);
-      },
-      error: err => {
-        console.error('Error building profile:', err);
-        alert('Failed to save profile. Please try again.');
-      }
+  if (this.profileForm.invalid) {
+    Object.keys(this.profileForm.controls).forEach(key => {
+      this.profileForm.get(key)?.markAsTouched();
     });
+    return;
   }
+
+  const userId = this.getUserIdFromToken();
+  if (!userId) {
+    alert('Please login');
+    return;
+  }
+
+  const formData = new FormData();
+
+  formData.append('UserID', userId);
+  formData.append('FirstName', this.profileForm.value.firstname);
+  formData.append('LastName', this.profileForm.value.lastname);
+  formData.append('Role', this.profileForm.value.role);
+  formData.append('Address', this.profileForm.value.address || '');
+  formData.append('PhoneNumber', this.profileForm.value.phone || '');
+  formData.append('Achievement', this.profileForm.value.achievements || '');
+  formData.append('Description', this.profileForm.value.description || '');
+  
+
+  // Only append files if user selected new ones
+  if (this.profileImageFile) {
+    formData.append('ProfileImage', this.profileImageFile);
+  }
+
+  if (this.backgroundImageFile) {
+    formData.append('BackgroundImage', this.backgroundImageFile);
+  }
+
+  this.profile.UpdateProfile(formData).subscribe({
+    next: () => {
+      this.router.navigate(['/userProfile']);
+    },
+    error: err => {
+      console.error(err);
+      alert('Failed to update profile');
+    }
+  });
+}
 }

@@ -6,14 +6,13 @@ import { ProfileService } from '../../core/Services/ProfileService/profileServic
 import { ProfileResponseDto } from '../../core/Dtos/ProfileResponseDto';
 import { Auth } from '../../core/Services/Auth/auth';
 import { Observable,map } from 'rxjs';
-import { Navbar } from '../../shared/navbar/navbar';
-import { Footer } from '../../shared/footer/footer';
+
 
 
 @Component({
   selector: 'app-user-profile',
   standalone: true,
-  imports: [CommonModule,Navbar,Footer],
+  imports: [CommonModule],
   templateUrl: './user-profile.html',
   styleUrl: './user-profile.css',
 })
@@ -121,6 +120,15 @@ export class UserProfile implements OnInit {
   }
 
   navigateToEditProfile(): void {
-    this.router.navigate(['/buildProfile']);
+    this.getUserIdFromToken().subscribe(id => {
+      console.log("User ID:", id);
+       if (!id) {
+      this.error = 'Please login to view your profile';
+      this.loading = false;
+      this.router.navigate(['/login']);
+      return;
+    }
+
+    this.router.navigate(['/buildProfile/',id]) });
   }
 }

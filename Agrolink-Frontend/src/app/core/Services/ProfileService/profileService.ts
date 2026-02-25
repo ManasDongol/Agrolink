@@ -27,4 +27,11 @@ export class ProfileService {
 
     return this.http.get<ProfileResponseDto>(`${this.baseUrl}/current`);
   }
+
+  UpdateProfile(formData: FormData) {
+  return this.http.put(
+    `${this.baseUrl}/update`,
+    formData
+  );
+}
 }

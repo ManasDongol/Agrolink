@@ -32,7 +32,7 @@ public class UserRepo(AgroLinkDbContext dbContext)
             {
                 Console.WriteLine("same username or email");
                 // Unique constraint violation
-                return null; // or custom error response
+                return null; 
             }
         }
 

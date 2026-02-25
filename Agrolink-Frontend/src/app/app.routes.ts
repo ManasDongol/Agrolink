@@ -18,10 +18,13 @@ export const routes: Routes = [
     { path: "feed", component:DefaultLayout,children: [{path:'',component:Feed}] , canActivate: [routeGuardGuard] },
     { path: "network", component:DefaultLayout,children: [{path:'',component:Network}], canActivate: [routeGuardGuard] },
     { path: "messages",  component:DefaultLayout,children: [{path:'',component:Messages}], canActivate: [routeGuardGuard] },
-    { path: "buildProfile", component:DefaultLayout,children: [{path:'',component:Profile}], canActivate: [routeGuardGuard] },
+    //{ path: "buildProfile/:id", component:DefaultLayout,children: [{path:'',component:Profile}], canActivate: [routeGuardGuard] },
     { path: "userProfile", component:DefaultLayout,children: [{path:'',component:UserProfile}], canActivate: [routeGuardGuard] },
     { path: "crop",  component:DefaultLayout,children: [{path:'',component:Crop}], canActivate: [routeGuardGuard] },
-
+      
+    { path: "buildProfile/:id", component:Profile },
+     
+  
     // Public routes
     { path: "login", component: EmptyLayout,children: [{path:'',component:Login}] },
     { path: "signup", component: EmptyLayout,children: [{path:'',component:Signup}]},

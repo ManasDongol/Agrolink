@@ -2,15 +2,13 @@
 
 public record ProfileRequestDto
 (
-    Guid UserID,
+    string UserID,
     string FirstName,
     string LastName,
     string PhoneNumber,
     string Address,
     string Role,
-    string ProfilePicture,
-    string ProfileBackgroundPicture,
-    string  Description,
+    string Description,
     string Achievement
 ); 
    

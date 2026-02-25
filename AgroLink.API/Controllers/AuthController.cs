@@ -45,6 +45,7 @@ public class AuthController(IAuthService authService, UserRepo UserRepo, Hashing
         if (result == null)
             return BadRequest(new { message = "Username or email already exists" });
 
+        Console.WriteLine(result.userID);
         return Ok(new { message = "Signup successful" ,userid = result.userID});
     }
     

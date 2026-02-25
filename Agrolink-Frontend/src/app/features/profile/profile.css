@@ -1,11 +1,17 @@
 * {
   box-sizing: border-box;
 }
-
+body {
+  background-image: url("../../../assets/images/loginpage.jpg");
+  background-size: cover;      /* Cover entire container */
+  background-position: center; /* Center the image */
+  background-repeat: no-repeat;
+  min-height: 100vh;           /* Ensure body is at least viewport height */
+}
 /* PAGE */
 .profile-page {
   display: flex;
-  height: 100vh;
+  min-height: 100vh;
   width: 100%;
 }
 
@@ -16,6 +22,8 @@
   display: flex;
   flex-direction: column;
   justify-content: center;
+  overflow-y: auto;
+  flex: 1;
 }
 
 .title {

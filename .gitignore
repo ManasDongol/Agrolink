@@ -18,6 +18,8 @@
 **/bin/
 **/obj/
 
+wwwroot/uploads/
+
 # ===== Node / Angular =====
 node_modules/
 dist/

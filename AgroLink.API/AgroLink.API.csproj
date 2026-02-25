@@ -30,4 +30,10 @@
     <ProjectReference Include="..\Agrolink.Infrastructure\AgroLink.Infrastructure.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="wwwroot\uploads\images\backgroundPictures\" />
+    <Folder Include="wwwroot\uploads\images\DefaultImages\" />
+    <Folder Include="wwwroot\uploads\images\profilePictures\" />
+  </ItemGroup>
+
 </Project>

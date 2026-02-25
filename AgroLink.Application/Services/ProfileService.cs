@@ -6,66 +6,73 @@ namespace AgroLink.Application.Services;
 
 public class ProfileService(ProfileRepo profileRepo)
 {
-    public async Task<ProfileResponseDto> BuildProfile(ProfileRequestDto dto)
+    public async Task<ProfileResponseDto> BuildProfile(
+    ProfileRequestDto dto,
+    string? profileImagePath,
+    string? backgroundImagePath)
+{
+    var existingProfile = await profileRepo.GetProfileByUserId(Guid.Parse(dto.UserID));
+
+    Profile profile;
+
+    if (existingProfile != null)
     {
-        // Check if profile already exists
-        var existingProfile = await profileRepo.GetProfileByUserId(dto.UserID);
-        
-        Profile profile;
-        if (existingProfile != null)
-        {
-            // Update existing profile
-            existingProfile.FirstName = dto.FirstName;
-            existingProfile.LastName = dto.LastName;
-            existingProfile.Address = dto.Address ?? string.Empty;
-            existingProfile.Role = dto.Role;
-            existingProfile.PhoneNumber = dto.PhoneNumber ?? string.Empty;
-            existingProfile.ProfilePicture = dto.ProfilePicture ?? string.Empty;
-            existingProfile.ProfileBackground = dto.ProfileBackgroundPicture ?? string.Empty;
-            existingProfile.Description = dto.Description ?? string.Empty;
-            existingProfile.Achievement = dto.Achievement ?? string.Empty;
-            
-            profile = await profileRepo.UpdateProfile(existingProfile) ?? existingProfile;
-        }
-        else
-        {
-            // Create new profile
-            profile = new Profile();
-            profile.UserId = dto.UserID;
-            profile.FirstName = dto.FirstName;
-            profile.LastName = dto.LastName;
-            profile.Address = dto.Address ?? string.Empty;
-            profile.Role = dto.Role;
-            profile.PhoneNumber = dto.PhoneNumber ?? string.Empty;
-            profile.ProfilePicture = dto.ProfilePicture ?? string.Empty;
-            profile.ProfileBackground = dto.ProfileBackgroundPicture ?? string.Empty;
-            profile.Description = dto.Description ?? string.Empty;
-            profile.Achievement = dto.Achievement ?? string.Empty;
+        //old profile is updated here
+        existingProfile.FirstName = dto.FirstName;
+        existingProfile.LastName = dto.LastName;
+        existingProfile.Address = dto.Address;
+        existingProfile.Role = dto.Role;
+        existingProfile.PhoneNumber = dto.PhoneNumber ?? string.Empty;
+        existingProfile.Description = dto.Description ?? string.Empty;
+        existingProfile.Achievement = dto.Achievement ?? string.Empty;
 
-            var result = await profileRepo.NewProfile(profile);
-            if (result == null)
-            {
-                throw new Exception("Failed to create profile");
-            }
-            profile = result;
-        }
+        // Only update images if new ones uploaded
+        if (!string.IsNullOrEmpty(profileImagePath))
+            existingProfile.ProfilePicture = profileImagePath;
 
-        ProfileResponseDto response = new ProfileResponseDto(
-            profile.ProfileId,
-            profile.UserId,
-            profile.FirstName,
-            profile.LastName,
-            profile.Role,
-            profile.Address,
-            profile.PhoneNumber,
-            profile.ProfilePicture,
-            profile.ProfileBackground,
-            profile.Description,
-            profile.Achievement
-        );
-        
-        return response;
+        if (!string.IsNullOrEmpty(backgroundImagePath))
+            existingProfile.ProfileBackground = backgroundImagePath;
+
+        profile = await profileRepo.UpdateProfile(existingProfile) ?? existingProfile;
     }
+    else
+    {
+        //new  profile is created from here
+        profile = new Profile
+        {
+            UserId = Guid.Parse(dto.UserID),
+            FirstName = dto.FirstName,
+            LastName = dto.LastName,
+            Address = dto.Address ?? string.Empty,
+            Role = dto.Role,
+            PhoneNumber = dto.PhoneNumber ?? string.Empty,
+            Description = dto.Description ?? string.Empty,
+            Achievement = dto.Achievement ?? string.Empty,
+            ProfilePicture = profileImagePath ?? string.Empty,
+            ProfileBackground = backgroundImagePath ?? string.Empty
+        };
+
+        var result = await profileRepo.NewProfile(profile);
+        if (result == null)
+            throw new Exception("Failed to create profile");
+
+        profile = result;
+    }
+
+    return new ProfileResponseDto(
+        profile.ProfileId,
+        profile.UserId,
+        profile.FirstName,
+        profile.LastName,
+        profile.Role,
+        profile.Address,
+        profile.PhoneNumber,
+        profile.ProfilePicture,
+        profile.ProfileBackground,
+        profile.Description,
+        profile.Achievement
+    );
+}
 
     public async Task<ProfileResponseDto?> GetProfileByUserId(Guid userId)
     {

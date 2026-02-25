@@ -8,7 +8,7 @@ namespace Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
-public class ProfileController(ProfileService profileService) : ControllerBase
+public class ProfileController(ProfileService profileService,IWebHostEnvironment _environment) : ControllerBase
 {
 
     [HttpPost("build")]
@@ -21,7 +21,7 @@ public class ProfileController(ProfileService profileService) : ControllerBase
                 return BadRequest(new { message = "Profile data is required" });
             }
 
-            var result = await profileService.BuildProfile(dto);
+            var result = await profileService.BuildProfile(dto,null,null);
             return Ok(result);
         }
         catch (Exception ex)
@@ -81,6 +81,67 @@ public class ProfileController(ProfileService profileService) : ControllerBase
             Console.WriteLine($"Stack trace: {ex.StackTrace}");
             return StatusCode(500, new { message = "An error occurred while fetching the profile", error = ex.Message });
         }
+    }
+    
+    [HttpPut("update")]
+    public async Task<IActionResult> UpdateProfile(
+        [FromForm] ProfileRequestDto dto,
+        [FromForm] IFormFile? ProfileImage,
+        [FromForm] IFormFile? BackgroundImage)
+    {
+        var uploadsFolder = Path.Combine(_environment.WebRootPath, "images");
+
+        if (!Directory.Exists(uploadsFolder))
+            Directory.CreateDirectory(uploadsFolder);
+
+        string? profileImageUrl = null;
+        string? backgroundImageUrl = null;
+
+        if (ProfileImage != null)
+        {
+            var profileFolder = Path.Combine(
+                _environment.WebRootPath,
+                "uploads",
+                "images",
+                "profilePictures"
+            );
+
+            Directory.CreateDirectory(profileFolder);
+
+            var fileName = Guid.NewGuid() + Path.GetExtension(ProfileImage.FileName);
+            var filePath = Path.Combine(profileFolder, fileName);
+
+            using var stream = new FileStream(filePath, FileMode.Create);
+            await ProfileImage.CopyToAsync(stream);
+
+            profileImageUrl = $"/uploads/images/profilePictures/{fileName}";
+        }
+        if (BackgroundImage != null)
+        {
+            var backgroundFolder = Path.Combine(
+                _environment.WebRootPath,
+                "uploads",
+                "images",
+                "backgroundPictures"
+            );
+
+            Directory.CreateDirectory(backgroundFolder);
+
+            var fileName = Guid.NewGuid() + Path.GetExtension(BackgroundImage.FileName);
+            var filePath = Path.Combine(backgroundFolder, fileName);
+
+            using var stream = new FileStream(filePath, FileMode.Create);
+            await BackgroundImage.CopyToAsync(stream);
+
+            backgroundImageUrl = $"/uploads/images/backgroundPictures/{fileName}";
+        }
+
+        // Call your Application layer here
+        Console.WriteLine(profileImageUrl);
+        Console.WriteLine(backgroundImageUrl);
+        await profileService.BuildProfile(dto, profileImageUrl, backgroundImageUrl);
+
+        return Ok();
     }
     
     
