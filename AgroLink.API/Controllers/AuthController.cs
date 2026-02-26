@@ -20,16 +20,20 @@ public class AuthController(IAuthService authService, UserRepo UserRepo, Hashing
     public async Task<ActionResult<LoginResponseDto>> LoginUser([FromBody] LoginRequestDto dto)
     {
         LoginResponseDto? result = await  authService.LoginUser(dto);
-        
-        Response.Cookies.Append("jwt", result.token, new CookieOptions
+        if (result != null)
         {
-            HttpOnly = true,
-            Secure = true, // only HTTPS
-            SameSite = SameSiteMode.Strict,
-            Expires = DateTimeOffset.UtcNow.AddHours(1)
-        });
 
-      
+
+            Response.Cookies.Append("jwt", result.token, new CookieOptions
+            {
+                HttpOnly = true,
+                Secure = true, // only HTTPS
+                SameSite = SameSiteMode.Strict,
+                Expires = DateTimeOffset.UtcNow.AddHours(1)
+            });
+
+        }
+
         if (result == null || result.token == null)
         {
             return Unauthorized(new { message = "Invalid username or password" });

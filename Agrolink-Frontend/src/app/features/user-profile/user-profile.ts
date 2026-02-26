@@ -93,6 +93,8 @@ export class UserProfile implements OnInit {
     this.profileService.GetProfileByUserId(id).subscribe({
       next: (data) => {
         this.profile = data;
+        console.log(this.profile.profilePicture);
+        console.log(this.profile.profileBackground);
         this.loading = false;
       },
       error: (err) => {

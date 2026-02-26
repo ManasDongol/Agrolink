@@ -10,16 +10,19 @@ import { Auth } from '../../core/Services/Auth/auth';
 import { LoginRequestDto } from '../../core/Dtos/LoginRequestDto';
 import { RouterLink, Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
+import { Spinner } from '../../shared/spinner/spinner';
 
 @Component({
   selector: 'app-login',
   standalone: true,
-  imports: [FormsModule, RouterLink, ReactiveFormsModule, CommonModule],
+  imports: [FormsModule, RouterLink, ReactiveFormsModule, CommonModule,Spinner],
   templateUrl: './login.html',
   styleUrl: './login.css',
 })
 export class Login implements OnInit {
   loginForm!: FormGroup;
+
+  isLoading: boolean= false;
 
   constructor(
     private fb: FormBuilder,
@@ -39,6 +42,8 @@ export class Login implements OnInit {
   }
 
   onlogin() {
+    this.isLoading = true;
+
     if (this.loginForm.invalid) {
       this.loginForm.markAllAsTouched();
       return;
@@ -51,11 +56,13 @@ export class Login implements OnInit {
 
     this.auth.login(dto).subscribe({
       next: _ => {
-     
+        
         this.auth.setAuthenticated(true);
+         this.isLoading =false;
         this.router.navigate(['/feed']);
       },
       error: err => {
+         this.isLoading =false;
         alert('Unable to login!');
         this.clearTextfields();
         console.error(err);

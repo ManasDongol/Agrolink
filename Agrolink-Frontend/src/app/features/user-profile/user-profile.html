@@ -12,7 +12,7 @@
 
   <div *ngIf="profile && !loading" class="profile-card">
     <!-- Cover Image -->
-    <div class="cover" [style.background-image]="profile.profileBackground ? 'url(' + profile.profileBackground + ')' : 'none'">
+    <div class="cover" [style.background-image]="profile.profileBackground ? 'url('+'http://localhost:5131' + profile.profileBackground + ')' : 'none'">
       <div *ngIf="!profile.profileBackground" class="cover-placeholder">
         <p>No background image</p>
       </div>
@@ -22,9 +22,9 @@
     <div class="profile-header">
       <div class="avatar">
         <img 
-          [src]="profile.profilePicture || 'assets/images/default-avatar.png'" 
+          [src]="'http://localhost:5131/'+profile.profilePicture" 
           [alt]="profile.firstName + ' ' + profile.lastName" 
-          onerror="this.src='assets/images/default-avatar.png'"
+          onerror="this.src='/uploads/images/profilePictures/5568f450-758f-4c78-9eb3-06b07a60be71.jpg'"
         />
       </div>
 

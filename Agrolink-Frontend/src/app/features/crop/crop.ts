@@ -5,12 +5,12 @@ import { CropService } from '../../core/Services/CropService/crop-service';
 import { PredictionRequestDto } from '../../core/Dtos/PredictionRequestDto';
 import { WebscraperDataDto } from '../../core/Dtos/WebscraperDataDto';
 
-
+import { Spinner } from '../../shared/spinner/spinner';
 
 @Component({
   selector: 'app-crop',
   standalone: true,
-  imports: [ ReactiveFormsModule],
+  imports: [ ReactiveFormsModule,Spinner],
   templateUrl: './crop.html',
   styleUrl: './crop.css',
 })
@@ -25,12 +25,16 @@ export class Crop implements OnInit {
   loading:Boolean = false;
   results: any[] = [];
 
+  isLoading : boolean = false;
+
   constructor(
     private fb: FormBuilder,
     private cropService: CropService
   ) {}
 
   ngOnInit(): void {
+
+    this.isLoading = true;
 
     this.SearchControl = new FormControl('');
 
@@ -48,9 +52,11 @@ export class Crop implements OnInit {
     this.cropService.Prices().subscribe({
       next:(res) =>{
         this.priceList = res;
+        this.isLoading = false
       },
       error:(err)=>{
         console.log("sorry");
+            this.isLoading = false
       }
     });
 
@@ -59,6 +65,7 @@ export class Crop implements OnInit {
   }
 
   searchCrop(): void {
+        this.isLoading = true;
   const query = this.SearchControl.value;
 
   if (!query || query.length < 2) return;
@@ -69,9 +76,11 @@ export class Crop implements OnInit {
     next: (res) => {
       this.priceList = res;
       this.loading = false;
+          this.isLoading = false
     },
     error: () => {
       this.loading = false;
+          this.isLoading = false
     },
   });
 }
