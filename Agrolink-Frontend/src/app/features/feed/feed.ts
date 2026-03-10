@@ -3,7 +3,8 @@ import { CommonModule } from '@angular/common';
 import { RouterLink, Router } from "@angular/router";
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { FeedService } from './feed.service';
-import { Post, Tag } from './feed.models';
+import { Post } from './feed.models';
+import { environment } from '../../../environments/environments';
 
 @Component({
   selector: 'app-feed',
@@ -16,7 +17,8 @@ import { Post, Tag } from './feed.models';
 export class Feed implements OnInit {
 
   posts: Post[] = [];
-  tags: Tag[] = [];
+
+ 
   currentView: 'all' | 'my' = 'all';
   currentPage: number = 1;
   pageSize: number = 10;
@@ -29,6 +31,8 @@ export class Feed implements OnInit {
   imagePreview: string | null = null;
   successMessage: string = '';
 
+  apiurl:string = environment.apiUrl;
+
   constructor(
     private feedService: FeedService,
     private fb: FormBuilder,
@@ -37,7 +41,7 @@ export class Feed implements OnInit {
     this.postForm = this.fb.group({
       title: ['', [Validators.required, Validators.minLength(5)]],
       content: ['', [Validators.required, Validators.minLength(10)]],
-      tagId: ['', Validators.required]
+      postcategory: ['', Validators.required]
     });
   }
 
@@ -47,22 +51,16 @@ export class Feed implements OnInit {
   }
 
   loadTags() {
-    this.feedService.getTags().subscribe({
-      next: (tags) => {
-        this.tags = tags;
-      },
-      error: (err) => console.error('Error loading tags', err)
-    });
+   
   }
 
   loadPosts() {
     this.isLoading = true;
+    
     this.feedService.getPosts(this.currentPage, this.pageSize, this.currentView).subscribe({
       next: (response) => {
         this.posts = response.posts;
-        this.totalPages = Math.ceil(response.total / response.pageSize); // Use pageSize from response or local?
-        // If response.pageSize is not available or reliable, use this.pageSize
-        // But better to use total / pageSize
+        this.totalPages = Math.ceil(response.total / response.pageSize); 
         this.totalPages = Math.ceil(response.total / this.pageSize);
         this.isLoading = false;
       },
@@ -105,7 +103,7 @@ export class Feed implements OnInit {
       const formData = new FormData();
       formData.append('title', this.postForm.get('title')?.value);
       formData.append('content', this.postForm.get('content')?.value);
-      formData.append('tagId', this.postForm.get('tagId')?.value);
+      formData.append('postcategory', this.postForm.get('postcategory')?.value);
 
       if (this.selectedFile) {
         formData.append('image', this.selectedFile);
@@ -152,7 +150,7 @@ export class Feed implements OnInit {
   }
 
   viewUserProfile(userId: string) {
-    this.router.navigate(['/network', userId]);
+    this.router.navigate(['/userProfile', userId]);
     // Assuming the route is /network/:userId as per typical patterns or previous conversations
     // Only "Network Page Creation" mentioned "right-side panel displaying user profile".
     // "view profile" on the top right of each post which takes us to the users profile.

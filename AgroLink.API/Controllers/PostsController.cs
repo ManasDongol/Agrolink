@@ -52,10 +52,5 @@ public class PostsController(IPostService postService) : ControllerBase
         }
     }
 
-    [HttpGet("tags")]
-    public async Task<IActionResult> GetTags()
-    {
-        var tags = await postService.GetTagsAsync();
-        return Ok(tags);
-    }
+  
 }

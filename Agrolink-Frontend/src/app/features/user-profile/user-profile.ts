@@ -5,6 +5,7 @@ import { Router, RouterLink } from '@angular/router';
 import { ProfileService } from '../../core/Services/ProfileService/profileService';
 import { ProfileResponseDto } from '../../core/Dtos/ProfileResponseDto';
 import { Auth } from '../../core/Services/Auth/auth';
+import { environment } from '../../../environments/environments';
 import { Observable,map } from 'rxjs';
 
 
@@ -23,6 +24,7 @@ export class UserProfile implements OnInit {
   showEditForm: boolean = false;
   connections: number = 12; // Static for now
   userid:string = "";
+  apiurl:string= environment.apiUrl;
 
   constructor(
     private profileService: ProfileService,

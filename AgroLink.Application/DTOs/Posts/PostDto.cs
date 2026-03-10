@@ -10,7 +10,7 @@ public class PostDto
     public DateTime Created { get; set; }
     public string? ImagePath { get; set; }
     public PostUserDto Author { get; set; }
-    public List<TagDto> Tags { get; set; } = new();
+    public string PostCategory { get; set; }
     public bool IsLiked { get; set; } 
     public int LikesCount { get; set; }
     public int CommentsCount { get; set; }

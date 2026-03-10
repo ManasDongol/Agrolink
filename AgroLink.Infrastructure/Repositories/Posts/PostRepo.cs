@@ -13,7 +13,7 @@ public class PostRepo(AgroLinkDbContext dbContext)
         // Reload to get included data if needed, but for create usually not needed unless returning full DTO
         // However, we might want to load User to return proper Author DTO
         await dbContext.Entry(post).Reference(p => p.User).LoadAsync();
-        await dbContext.Entry(post).Collection(p => p.Tags).LoadAsync();
+ 
         return post;
     }
 
@@ -22,7 +22,6 @@ public class PostRepo(AgroLinkDbContext dbContext)
         IQueryable<AgroLink.Domain.Entities.Posts> query = dbContext.Posts
             .Include(p => p.User)
              .ThenInclude(u => u.Profile) 
-            .Include(p => p.Tags)
             .OrderByDescending(p => p.Created);
 
         if (myPosts && userId.HasValue)
@@ -36,22 +35,13 @@ public class PostRepo(AgroLinkDbContext dbContext)
         return (posts, totalCount);
     }
     
-    public async Task<List<Tag>> GetTagsAsync()
-    {
-        return await dbContext.Tags.ToListAsync();
-    }
-
-    public async Task<Tag?> GetTagByIdAsync(Guid tagId)
-    {
-        return await dbContext.Tags.FindAsync(tagId);
-    }
+   
     
     public async Task<AgroLink.Domain.Entities.Posts?> GetPostByIdAsync(Guid postId)
     {
          return await dbContext.Posts
             .Include(p => p.User)
             .ThenInclude(u => u.Profile)
-            .Include(p => p.Tags)
             .FirstOrDefaultAsync(p => p.PostId == postId);
     }
 }

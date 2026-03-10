@@ -1,3 +1,4 @@
+using System.ComponentModel;
 using AgroLink.Application.DTOs.Posts;
 using AgroLink.Application.Interfaces.Posts;
 using AgroLink.Domain.Entities;
@@ -9,11 +10,7 @@ public class PostService(PostRepo postRepo) : IPostService
 {
     public async Task<PostDto> CreatePostAsync(CreatePostDto createPostDto, Guid userId)
     {
-        var tag = await postRepo.GetTagByIdAsync(createPostDto.TagId);
-        if (tag == null)
-        {
-            throw new Exception("Tag not found");
-        }
+       
 
         string? imagePath = null;
         if (createPostDto.Image != null)
@@ -21,7 +18,7 @@ public class PostService(PostRepo postRepo) : IPostService
             
             
             var fileName = $"{Guid.NewGuid()}{Path.GetExtension(createPostDto.Image.FileName)}";
-            var uploadPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "uploads"); 
+            var uploadPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "uploads","images","UserPosts"); 
             // Note: Directory.GetCurrentDirectory() usually points to the API project root when running.
             
             if (!Directory.Exists(uploadPath))
@@ -35,7 +32,7 @@ public class PostService(PostRepo postRepo) : IPostService
                 await createPostDto.Image.CopyToAsync(stream);
             }
             
-            imagePath = $"/uploads/{fileName}";
+            imagePath = $"/uploads/images/UserPosts/{fileName}";
         }
 
         var post = new AgroLink.Domain.Entities.Posts
@@ -47,7 +44,7 @@ public class PostService(PostRepo postRepo) : IPostService
             Created = DateTime.UtcNow, // Use UTC
             hasImage = imagePath != null,
             ImagePath = imagePath ?? string.Empty,
-            Tags = new List<Tag> { tag }
+            PostCategory = ""
         };
 
         var createdPost = await postRepo.CreatePostAsync(post);
@@ -61,15 +58,7 @@ public class PostService(PostRepo postRepo) : IPostService
         return (postDtos, totalCount);
     }
 
-    public async Task<List<TagDto>> GetTagsAsync()
-    {
-        var tags = await postRepo.GetTagsAsync();
-        return tags.Select(t => new TagDto
-        {
-            TagId = t.TagId,
-            Name = t.Name
-        }).ToList();
-    }
+  
 
     private PostDto MapToDto(AgroLink.Domain.Entities.Posts post)
     {
@@ -87,10 +76,12 @@ public class PostService(PostRepo postRepo) : IPostService
                 ProfilePictureUrl = post.User?.Profile?.ProfilePicture , // Assuming Profile exists and has ProfilePictureUrl
                 Role = post.User?.UserType
             },
-            Tags = post.Tags.Select(t => new TagDto { TagId = t.TagId, Name = t.Name }).ToList(),
+            PostCategory = post.PostCategory,
             LikesCount = 0, // Implement real count if entity has it
             CommentsCount = 0,
             IsLiked = false 
         };
     }
+    
+    
 }

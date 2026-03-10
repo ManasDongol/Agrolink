@@ -1,7 +1,4 @@
-export interface Tag {
-    tagId: string;
-    name: string;
-}
+
 
 export interface Author {
     userId: string;
@@ -17,7 +14,7 @@ export interface Post {
     created: string; // Dates often come as strings from JSON
     imagePath?: string;
     author: Author;
-    tags: Tag[];
+    postcategory: string;
     isLiked: boolean;
     likesCount: number;
     commentsCount: number;

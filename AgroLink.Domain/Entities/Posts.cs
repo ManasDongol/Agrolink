@@ -16,7 +16,7 @@ public class Posts
     public bool? hasImage { get; set; }
     public string ImagePath { get; set; }
     
-    public ICollection<Tag> Tags { get; set; } = new List<Tag>();
+    public string PostCategory { get; set; }
     //nav properties
     
     public User User { get; set; }

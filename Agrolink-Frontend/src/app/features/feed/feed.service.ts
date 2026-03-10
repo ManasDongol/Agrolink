@@ -1,7 +1,7 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { Post, Tag, PostResponse } from './feed.models';
+import { Post, PostResponse } from './feed.models';
 
 @Injectable({
     providedIn: 'root'
@@ -12,9 +12,7 @@ export class FeedService {
 
     constructor() { }
 
-    getTags(): Observable<Tag[]> {
-        return this.http.get<Tag[]>(`${this.baseUrl}/tags`);
-    }
+    
 
     getPosts(page: number, pageSize: number, view: 'all' | 'my'): Observable<PostResponse> {
         let params = new HttpParams()

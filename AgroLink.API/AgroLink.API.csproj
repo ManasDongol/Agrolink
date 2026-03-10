@@ -34,6 +34,7 @@
     <Folder Include="wwwroot\uploads\images\backgroundPictures\" />
     <Folder Include="wwwroot\uploads\images\DefaultImages\" />
     <Folder Include="wwwroot\uploads\images\profilePictures\" />
+    <Folder Include="wwwroot\uploads\images\UserPosts\" />
   </ItemGroup>
 
 </Project>
