@@ -40,7 +40,7 @@
       
             <ng-container >
                 <button class="loginbutton" type="button">
-                    <a style="color:#66D136;" routerLink="/userProfile">Profile</a>
+                    <a style="color:#66D136;" [routerLink]="['/userProfile',this.UserId]">Profile</a>
                 </button>
                 <button class="signupbutton" type="button" (click)="logout()">
                     Logout

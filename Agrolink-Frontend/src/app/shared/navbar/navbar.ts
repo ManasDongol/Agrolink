@@ -14,7 +14,7 @@ import { Subscription, filter } from 'rxjs';
 export class Navbar implements OnInit {
   isAuthenticated: boolean = false;
   private authSubscription?: Subscription;
-  
+   UserId: string="";
 
   constructor(
     private auth: Auth,
@@ -28,10 +28,16 @@ export class Navbar implements OnInit {
     });
 
    
-  this.auth.checkAuth().subscribe({
-    next: () => this.auth.setAuthenticated(true),
-    error: () => this.auth.setAuthenticated(false)
-  });
+    this.auth.checkAuth().subscribe({
+      next: (User) =>
+        {
+           this.auth.setAuthenticated(true);
+           console.log(User.id);
+           this.UserId = User.id;
+           
+        },
+      error: () => this.auth.setAuthenticated(false)
+    });
   }
 
 

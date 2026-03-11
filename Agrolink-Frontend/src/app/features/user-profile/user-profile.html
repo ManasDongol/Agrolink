@@ -40,7 +40,12 @@
           <span>{{ connections }}</span>
           <small>connections</small>
         </div>
-        <button class="edit-btn" (click)="navigateToEditProfile()">Edit Profile</button>
+        @if(isOwnProfile){
+               <button class="edit-btn" (click)="navigateToEditProfile()">Edit Profile</button>
+        }@else{
+               <button class="edit-btn" (click)="sendConnection()">Connect</button>
+        }
+     
       </div>
     </div>
 

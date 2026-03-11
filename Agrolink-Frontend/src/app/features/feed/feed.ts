@@ -31,7 +31,7 @@ export class Feed implements OnInit {
   imagePreview: string | null = null;
   successMessage: string = '';
 
-  apiurl:string = environment.apiUrl;
+  apiurl:string = environment.apiUrl
 
   constructor(
     private feedService: FeedService,
@@ -150,13 +150,9 @@ export class Feed implements OnInit {
   }
 
   viewUserProfile(userId: string) {
+    console.log("go to profile");
     this.router.navigate(['/userProfile', userId]);
-    // Assuming the route is /network/:userId as per typical patterns or previous conversations
-    // Only "Network Page Creation" mentioned "right-side panel displaying user profile".
-    // "view profile" on the top right of each post which takes us to the users profile.
-    // I need to verify the route for user profile. 
-    // Usually it might be /profile/:id or /network/profile/:id.
-    // I'll assume /network/:id or similar based on "Network Page" context.
-    // Let me check existing routes if possible, or just assume /network for now as requested by user "takes us to the users profile".
+   
+
   }
 }

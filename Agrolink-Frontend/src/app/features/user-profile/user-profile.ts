@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterLink } from '@angular/router';
-
+import { ActivatedRoute } from '@angular/router';
 import { ProfileService } from '../../core/Services/ProfileService/profileService';
 import { ProfileResponseDto } from '../../core/Dtos/ProfileResponseDto';
 import { Auth } from '../../core/Services/Auth/auth';
@@ -25,11 +25,13 @@ export class UserProfile implements OnInit {
   connections: number = 12; // Static for now
   userid:string = "";
   apiurl:string= environment.apiUrl;
+  isOwnProfile:boolean = false;
 
   constructor(
     private profileService: ProfileService,
     private router: Router,
-    private auth: Auth
+    private auth: Auth,
+    private route : ActivatedRoute
   ) {}
 
   ngOnInit(): void {
@@ -42,58 +44,35 @@ export class UserProfile implements OnInit {
   );
 }
 
-/*
-  private getUserIdFromToken(): string | null {
-    
-    
-    const token = this.auth.checkAuth().subscribe({
-      next:(user)=>{
-        this.userid = user.id;
-        console.log("the token is "+this.userid);
-        return this.userid;
-        
-      },
-      error:(err)=>{
-        return "error";
-      }
-      
-    }
-    );
-     if (!token) {
-      return null;
-    }
-    
-    return toen;*/
-   /* try {
-      const payload = JSON.parse(atob(token.split('.')[1]));
-      return payload['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier'] 
-        || payload['nameid'] 
-        || payload['NameIdentifier']
-        || payload['sub']
-        || null;
-    } catch (error) {
-      console.error('Error decoding token:', error);
-      return null;
-    }
-  }*/
-
   loadProfile(): void {
     this.loading = true;
     this.error = null;
 
    //let userId = this.getUserIdFromToken();
 
-   this.getUserIdFromToken().subscribe(id => {
-      console.log("User ID:", id);
-       if (!id) {
+   const routeId = this.route.snapshot.paramMap.get('id');
+
+     if (!routeId) {
+    this.error = "Invalid profile id";
+    this.loading = false;
+    return;
+  }
+
+   this.getUserIdFromToken().subscribe(tokenId => {
+      
+       if (!tokenId) {
       this.error = 'Please login to view your profile';
       this.loading = false;
       this.router.navigate(['/login']);
       return;
     }
 
-    this.profileService.GetProfileByUserId(id).subscribe({
+
+     this.isOwnProfile = routeId === tokenId;
+
+    this.profileService.GetProfileByUserId(routeId).subscribe({
       next: (data) => {
+        console.log(routeId);
         this.profile = data;
         console.log(this.profile.profilePicture);
         console.log(this.profile.profileBackground);
@@ -134,5 +113,9 @@ export class UserProfile implements OnInit {
     }
 
     this.router.navigate(['/buildProfile/',id]) });
+  }
+
+  sendConnection(){
+
   }
 }

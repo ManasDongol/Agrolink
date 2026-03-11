@@ -76,7 +76,7 @@
 }
 
 .btn-create {
-  background: #4CAF50;
+  background: var(--primary-color);
   color: white;
   border: none;
   padding: 10px 20px;
@@ -131,7 +131,7 @@
   /* Primary Green */
   color: #4CAF50;
   padding: 6px 16px;
-  border-radius: 20px;
+  border-radius: 6px;
   font-size: 0.85rem;
   font-weight: 600;
   cursor: pointer;
@@ -139,7 +139,7 @@
 }
 
 .view-profile-btn:hover {
-  background: #4CAF50;
+  background: var(--primary-color);
   color: white;
   box-shadow: 0 2px 8px rgba(76, 175, 80, 0.3);
 }
@@ -358,7 +358,7 @@
   padding: 10px;
   border: 1px solid #ddd;
   border-radius: 8px;
-  font-family: inherit;
+  
   font-size: 1rem;
   box-sizing: border-box;
 }

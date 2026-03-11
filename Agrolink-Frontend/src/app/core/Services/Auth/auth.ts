@@ -3,6 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { LoginRequestDto } from '../../Dtos/LoginRequestDto';
 import { SignupRequestDto } from '../../Dtos/SignupRequestDto';
 import { BehaviorSubject, Observable } from 'rxjs';
+import { userDto } from '../../Dtos/UserDto';
 
 @Injectable({
   providedIn: 'root',
@@ -29,8 +30,8 @@ export class Auth {
 
  
 
-  checkAuth(): Observable<any> {
-    return this.http.get(`${this.baseUrl}/me`);
+  checkAuth(): Observable<userDto> {
+    return this.http.get<userDto>(`${this.baseUrl}/me`);
   }
 
   // -----------------------------
@@ -42,6 +43,10 @@ export class Auth {
   }
 
   checkstate(){
+    
+  }
+
+  getUserid(){
     
   }
 

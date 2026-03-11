@@ -20,6 +20,7 @@ export const routes: Routes = [
     { path: "messages",  component:DefaultLayout,children: [{path:'',component:Messages}], canActivate: [routeGuardGuard] },
     //{ path: "buildProfile/:id", component:DefaultLayout,children: [{path:'',component:Profile}], canActivate: [routeGuardGuard] },
     { path: "userProfile", component:DefaultLayout,children: [{path:'',component:UserProfile}], canActivate: [routeGuardGuard] },
+     { path: "userProfile/:id", component:DefaultLayout,children: [{path:'',component:UserProfile}], canActivate: [routeGuardGuard] },
     { path: "crop",  component:DefaultLayout,children: [{path:'',component:Crop}], canActivate: [routeGuardGuard] },
       
     { path: "buildProfile/:id", component:Profile },
