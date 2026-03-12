@@ -1,4 +1,4 @@
-﻿using System.IdentityModel.Tokens.Jwt;
+using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 using AgroLink.Domain.Entities;
@@ -14,9 +14,8 @@ public class TokenService(IConfiguration configuration)
         var claims = new List<Claim>
         {
             new Claim(ClaimTypes.Name, user.Username),
-            new Claim(ClaimTypes.NameIdentifier,user.UserId.ToString()),
-           
-
+            new Claim(ClaimTypes.NameIdentifier, user.UserId.ToString()),
+            new Claim(ClaimTypes.Role, user.UserType ?? "User"),
         };
         
         var key = new SymmetricSecurityKey(

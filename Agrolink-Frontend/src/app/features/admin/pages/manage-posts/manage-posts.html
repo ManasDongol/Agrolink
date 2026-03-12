@@ -1,0 +1,25 @@
+<div class="card">
+  <h2>Manage Posts</h2>
+
+  <div *ngIf="loading">Loading posts...</div>
+  <div *ngIf="error && !loading" class="error">{{ error }}</div>
+
+  <table *ngIf="!loading && !error" class="table">
+    <thead>
+      <tr>
+        <th>Title</th>
+        <th>Author</th>
+        <th>Category</th>
+        <th>Created</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let post of posts">
+        <td>{{ post.title }}</td>
+        <td>{{ post.author }}</td>
+        <td>{{ post.category || '—' }}</td>
+        <td>{{ post.created | date: 'short' }}</td>
+      </tr>
+    </tbody>
+  </table>
+</div>

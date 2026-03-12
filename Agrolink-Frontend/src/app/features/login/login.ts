@@ -56,10 +56,23 @@ export class Login implements OnInit {
 
     this.auth.login(dto).subscribe({
       next: _ => {
-        
         this.auth.setAuthenticated(true);
-         this.isLoading =false;
-        this.router.navigate(['/feed']);
+        this.isLoading = false;
+
+        // After successful login, check the current user's type
+        this.auth.checkAuth().subscribe({
+          next: user => {
+            if (user.userType === 'Admin' || user.userType === 'SuperAdmin') {
+              this.router.navigate(['/admin']);
+            } else {
+              this.router.navigate(['/feed']);
+            }
+          },
+          error: () => {
+            // Fallback to normal user feed if role cannot be determined
+            this.router.navigate(['/feed']);
+          }
+        });
       },
       error: err => {
          this.isLoading =false;

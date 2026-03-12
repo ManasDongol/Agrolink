@@ -1,4 +1,4 @@
-﻿using System.IdentityModel.Tokens.Jwt;
+using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 using AgroLink.Application.DTOs;
@@ -97,7 +97,7 @@ public class AuthController(IAuthService authService, UserRepo UserRepo, Hashing
                 return NotFound(new { message = "User not found" });
 
            Console.WriteLine("token returned successfully");
-            return Ok(new UserDto(user.UserId.ToString(),user.Email,user.Username));
+            return Ok(new UserDto(user.UserId.ToString(), user.Email, user.Username, user.UserType));
         }
         catch
         {

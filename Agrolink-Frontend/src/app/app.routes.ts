@@ -30,5 +30,12 @@ export const routes: Routes = [
     { path: "login", component: EmptyLayout,children: [{path:'',component:Login}] },
     { path: "signup", component: EmptyLayout,children: [{path:'',component:Signup}]},
     { path: "", component: DefaultLayout,children: [{path:'',component:Home}]},
-    { path: "home", component: DefaultLayout,children: [{path:'',component:Home}]}
+    { path: "home", component: DefaultLayout,children: [{path:'',component:Home}]},
+
+    //admin side
+    { path : "admin",
+        loadChildren:()=>import('./features/admin/admin-module').then(m=>m.AdminModule)
+    }
+    
+ 
 ];

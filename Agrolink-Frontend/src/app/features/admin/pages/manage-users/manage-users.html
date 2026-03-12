@@ -1,0 +1,27 @@
+<div class="card">
+  <h2>Manage Users</h2>
+
+  <div *ngIf="loading">Loading users...</div>
+  <div *ngIf="error && !loading" class="error">{{ error }}</div>
+
+  <table *ngIf="!loading && !error" class="table">
+    <thead>
+      <tr>
+        <th>Username</th>
+        <th>Email</th>
+        <th>Type</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let user of users">
+        <td>{{ user.username }}</td>
+        <td>{{ user.email }}</td>
+        <td>{{ user.userType }}</td>
+        <td class="actions">
+          <button class="danger" (click)="removeUser(user.id)">Remove</button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>

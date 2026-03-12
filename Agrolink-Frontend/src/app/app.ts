@@ -2,6 +2,7 @@ import { Component, signal } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { Home  } from "./features/home/home";
 import { RouterLink } from '@angular/router';
+import { AdminModule } from './features/admin/admin-module';
 
 
 @Component({
