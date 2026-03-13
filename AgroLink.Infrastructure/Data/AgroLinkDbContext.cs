@@ -11,7 +11,8 @@ public class AgroLinkDbContext(DbContextOptions<AgroLinkDbContext> options) : Db
     public DbSet<ConnectionRequests>   ConnectionRequests { get; set; }
     public DbSet<Connections> Connections { get; set; }
     public DbSet<Posts> Posts { get; set; }
-   
+   public DbSet<Conversations> Conversations { get; set; }
+   public DbSet<Messages> Messages { get; set; }
     
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -19,6 +20,12 @@ public class AgroLinkDbContext(DbContextOptions<AgroLinkDbContext> options) : Db
             .HasOne(u => u.Profile)
             .WithOne(p => p.User)
             .HasForeignKey<Profile>(p => p.UserId);
+        
+        modelBuilder.Entity<Messages>()
+            .HasOne(m => m.Conversation)
+            .WithMany(m=>m.Messages)
+            .HasForeignKey(m=>m.ConversationId)
+            .OnDelete(DeleteBehavior.Cascade);
 
         base.OnModelCreating(modelBuilder);
     }

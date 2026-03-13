@@ -1,4 +1,5 @@
 using System.Text;
+using AgroLink.API.Hubs;
 using AgroLink.Application.Interfaces;
 using AgroLink.Application.Services;
 using AgroLink.Infrastructure.Data;
@@ -68,6 +69,7 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 
 
 builder.Services.AddAuthorization();
+builder.Services.AddSignalR();
 builder.Services.AddScoped<UserRepo>();
 builder.Services.AddScoped<ProfileRepo>();
 builder.Services.AddScoped<TokenService>();
@@ -110,6 +112,7 @@ app.MapControllers();
 
 app.UseHttpsRedirection();
 app.UseStaticFiles();
+app.MapHub<ChatHub>("/chatHub");
 app.Run();
 
 
