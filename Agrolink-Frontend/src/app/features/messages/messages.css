@@ -1,15 +1,16 @@
 body{
- 
-    background-color: #19321C;
+    padding-left:20px;
+    padding-right: 20px;
+    background-color: var(--main-color);
 }
 .messages-card {
   display: flex;
-  margin-top:20px;
+
   gap: 16px;
   height: 90vh; /* almost full viewport */
-  background: #f0f2f5;
+
   border-radius: 12px;
-  padding: 16px;
+ 
   box-sizing: border-box;
   overflow: hidden;
 }
@@ -21,6 +22,7 @@ body{
   border-radius: 12px;
   display: flex;
   flex-direction: column;
+  border : var(--card-border);
 }
 
 .chat-list {
@@ -45,6 +47,9 @@ body{
   border-radius: 12px;
   display: flex;
   flex-direction: column;
+  border : var(--card-border);
+  padding-left:10px;
+  padding-right:10px;
 }
 
 .messages-list {

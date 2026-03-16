@@ -4,6 +4,7 @@ import { FormBuilder, ReactiveFormsModule, FormGroup, Validators,FormControl } f
 import { CropService } from '../../core/Services/CropService/crop-service';
 import { PredictionRequestDto } from '../../core/Dtos/PredictionRequestDto';
 import { WebscraperDataDto } from '../../core/Dtos/WebscraperDataDto';
+import { PDFReportDto } from '../../core/Dtos/PDFReportDto';
 
 import { Spinner } from '../../shared/spinner/spinner';
 
@@ -27,6 +28,8 @@ export class Crop implements OnInit {
 
   isLoading : boolean = false;
 
+  newRecommendationGenerated : boolean = false;
+
   constructor(
     private fb: FormBuilder,
     private cropService: CropService
@@ -40,13 +43,13 @@ export class Crop implements OnInit {
 
 
     this.RecomendationForm = this.fb.group({
-      Nitrogen: ['', Validators.required],
-      Potassium: ['', Validators.required],
-      Phosphorus: ['', Validators.required],
-      Humidity: ['', Validators.required],
-      Temperature: ['', Validators.required],
-      Rainfall: ['', Validators.required],
-      pH: ['', Validators.required],
+      Nitrogen: [0, Validators.required],
+      Potassium: [0, Validators.required],
+      Phosphorus: [0, Validators.required],
+      Humidity: [0, Validators.required],
+      Temperature: [0, Validators.required],
+      Rainfall: [0, Validators.required],
+      pH: [0, Validators.required],
     });
 
     this.cropService.Prices().subscribe({
@@ -61,6 +64,45 @@ export class Crop implements OnInit {
     });
 
    
+
+  }
+
+
+
+  generatePDF(){
+     this.isLoading = true;
+        const form = this.RecomendationForm.value;
+      const dto: PDFReportDto = {
+      N: parseFloat(form.Nitrogen),
+      P: parseFloat(form.Phosphorus),
+      K: parseFloat(form.Potassium),
+      Temperature: parseFloat(form.Temperature),
+      Humidity: parseFloat(form.Humidity),
+      Ph: parseFloat(form.pH),
+      Rainfall: parseFloat(form.Rainfall),
+      Crop: this.crop,
+      Fertilizer : this.fertilizer
+    };
+
+    console.log("lolll" + this.crop + " "+this.fertilizer+" "+form.Nitrogen);
+    this.cropService.report(dto).subscribe({
+      next:(res:Blob)=>{
+        const blob = new Blob([res], { type: 'application/pdf' });
+      const url = window.URL.createObjectURL(blob);
+
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'AgroLink-CropReport.pdf';
+      a.click();
+
+      window.URL.revokeObjectURL(url);
+      this.isLoading = false;
+      },
+      error:(err)=>{
+           this.isLoading = false;
+      }
+
+    })
 
   }
 
@@ -96,13 +138,13 @@ export class Crop implements OnInit {
     const form = this.RecomendationForm.value;
 
     const dto: PredictionRequestDto = {
-      N: Number(form.Nitrogen),
-      P: Number(form.Phosphorus),
-      K: Number(form.Potassium),
-      temperature: Number(form.Temperature),
-      humidity: Number(form.Humidity),
-      ph: Number(form.pH),
-      rainfall: Number(form.Rainfall)
+      N: parseFloat(form.Nitrogen),
+      P: parseFloat(form.Phosphorus),
+      K: parseFloat(form.Potassium),
+      temperature: parseFloat(form.Temperature),
+      humidity: parseFloat(form.Humidity),
+      ph: parseFloat(form.pH),
+      rainfall: parseFloat(form.Rainfall)
     };
 
     this.cropService.Predict(dto).subscribe({
@@ -110,6 +152,7 @@ export class Crop implements OnInit {
         
         this.crop = res.crop;
         this.fertilizer = res.fertilizer;
+        this.newRecommendationGenerated =true;
         console.log(this.crop);// adjust to match API response
       },
       error: (err) => {

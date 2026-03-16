@@ -90,9 +90,16 @@
         <p><strong>Fertilizer :</strong> {{ fertilizer }}</p>
       </div>
 
-      <button class="btn btn-primary" (click)="submit()">
+      <div>
+           <button class="btn btn-primary" (click)="submit()" style="margin-right: 20px;">
         Generate Recommendation
       </button>
+       <button class="btn btn-primary" (click)="generatePDF()" [disabled]="!newRecommendationGenerated">
+        Generate full Report PDF
+      </button>
+      </div>
+
+     
 
     </div>
 

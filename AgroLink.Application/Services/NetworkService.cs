@@ -10,7 +10,7 @@ public class NetworkService(AgroLinkDbContext context) : INetworkService
 {
     public async Task<NetworkPageDto> GetNetworkPageAsync(Guid currentUserId, string? username, string? role, int page, int pageSize)
     {
-        // 1. Get Current User Profile Stats
+        
         var myProfile = await context.Profiles
             .Where(p => p.UserId == currentUserId)
             .Select(p => new ProfileStatsDto
@@ -26,7 +26,7 @@ public class NetworkService(AgroLinkDbContext context) : INetworkService
         if (myProfile == null)
             myProfile = new ProfileStatsDto { Name = "Unknown", Role = "Guest" }; 
 
-        // 2. Get Requests
+       
         var requests = await context.ConnectionRequests
             .Where(r => r.ConnectionUserId == currentUserId && !r.Accepted)
             .Include(r => r.User) 
@@ -42,7 +42,7 @@ public class NetworkService(AgroLinkDbContext context) : INetworkService
             })
             .ToListAsync();
 
-        // 3. Get Users (Grid)
+      
         var query = context.Users
             .Include(u => u.Profile)
             .Where(u => u.UserId != currentUserId);
@@ -119,6 +119,20 @@ public class NetworkService(AgroLinkDbContext context) : INetworkService
         };
         
         context.Connections.Add(connection);
+        await context.SaveChangesAsync();
+        return true;
+    }
+    
+    public async Task<bool> RejectConnectionRequestAsync(Guid currentUserId, Guid requestId)
+    {
+        var request = await context.ConnectionRequests
+            .FirstOrDefaultAsync(r => r.ConnectionRequestID == requestId 
+                                      && r.ConnectionUserId == currentUserId);
+
+        if (request == null) return false;
+
+        context.ConnectionRequests.Remove(request);
+
         await context.SaveChangesAsync();
         return true;
     }

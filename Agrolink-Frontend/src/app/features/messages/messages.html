@@ -2,7 +2,10 @@
 <div class="messages-card">
   <!-- Left: recent chats -->
   <div class="recent-chats">
-    <h3>Chats</h3>
+    <div style="display: flex;border-bottom: 1.5px solid #e5e5e5;">
+<h3>Chats </h3>
+    </div>
+
     <div class="chat-list">
       @for(chat of recentChats;track chat.name){
           <div  class="chat-card">
@@ -16,7 +19,11 @@
 
   <!-- Right: opened chat -->
   <div class="opened-chat">
-    <h3>Chat with Friend</h3>
+    <div style="display: flex;border-bottom: 1.5px solid #e5e5e5;">
+<h3>Chat with Friend</h3>
+    </div>
+    
+    
     <div class="messages-list">
       @for(msg of openedChatMessages;track msg.sender){
             <div 
@@ -34,3 +41,4 @@
     </div>
   </div>
 </div>
+

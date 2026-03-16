@@ -1,8 +1,8 @@
 .network-page {
   display: flex;
   gap: 2rem;
-  padding: 2rem;
-  background-color: #1a3e2e; /* Dark green background */
+  
+ background-color:rgb(249, 249, 249); /* Dark green background */
   min-height: 100vh;
   color: var(--text-color);
 }
@@ -28,8 +28,8 @@
   gap: 1rem;
   background: white;
   padding: 1rem;
-  border-radius: 12px;
-  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+  border-radius: 8px;
+  border: 1.5px solid #e5e5e5;
 }
 
 .search-input {
@@ -69,10 +69,10 @@
 
 .user-card {
   background: white;
-  border-radius: 12px;
+  border-radius: 8px;
   padding: 1.5rem;
   text-align: center;
-  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+  border: 1.5px solid #e5e5e5;
   transition: transform 0.2s;
 }
 
@@ -135,9 +135,9 @@
 /* Sidebar Cards */
 .sidebar-card {
   background: white;
-  border-radius: 12px;
+  border-radius: 8px;
   padding: 1.5rem;
-  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+  border: 1.5px solid #e5e5e5;
 }
 
 .profile-top {
@@ -230,6 +230,18 @@
 
 .accept-btn {
   background: #4CAF50;
+  color: white;
+  border: none;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.reject-btn {
+  background: #ff2158;
   color: white;
   border: none;
   width: 30px;

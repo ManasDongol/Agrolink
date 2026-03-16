@@ -17,13 +17,13 @@
     <div class="card users-grid" *ngIf="!loading; else spinner">
       <div class="user-card" *ngFor="let user of users">
         <div class="card-avatar">
-            <img [src]="user.profilePicture || 'assets/default-avatar.png'" alt="User Avatar">
+            <img [src]="apiurl+user.profilePicture || 'assets/default-avatar.png'" alt="User Avatar">
         </div>
         <h3>{{ user.username }}</h3>
         <p class="user-role">{{ user.role }}</p>
         <p class="connections-count">{{ user.connectionCount }} connections</p>
         
-        <button class="connect-btn" 
+        <button class="btn btn-primary" 
                 [disabled]="user.isConnected || user.isRequestSent"
                 [class.connected]="user.isConnected"
                 [class.pending]="user.isRequestSent"
@@ -43,7 +43,7 @@
   <div class="sidebar">
     <div class="sidebar-card profile-card" *ngIf="myProfile">
       <div class="profile-top">
-        <img [src]="myProfile.profilePicture || 'assets/default-avatar.png'" alt="My Avatar">
+        <img [src]="apiurl+myProfile.profilePicture || 'assets/default-avatar.png'" alt="My Avatar">
         <div class="profile-info">
           <h3>{{ myProfile.name }}</h3>
           <p>{{ myProfile.role }}</p>
@@ -66,12 +66,13 @@
       <h3>Requests</h3>
       <div class="requests-list">
         <div class="request-item" *ngFor="let req of requests">
-            <img [src]="req.fromUserProfilePicture || 'assets/default-avatar.png'" alt="Requester">
+            <img [src]="apiurl+req.fromUserProfilePicture || 'assets/default-avatar.png'" alt="Requester">
             <div class="request-details">
                 <h4>{{ req.fromUserName }}</h4>
                 <p>{{ req.fromUserRole }}</p>
             </div>
             <button class="accept-btn" (click)="accept(req)"><i class="fas fa-check"></i></button>
+            <button class="reject-btn" (click)="reject(req)"><i class="fas fa-trash"></i></button>
         </div>
         <div class="no-requests" *ngIf="requests.length === 0">
             <p>No pending requests.</p>

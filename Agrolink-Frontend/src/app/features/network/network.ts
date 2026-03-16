@@ -4,7 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { NetworkService } from '../../core/Services/Network/network';
 import { NetworkPageDto, NetworkUserDto, ConnectionRequestDto, ProfileStatsDto } from '../../core/Dtos/NetworkDtos';
 import { Auth } from '../../core/Services/Auth/auth';
-
+import { environment } from '../../../environments/environments';
 
 @Component({
   selector: 'app-network',
@@ -20,6 +20,7 @@ export class Network implements OnInit {
   users: NetworkUserDto[] = [];
   requests: ConnectionRequestDto[] = [];
   myProfile: ProfileStatsDto | null = null;
+  apiurl:string= environment.apiUrl;
 
   searchUsername = '';
   searchRole = '';
@@ -82,4 +83,16 @@ export class Network implements OnInit {
       error: (err) => console.error(err)
     });
   }
+
+  reject(req: ConnectionRequestDto) {
+    this.networkService.rejectRequest(req.requestId).subscribe({
+      next: () => {
+        this.requests = this.requests.filter(r => r.requestId !== req.requestId);
+        if (this.myProfile) this.myProfile.connectionCount--;
+      },
+      error: (err) => console.error(err)
+    });
+  }
+
+
 }

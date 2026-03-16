@@ -1,6 +1,7 @@
 ﻿using AgroLink.Application.DTOs;
 using AgroLink.Application.Interfaces;
 using AgroLink.Application.Services;
+using Agrolink.Infrastructure.ExternalServices.PDFGenerator;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -14,11 +15,13 @@ public class CropsController : ControllerBase
     private readonly HttpClient _httpClient;
     private ICropService _cropService;
     private WebscraperService _webscraperService;
-    public CropsController(HttpClient httpClient, ICropService cropService,WebscraperService webscraperService)
+    private PDFservice _pdfService;
+    public CropsController(HttpClient httpClient, ICropService cropService,WebscraperService webscraperService,PDFservice pdfService )
     {
         _httpClient = httpClient;
         _cropService = cropService;
         _webscraperService = webscraperService;
+        _pdfService = pdfService;
     }
 
     [HttpGet("prices")]
@@ -33,6 +36,19 @@ public class CropsController : ControllerBase
     {
         var prices = await _webscraperService.FindCrop(name);
         return prices;
+    }
+    
+    [HttpPost("report")]
+    public IActionResult GenerateCropReport([FromBody] PDFreportDto report)
+    {
+        Console.Write("hello" + report.Fertilizer);
+        var pdfBytes = _pdfService.GenerateCropReport(report);
+
+        return File(
+            pdfBytes,
+            "application/pdf",
+            $"AgroLink-CropReport-{DateTime.Now:yyyyMMddHHmm}.pdf"
+        );
     }
     
     [HttpPost("predict")]

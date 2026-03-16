@@ -1,3 +1,7 @@
 html,body{
      font-family: 'Outfit-Medium'
 }
+.page-container{
+     padding-left: 50px;padding-right:50px;padding-top:30px;background-color: var(--main-color);
+}
+ 

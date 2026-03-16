@@ -43,7 +43,14 @@
         @if(isOwnProfile){
                <button class="edit-btn" (click)="navigateToEditProfile()">Edit Profile</button>
         }@else{
-               <button class="edit-btn" (click)="sendConnection()">Connect</button>
+          @if(requestSent){
+
+             <button class="grey-btn" disabled>pending</button>
+          }@else {
+
+              <button class="edit-btn" (click)="sendConnection()">Connect</button>
+          }
+               
         }
      
       </div>

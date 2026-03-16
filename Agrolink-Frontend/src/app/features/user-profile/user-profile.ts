@@ -7,6 +7,7 @@ import { ProfileResponseDto } from '../../core/Dtos/ProfileResponseDto';
 import { Auth } from '../../core/Services/Auth/auth';
 import { environment } from '../../../environments/environments';
 import { Observable,map } from 'rxjs';
+import { NetworkService } from '../../core/Services/Network/network';
 
 
 
@@ -26,9 +27,11 @@ export class UserProfile implements OnInit {
   userid:string = "";
   apiurl:string= environment.apiUrl;
   isOwnProfile:boolean = false;
+  requestSent:boolean=false;
 
   constructor(
     private profileService: ProfileService,
+    private networkService : NetworkService,
     private router: Router,
     private auth: Auth,
     private route : ActivatedRoute
@@ -117,5 +120,18 @@ export class UserProfile implements OnInit {
 
   sendConnection(){
 
+    const routeId = this.route.snapshot.paramMap.get('id')!;
+    this.networkService.sendConnectionRequest(routeId).subscribe({
+      next: () => {
+        this.requestSent=true;
+      },
+      error: (err) => console.error(err)
+    });
+
   }
 }
+
+
+  
+    
+  

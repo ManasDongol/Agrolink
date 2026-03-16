@@ -78,4 +78,28 @@ public class NetworkController(NetworkService networkService) : ControllerBase
             return StatusCode(500, new { message = "Error accepting request", error = ex.Message });
         }
     }
+    
+    
+    
+    [HttpPost("reject/{requestId}")]
+    public async Task<IActionResult> RejectConnectionRequest(Guid requestId)
+    {
+        try
+        {
+            var userId = GetCurrentUserId();
+            var result = await networkService.RejectConnectionRequestAsync(userId, requestId);
+            if (!result) return BadRequest(new { message = "Request not found or invalid" });
+            return Ok(new { message = "Connection request accepted" });
+        }
+        catch (UnauthorizedAccessException ex)
+        {
+            return Unauthorized(new { message = ex.Message });
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, new { message = "Error accepting request", error = ex.Message });
+        }
+    }
+    
+    
 }

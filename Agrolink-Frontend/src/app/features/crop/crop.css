@@ -24,6 +24,6 @@
 
 .crops-page {
   padding: var(--space-lg);
-  background: var(--darkgreen-color);
+  background: var(--main-color);
   min-height: 100vh;
 }

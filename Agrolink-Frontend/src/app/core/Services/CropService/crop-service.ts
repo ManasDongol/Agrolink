@@ -3,6 +3,7 @@ import { HttpClient , HttpParams} from '@angular/common/http';
 import { Auth } from '../Auth/auth';
 import { Observable } from 'rxjs';
 import { PredictionRequestDto } from '../../Dtos/PredictionRequestDto';
+import { PDFReportDto } from '../../Dtos/PDFReportDto';
 
 @Injectable({
   providedIn: 'root',
@@ -13,7 +14,7 @@ export class CropService{
   private baseUrl = "http://localhost:5131/api/Crops/predict";
   private priceUrl = "http://localhost:5131/api/Crops/prices";
    private cropUrl = "http://localhost:5131/api/Crops/cropName";
-
+  private reportURL = "http://localhost:5131/api/Crops/report";
     
   
   Predict(dto: PredictionRequestDto): Observable<any>{
@@ -27,4 +28,8 @@ export class CropService{
 
   return this.http.get(this.cropUrl, { params });
 }
+
+  report(dto : PDFReportDto):Observable<any>{
+    return this.http.post(`${this.reportURL}`,dto,{ responseType: 'blob' , headers: { 'Content-Type': 'application/json' }});
+  }
 }

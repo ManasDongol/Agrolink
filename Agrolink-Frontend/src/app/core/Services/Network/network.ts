@@ -25,4 +25,9 @@ export class NetworkService {
     acceptRequest(requestId: string): Observable<any> {
         return this.http.post(`${this.baseUrl}/accept/${requestId}`, {});
     }
+
+
+    rejectRequest(requestId: string): Observable<any> {
+        return this.http.post(`${this.baseUrl}/reject/${requestId}`, {});
+    }
 }

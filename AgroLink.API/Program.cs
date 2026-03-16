@@ -6,10 +6,12 @@ using AgroLink.Infrastructure.Data;
 using AgroLink.Infrastructure.Repositories;
 using AgroLink.Infrastructure.Repositories.Posts;
 using AgroLink.Application.Interfaces.Posts;
+using Agrolink.Infrastructure.ExternalServices.PDFGenerator;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.IdentityModel.Tokens.Experimental;
+using QuestPDF.Infrastructure;
 using Scalar.AspNetCore;
 using StackExchange.Redis;
 
@@ -66,10 +68,12 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
         });
 
 
-
+QuestPDF.Settings.License = LicenseType.Community;
 
 builder.Services.AddAuthorization();
 builder.Services.AddSignalR();
+
+
 builder.Services.AddScoped<UserRepo>();
 builder.Services.AddScoped<ProfileRepo>();
 builder.Services.AddScoped<TokenService>();
@@ -81,6 +85,15 @@ builder.Services.AddScoped<WebscraperService>();
 builder.Services.AddScoped<NetworkService>();
 builder.Services.AddScoped<PostRepo>();
 builder.Services.AddScoped<IPostService, PostService>();
+
+builder.Services.AddScoped<MessagesRepo>();
+builder.Services.AddScoped<MessageService>();
+
+builder.Services.AddScoped<PDFreportDto>();
+builder.Services.AddScoped<PDFservice>();
+
+
+
 builder.Services.AddStackExchangeRedisCache(options =>
 {
     options.Configuration = "localhost:6379";
