@@ -6,24 +6,50 @@ namespace AgroLink.Infrastructure.Repositories;
 
 public class MessagesRepo(AgroLinkDbContext _dbContext)
 {
-    public IEnumerable<Connections> getConnections(string id)
+    public async Task<List<Conversation>> GetUserConversations(Guid userId)
     {
-        IEnumerable<Connections> connectionlist = _dbContext.Connections.Where(x => x.UserID == Guid.Parse(id) || x.ConnectionUserId ==Guid.Parse(id)).ToList();
-         return connectionlist;
+        return await _dbContext.Conversations
+            .Where(c => c.User1Id == userId || c.User2Id == userId)
+            .Include(c => c.Messages.OrderByDescending(m => m.Sent).Take(1)) // last message
+            .ToListAsync();
     }
 
-    public async Task<String> getConversations(string userid1, string userid2)
+    public async Task<List<Message>> GetMessages(Guid conversationId, int pageSize = 10)
     {
-        var conversation = await _dbContext.Conversations.FirstOrDefaultAsync(m=>m.User1Id == Guid.Parse(userid1) && m.User2Id == Guid.Parse(userid2) 
-            || m.User1Id == Guid.Parse(userid2) && m.User2Id == Guid.Parse(userid1));
-        
-        return conversation.Id.ToString();
+        return await _dbContext.Messages
+            .Where(m => m.ConversationId == conversationId)
+            .OrderByDescending(m => m.Sent)
+            .Take(pageSize)
+            .OrderBy(m => m.Sent) // reverse for UI
+            .ToListAsync();
     }
 
-    public IEnumerable<Messages> getMessages(string id)
+    public async Task<Message> AddMessage(Message message)
     {
-        var messageList = _dbContext.Messages.Where(x=>x.ConversationId == Guid.Parse(id)).ToList();
-        return messageList;
+        _dbContext.Messages.Add(message);
+        await _dbContext.SaveChangesAsync();
+        return message;
+    }
+
+    public async Task<Conversation?> GetConversation(Guid conversationId)
+    {
+        return await _dbContext.Conversations.FindAsync(conversationId);
+    }
+
+    public async Task<Conversation?> GetConversationBetweenUsers(Guid user1Id, Guid user2Id)
+    {
+        return await _dbContext.Conversations
+            .FirstOrDefaultAsync(c =>
+                (c.User1Id == user1Id && c.User2Id == user2Id) ||
+                (c.User1Id == user2Id && c.User2Id == user1Id));
+    }
+
+    public async Task<List<Guid>> GetConnections(Guid userId)
+    {
+        return await _dbContext.Connections
+        .Where(c => c.UserID == userId || c.ConnectionUserId == userId)
+        .Select(c => c.UserID == userId ? c.ConnectionUserId : c.UserID)
+        .ToListAsync();
     }
     
 }

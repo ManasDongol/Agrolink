@@ -1,44 +1,73 @@
-
 <div class="messages-card">
-  <!-- Left: recent chats -->
+  <!-- Left: recent conversations -->
   <div class="recent-chats">
-    <div style="display: flex;border-bottom: 1.5px solid #e5e5e5;">
-<h3>Chats </h3>
+    <div style="display: flex; border-bottom: 1.5px solid #e5e5e5;">
+      <h3>Chats</h3>
     </div>
 
     <div class="chat-list">
-      @for(chat of recentChats;track chat.name){
-          <div  class="chat-card">
-        <strong>{{ chat.name }}</strong>
-        <p>{{ chat.lastMessage }}</p>
-      </div>
+
+      @if (HasConversation) {
+        @for (conv of recentConversations; track conv.id) {
+          <div class="chat-card" (click)="selectConversation(conv)">
+            <strong>{{ conv.id }}</strong>
+          </div>
+        }
+      } @else {
+        @for (conn of ConnectionList; track conn.id) {
+          <div class="connection-card">
+            
+            <!-- Profile Image -->
+            <img
+              [src]="apiurl + conn.profileImage"
+              alt="{{ conn.name }}"
+              class="profile-img"
+            />
+
+            <!-- User Name -->
+            <div class="user-info">
+              <span class="user-name">{{ conn.name }}</span>
+            </div>
+
+            <!-- Chat Button -->
+            <button class="chat-btn" (click)="startConversation(conn)">
+              Chat
+            </button>
+
+          </div>
+        }
       }
-    
+      
     </div>
   </div>
 
-  <!-- Right: opened chat -->
+  <!-- Right: opened messages -->
   <div class="opened-chat">
-    <div style="display: flex;border-bottom: 1.5px solid #e5e5e5;">
-<h3>Chat with Friend</h3>
+    <div style="display: flex; border-bottom: 1.5px solid #e5e5e5;">
+      <h3>Chat with Friend</h3>
     </div>
-    
-    
-    <div class="messages-list">
-      @for(msg of openedChatMessages;track msg.sender){
-            <div 
-           [class.you]="msg.sender === 'You'" 
-           class="message-card">
-        <p>{{ msg.content }}</p>
+
+    @if (!OpenedConversation) {
+      <div style="display:flex; align-items:center; justify-content:center; height:100%;">
+        <p style="color:#888;">Open a conversation to start chatting</p>
       </div>
-      }
-    
-    </div>
-    <!-- Message input box -->
+    } @else {
+      <div #messagesList class="messages-list">
+        @for (msg of openedMessages; track msg.messageId) {
+          <div class="message-card" [class.you]="msg.senderId === UserId">
+            <p>{{ msg.content }}</p>
+          </div>
+        }
+      </div>
+    }
+
     <div class="chat-input">
-      <input type="text" placeholder="Type a message..." />
-      <button>Send</button>
+      <input
+        type="text"
+        placeholder="Type a message..."
+        [(ngModel)]="newMessage"
+      />
+      <button (click)="sendMessage()">Send</button>
     </div>
   </div>
 </div>
-

@@ -1,13 +1,12 @@
 ﻿using System;
 using Microsoft.EntityFrameworkCore.Migrations;
-using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 #nullable disable
 
 namespace AgroLink.Infrastructure.Migrations
 {
     /// <inheritdoc />
-    public partial class Messagesandconversationstable : Migration
+    public partial class messagesAndConversationTables : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -24,20 +23,31 @@ namespace AgroLink.Infrastructure.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Conversations", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Conversations_Users_User1Id",
+                        column: x => x.User1Id,
+                        principalTable: "Users",
+                        principalColumn: "UserId",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_Conversations_Users_User2Id",
+                        column: x => x.User2Id,
+                        principalTable: "Users",
+                        principalColumn: "UserId",
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
                 name: "Messages",
                 columns: table => new
                 {
-                    MessageId = table.Column<int>(type: "integer", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    Message = table.Column<string>(type: "text", nullable: false),
-                    sent = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    MessageId = table.Column<Guid>(type: "uuid", nullable: false),
                     ConversationId = table.Column<Guid>(type: "uuid", nullable: false),
                     SenderId = table.Column<Guid>(type: "uuid", nullable: false),
-                    attachment = table.Column<bool>(type: "boolean", nullable: true),
-                    AttachmentPath = table.Column<string>(type: "text", nullable: true)
+                    HasAttachment = table.Column<bool>(type: "boolean", nullable: false),
+                    AttachmentPath = table.Column<string>(type: "text", nullable: true),
+                    Content = table.Column<string>(type: "text", nullable: true),
+                    Sent = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -48,12 +58,33 @@ namespace AgroLink.Infrastructure.Migrations
                         principalTable: "Conversations",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_Messages_Users_SenderId",
+                        column: x => x.SenderId,
+                        principalTable: "Users",
+                        principalColumn: "UserId",
+                        onDelete: ReferentialAction.Restrict);
                 });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Conversations_User1Id",
+                table: "Conversations",
+                column: "User1Id");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Conversations_User2Id",
+                table: "Conversations",
+                column: "User2Id");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Messages_ConversationId",
                 table: "Messages",
                 column: "ConversationId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Messages_SenderId",
+                table: "Messages",
+                column: "SenderId");
         }
 
         /// <inheritdoc />

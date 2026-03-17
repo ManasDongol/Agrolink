@@ -3,14 +3,16 @@ import { RouterOutlet } from '@angular/router';
 import { Home  } from "./features/home/home";
 import { RouterLink } from '@angular/router';
 import { AdminModule } from './features/admin/admin-module';
+import { FormsModule } from '@angular/forms';
 
 
 @Component({
   selector: 'app-root',
-  imports: [  RouterOutlet],
+    standalone: true, 
+  imports: [  RouterOutlet,FormsModule],
   templateUrl: './app.html',
-  styleUrl: './app.css'
+  styleUrls: ['./app.css']
 })
 export class App {
-  protected readonly title = signal('FrontEndPrac');
+  protected readonly title = signal('Agrolink');
 }

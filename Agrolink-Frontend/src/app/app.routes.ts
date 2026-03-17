@@ -4,7 +4,7 @@ import { Home } from './features/home/home';
 import { Network } from './features/network/network';
 import { Login } from './features/login/login';  
 import { Signup } from './features/signup/signup';
-import { Messages } from './features/messages/messages';
+import { MessagesComponent } from './features/messages/messages';
 import { Profile } from './features/profile/profile';
 import { UserProfile } from './features/user-profile/user-profile';
 import { Crop } from './features/crop/crop';
@@ -17,7 +17,7 @@ import { Component } from '@angular/core';
 export const routes: Routes = [
     { path: "feed", component:DefaultLayout,children: [{path:'',component:Feed}] , canActivate: [routeGuardGuard] },
     { path: "network", component:DefaultLayout,children: [{path:'',component:Network}], canActivate: [routeGuardGuard] },
-    { path: "messages",  component:DefaultLayout,children: [{path:'',component:Messages}], canActivate: [routeGuardGuard] },
+    { path: "messages",  component:DefaultLayout,children: [{path:'',component:MessagesComponent}], canActivate: [routeGuardGuard] },
     //{ path: "buildProfile/:id", component:DefaultLayout,children: [{path:'',component:Profile}], canActivate: [routeGuardGuard] },
     { path: "userProfile", component:DefaultLayout,children: [{path:'',component:UserProfile}], canActivate: [routeGuardGuard] },
      { path: "userProfile/:id", component:DefaultLayout,children: [{path:'',component:UserProfile}], canActivate: [routeGuardGuard] },

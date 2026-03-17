@@ -22,6 +22,7 @@
 
   <ItemGroup>
     <Folder Include="ExternalServices\" />
+    <Folder Include="repoDTO\" />
   </ItemGroup>
 
   <PropertyGroup>

@@ -71,56 +71,35 @@ namespace AgroLink.Infrastructure.Migrations
                     b.ToTable("Connections");
                 });
 
-            modelBuilder.Entity("AgroLink.Domain.Entities.Conversations", b =>
+            modelBuilder.Entity("AgroLink.Domain.Entities.Message", b =>
                 {
-                    b.Property<Guid>("Id")
+                    b.Property<Guid>("MessageId")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<Guid>("User1Id")
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid>("User2Id")
-                        .HasColumnType("uuid");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Conversations");
-                });
-
-            modelBuilder.Entity("AgroLink.Domain.Entities.Messages", b =>
-                {
-                    b.Property<int>("MessageId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("MessageId"));
 
                     b.Property<string>("AttachmentPath")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Content")
                         .HasColumnType("text");
 
                     b.Property<Guid>("ConversationId")
                         .HasColumnType("uuid");
 
-                    b.Property<string>("Message")
-                        .IsRequired()
-                        .HasColumnType("text");
+                    b.Property<bool>("HasAttachment")
+                        .HasColumnType("boolean");
 
                     b.Property<Guid>("SenderId")
                         .HasColumnType("uuid");
 
-                    b.Property<bool?>("attachment")
-                        .HasColumnType("boolean");
-
-                    b.Property<DateTime>("sent")
+                    b.Property<DateTime>("Sent")
                         .HasColumnType("timestamp with time zone");
 
                     b.HasKey("MessageId");
 
                     b.HasIndex("ConversationId");
+
+                    b.HasIndex("SenderId");
 
                     b.ToTable("Messages");
                 });
@@ -250,6 +229,30 @@ namespace AgroLink.Infrastructure.Migrations
                     b.ToTable("Users");
                 });
 
+            modelBuilder.Entity("Conversation", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid>("User1Id")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("User2Id")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("User1Id");
+
+                    b.HasIndex("User2Id");
+
+                    b.ToTable("Conversations");
+                });
+
             modelBuilder.Entity("AgroLink.Domain.Entities.ConnectionRequests", b =>
                 {
                     b.HasOne("AgroLink.Domain.Entities.User", "User")
@@ -272,15 +275,23 @@ namespace AgroLink.Infrastructure.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("AgroLink.Domain.Entities.Messages", b =>
+            modelBuilder.Entity("AgroLink.Domain.Entities.Message", b =>
                 {
-                    b.HasOne("AgroLink.Domain.Entities.Conversations", "Conversation")
+                    b.HasOne("Conversation", "Conversation")
                         .WithMany("Messages")
                         .HasForeignKey("ConversationId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("AgroLink.Domain.Entities.User", "Sender")
+                        .WithMany()
+                        .HasForeignKey("SenderId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
                     b.Navigation("Conversation");
+
+                    b.Navigation("Sender");
                 });
 
             modelBuilder.Entity("AgroLink.Domain.Entities.Posts", b =>
@@ -305,15 +316,34 @@ namespace AgroLink.Infrastructure.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("AgroLink.Domain.Entities.Conversations", b =>
+            modelBuilder.Entity("Conversation", b =>
                 {
-                    b.Navigation("Messages");
+                    b.HasOne("AgroLink.Domain.Entities.User", "User1")
+                        .WithMany()
+                        .HasForeignKey("User1Id")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("AgroLink.Domain.Entities.User", "User2")
+                        .WithMany()
+                        .HasForeignKey("User2Id")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("User1");
+
+                    b.Navigation("User2");
                 });
 
             modelBuilder.Entity("AgroLink.Domain.Entities.User", b =>
                 {
                     b.Navigation("Profile")
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("Conversation", b =>
+                {
+                    b.Navigation("Messages");
                 });
 #pragma warning restore 612, 618
         }

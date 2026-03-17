@@ -12,4 +12,5 @@ public class Connections
     public DateTime AceeptedDate { get; set; }
     
     public User User { get; set; }
+    public User ConnectionUser { get; set; }
 }
