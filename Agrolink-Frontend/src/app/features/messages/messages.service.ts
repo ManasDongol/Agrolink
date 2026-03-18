@@ -128,7 +128,7 @@ export class MessagesService {
     });
 
     // Send to hub for real-time
-    this.hubConnection.invoke('SendMessage', receiverId, content, this.currentConversationId)
+  this.hubConnection.invoke('SendMessage', receiverId, this.currentConversationId, content)
       .then(() => console.log("SignalR SendMessage invoked"))
       .catch(err => console.error("SignalR SendMessage error:", err));
   }

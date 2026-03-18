@@ -25,8 +25,7 @@ public class ChatHub: Hub
            
             await Clients.User(receiverId)
                 .SendAsync("ReceiveMessage", messageDto);
-            await Clients.Caller
-                .SendAsync("ReceiveMessage", messageDto);
+           
         }
         catch (Exception e)
         {
