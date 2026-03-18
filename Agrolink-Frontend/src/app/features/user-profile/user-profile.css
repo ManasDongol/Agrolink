@@ -146,6 +146,17 @@
   cursor: pointer;
   transition: background-color 0.3s;
 }
+grey-btn {
+  background-color: #676767;
+  color: rgb(56, 56, 56);
+  border: none;
+  border-radius: 20px;
+  padding: 10px 24px;
+  font-family: 'Outfit-Medium';
+  font-size: 14px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
 
 .edit-btn:hover {
   background-color: #5ab82d;

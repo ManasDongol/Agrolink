@@ -14,7 +14,7 @@
    
     <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="9.0.8" />
    
-    <PackageReference Include="Microsoft.AspNetCore.SignalR.Common" Version="10.0.5" />
+    <PackageReference Include="Microsoft.AspNetCore.SignalR.Common" Version="9.0.6" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="9.0.11">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
@@ -22,7 +22,6 @@
     <PackageReference Include="Microsoft.Extensions.Caching.StackExchangeRedis" Version="10.0.2" />
     <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="9.0.4" />
     <PackageReference Include="QuestPDF" Version="2026.2.3" />
-    <PackageReference Include="Scalar.AspNetCore" Version="2.11.0" />
     <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="8.15.0" />
     <PackageReference Include="System.Net.Http" Version="4.3.4" />
   </ItemGroup>

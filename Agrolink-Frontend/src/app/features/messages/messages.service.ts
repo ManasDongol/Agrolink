@@ -3,12 +3,12 @@ import * as signalR from '@microsoft/signalr';
 import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject } from 'rxjs';
 
-export interface Message {
+export interface MessageDto {
   messageId: string;
   conversationId: string;
   senderId: string;
   content: string;
-  sent: Date;
+  sent: string; // ISO string from backend
 }
 
 export interface Conversation {
@@ -17,11 +17,10 @@ export interface Conversation {
   user2Id: string;
 }
 
-export interface Connection{
-    id: string;
-    name:string;
-    profileImage:string;
-
+export interface Connection {
+  id: string;
+  name: string;
+  profileImage: string;
 }
 
 @Injectable({
@@ -31,99 +30,106 @@ export class MessagesService {
 
   private hubConnection!: signalR.HubConnection;
 
-  private messagesMap = new Map<string, Message[]>();
-  public messages$ = new BehaviorSubject<Message[]>([]);
+  private messagesMap = new Map<string, MessageDto[]>();
+  public messages$ = new BehaviorSubject<MessageDto[]>([]);
 
   currentConversationId: string = '';
 
-  private apiUrl = 'http://localhost:5131/api/Message'; // change if needed
-  private hubUrl = 'http://localhost:5131/chatHub';
+  private apiUrl = 'http://localhost:5131/api/Message'; // backend API
+  private hubUrl = 'http://localhost:5131/chatHub';     // SignalR hub
 
   constructor(private http: HttpClient) {
     this.startConnection();
   }
 
-  
-  startConnection() {
+  async startConnection() {
     this.hubConnection = new signalR.HubConnectionBuilder()
-      .withUrl(this.hubUrl)
+      .withUrl(this.hubUrl, { withCredentials: true })
+      .configureLogging(signalR.LogLevel.Trace)
       .withAutomaticReconnect()
       .build();
 
-    this.hubConnection.start()
-      .then(() => console.log('SignalR connected'))
-      .catch(err => console.log(err));
+    try {
+      await this.hubConnection.start();
+      console.log('SignalR connected');
 
-    //  Receive message from server
-    this.hubConnection.on('ReceiveMessage', (message: Message) => {
-      const convId = message.conversationId;
+      // Listen for incoming messages
+      this.hubConnection.on('ReceiveMessage', (message: MessageDto) => {
+        const convId = message.conversationId;
+        if (!this.messagesMap.has(convId)) this.messagesMap.set(convId, []);
+        this.messagesMap.get(convId)!.push(message);
+        this.messages$.next([...this.messagesMap.get(convId)!]);
+      });
 
-      if (!this.messagesMap.has(convId)) {
-        this.messagesMap.set(convId, []);
-      }
-
-      this.messagesMap.get(convId)!.push(message);
-
-      // update UI only if it's current chat
-      if (convId === this.currentConversationId) {
-        this.messages$.next(this.messagesMap.get(convId)!);
-      }
-    });
+    } catch (err) {
+      console.error('SignalR connection failed:', err);
+    }
   }
 
-  // Create a new conversation with a connection
-createConversation(user1Id: string, user2Id: string) {
-  const payload = { user1Id, user2Id };
-  
-  return this.http.post<Conversation>(`${this.apiUrl}/conversations`, payload);
-}
-  
+  // Create a new conversation
+  createConversation(user1Id: string, user2Id: string) {
+    const payload = { user1Id, user2Id };
+    return this.http.post<Conversation>(`${this.apiUrl}/conversations`, payload);
+  }
 
+  // Get conversations for a user
   getConversations(userId: string) {
-   
     return this.http.get<Conversation[]>(`${this.apiUrl}/conversations/${userId}`);
   }
-  // Load Connections for potential convos
-  getConnections(userId:string){
-    return this.http.get<Connection[]>(`${this.apiUrl}/connections/${userId}`)
 
+  // Get connections
+  getConnections(userId: string) {
+    return this.http.get<Connection[]>(`${this.apiUrl}/connections/${userId}`);
   }
 
- 
-
-  //  OPEN CHAT
+  // Open a conversation
   openConversation(conversationId: string) {
     this.currentConversationId = conversationId;
 
-    // If already cached → don't call API again
     if (this.messagesMap.has(conversationId)) {
       this.messages$.next(this.messagesMap.get(conversationId)!);
       return;
     }
 
-    // Otherwise fetch from backend
-    this.http.get<Message[]>(`${this.apiUrl}/messages/${conversationId}`)
+    this.http.get<MessageDto[]>(`${this.apiUrl}/messages/${conversationId}`)
       .subscribe(messages => {
         this.messagesMap.set(conversationId, messages);
         this.messages$.next(messages);
       });
-
-    // Join SignalR group
-    this.hubConnection.invoke('JoinConversation', conversationId);
   }
 
-  // SEND MESSAGE
-  sendMessage(senderid:string,content: string) {
-    const message = {
-      senderId: senderid, 
+  // Send a message
+  sendMessage(senderId: string, receiverId: string, content: string) {
+    if (!this.hubConnection || this.hubConnection.state !== signalR.HubConnectionState.Connected) {
+      console.warn("Hub not connected yet!");
+      return;
+    }
+
+    // Optimistically add message to UI
+    const tempMessage: MessageDto = {
+      messageId: 'temp-' + Date.now(),
       conversationId: this.currentConversationId,
-      content: content
+      senderId,
+      content,
+      sent: new Date().toISOString()
     };
+    if (!this.messagesMap.has(this.currentConversationId)) this.messagesMap.set(this.currentConversationId, []);
+    this.messagesMap.get(this.currentConversationId)!.push(tempMessage);
+    this.messages$.next([...this.messagesMap.get(this.currentConversationId)!]);
 
     // Save to DB
-    this.http.post(`${this.apiUrl}/send`, message).subscribe();
+    this.http.post(`${this.apiUrl}/send`, {
+      senderId,
+      conversationId: this.currentConversationId,
+      content
+    }).subscribe({
+      next: () => console.log("Message saved to DB"),
+      error: err => console.error("Failed to save message:", err)
+    });
 
-    // Send real-time
-    this.hubConnection.invoke('SendMessage', this.currentConversationId, content);
+    // Send to hub for real-time
+    this.hubConnection.invoke('SendMessage', receiverId, content, this.currentConversationId)
+      .then(() => console.log("SignalR SendMessage invoked"))
+      .catch(err => console.error("SignalR SendMessage error:", err));
   }
 }

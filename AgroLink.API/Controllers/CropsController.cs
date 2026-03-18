@@ -1,4 +1,4 @@
-﻿using AgroLink.Application.DTOs;
+using AgroLink.Application.DTOs;
 using AgroLink.Application.Interfaces;
 using AgroLink.Application.Services;
 using Agrolink.Infrastructure.ExternalServices.PDFGenerator;
@@ -100,7 +100,7 @@ public class CropsController : ControllerBase
 
 public class CropRequest
 {
-    public List<float> features { get; set; }
+    public List<float> features { get; set; } = new List<float>();
 }
 
 public class CropResponse

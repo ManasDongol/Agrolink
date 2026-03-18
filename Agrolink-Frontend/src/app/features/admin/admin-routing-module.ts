@@ -12,7 +12,7 @@ const routes: Routes = [
     component:AdminLayout,
     children:[
       {path:"",component:Dashboard},
-         {path:"admins",component:ManageAdmins},
+      {path:"admins",component:ManageAdmins},
        {path:"posts",component:ManagePosts},
        {path:"users",component:ManageUsers}
     ]

@@ -144,7 +144,7 @@ export class Profile implements OnInit{
      const id = this.route.snapshot.paramMap.get('id')
     if (!id) {
     
-      console.error('No token found in localStorage');
+      console.error('No token found ');
       return null;
     }
     return id;

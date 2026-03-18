@@ -34,9 +34,7 @@ export class Auth {
     return this.http.get<userDto>(`${this.baseUrl}/me`);
   }
 
-  // -----------------------------
-  // STATE MANAGEMENT
-  // -----------------------------
+
 
   setAuthenticated(value: boolean) {
     this.isAuthenticatedSubject.next(value);
@@ -49,10 +47,6 @@ export class Auth {
   getUserid(){
     
   }
-
-  // -----------------------------
-  // LOGOUT (backend clears cookie)
-  // -----------------------------
 
   logout() {
     return this.http.post(`${this.baseUrl}/logout`, {}, {

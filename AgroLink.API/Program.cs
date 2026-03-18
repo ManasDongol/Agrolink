@@ -12,14 +12,14 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.IdentityModel.Tokens.Experimental;
 using QuestPDF.Infrastructure;
-using Scalar.AspNetCore;
+
 using StackExchange.Redis;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers();
 // Add services to the container.
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
-builder.Services.AddOpenApi();
+
 
 builder.Services.AddCors(options =>
 {
@@ -114,8 +114,8 @@ app.UseCors("AllowAngularApp");
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
-    app.MapOpenApi();
-    app.MapScalarApiReference();
+    
+  
 }
 
 app.UseAuthentication();
