@@ -9,12 +9,14 @@ import { Post, PostResponse } from './feed.models';
 export class FeedService {
     private http = inject(HttpClient);
     private baseUrl = 'http://localhost:5131/api/Posts';
+    private BookmarkUrl = 'http://localhost:5131/api/Bookmark';
+  
 
     constructor() { }
 
     
 
-    getPosts(page: number, pageSize: number, view: 'all' | 'my'): Observable<PostResponse> {
+    getPosts(page: number, pageSize: number, view: 'all' | 'my'|'bookmarks'): Observable<PostResponse> {
         let params = new HttpParams()
             .set('page', page.toString())
             .set('pageSize', pageSize.toString())
@@ -25,5 +27,13 @@ export class FeedService {
 
     createPost(data: FormData): Observable<Post> {
         return this.http.post<Post>(this.baseUrl, data);
+    }
+
+    toggleLike(postId: string) {
+  return this.http.post(`${this.baseUrl}/${postId}/like`, {});
+    }
+
+     toggleBookmark(postId: string) {
+  return this.http.post(`${this.BookmarkUrl}/${postId}/bookmark`, {});
     }
 }

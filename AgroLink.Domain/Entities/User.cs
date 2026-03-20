@@ -12,5 +12,6 @@ public class User
     public string salt { get; set; }
     public string UserType { get; set; } 
     public Profile Profile { get; set; }
+    public ICollection<Comment> Comments { get; set; }
 
 }

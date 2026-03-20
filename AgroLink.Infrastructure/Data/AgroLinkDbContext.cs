@@ -13,6 +13,9 @@ public class AgroLinkDbContext(DbContextOptions<AgroLinkDbContext> options) : Db
     public DbSet<Posts> Posts { get; set; }
    public DbSet<Conversation> Conversations { get; set; }
    public DbSet<Message> Messages { get; set; }
+   public DbSet<Comment> Comments { get; set; }
+   public DbSet<Like> Likes { get; set; }
+  
     
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -58,7 +61,25 @@ public class AgroLinkDbContext(DbContextOptions<AgroLinkDbContext> options) : Db
             .HasForeignKey(c => c.ConnectionUserId)
             .OnDelete(DeleteBehavior.Restrict);
         
+        modelBuilder.Entity<Comment>()
+            .HasOne(c => c.User)
+            .WithMany(u => u.Comments)
+            .HasForeignKey(c => c.UserId)
+            .OnDelete(DeleteBehavior.Cascade);
 
+        modelBuilder.Entity<Comment>()
+            .HasOne(c => c.Post)
+            .WithMany(p => p.Comments)
+            .HasForeignKey(c => c.PostId)
+            .OnDelete(DeleteBehavior.Cascade);
+        
+        modelBuilder.Entity<Comment>()
+            .HasOne(c => c.ParentComment)
+            .WithMany(c => c.Replies)
+            .HasForeignKey(c => c.ParentCommentId)
+            .OnDelete(DeleteBehavior.Restrict);
+        
+        
        
     }
 

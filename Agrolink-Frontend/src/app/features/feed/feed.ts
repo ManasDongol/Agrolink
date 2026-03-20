@@ -5,6 +5,7 @@ import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angula
 import { FeedService } from './feed.service';
 import { Post } from './feed.models';
 import { environment } from '../../../environments/environments';
+import { HttpErrorResponse } from '@angular/common/http';
 
 @Component({
   selector: 'app-feed',
@@ -17,9 +18,7 @@ import { environment } from '../../../environments/environments';
 export class Feed implements OnInit {
 
   posts: Post[] = [];
-
- 
-  currentView: 'all' | 'my' = 'all';
+ currentView: 'all' | 'my' | 'bookmarks' = 'all';
   currentPage: number = 1;
   pageSize: number = 10;
   totalPages: number = 0;
@@ -31,7 +30,9 @@ export class Feed implements OnInit {
   imagePreview: string | null = null;
   successMessage: string = '';
 
-  apiurl:string = environment.apiUrl
+  commentsForm: { [postId: string]: FormGroup } = {};
+
+  apiurl: string = environment.apiUrl;
 
   constructor(
     private feedService: FeedService,
@@ -46,21 +47,23 @@ export class Feed implements OnInit {
   }
 
   ngOnInit(): void {
-    this.loadTags();
     this.loadPosts();
-  }
-
-  loadTags() {
-   
   }
 
   loadPosts() {
     this.isLoading = true;
-    
+
     this.feedService.getPosts(this.currentPage, this.pageSize, this.currentView).subscribe({
       next: (response) => {
-        this.posts = response.posts;
-        this.totalPages = Math.ceil(response.total / response.pageSize); 
+        // Map API posts to Post class instances
+        const mappedPosts = response.posts.map((p: Post)=> new Post(p));
+
+        if (this.currentPage === 1) {
+          this.posts = mappedPosts;
+        } else {
+          this.posts = [...this.posts, ...mappedPosts];
+        }
+
         this.totalPages = Math.ceil(response.total / this.pageSize);
         this.isLoading = false;
       },
@@ -71,7 +74,7 @@ export class Feed implements OnInit {
     });
   }
 
-  changeView(view: 'all' | 'my') {
+  changeView(view: 'all' | 'my'|'bookmarks') {
     if (this.currentView !== view) {
       this.currentView = view;
       this.currentPage = 1;
@@ -121,7 +124,6 @@ export class Feed implements OnInit {
         error: (err) => {
           console.error('Error creating post', err);
           this.isLoading = false;
-          // Handle error (show message)
         }
       });
     } else {
@@ -150,9 +152,41 @@ export class Feed implements OnInit {
   }
 
   viewUserProfile(userId: string) {
-    console.log("go to profile");
     this.router.navigate(['/userProfile', userId]);
-   
+  }
 
+  openComments(post: Post) {
+    post.toggleComments();
+  }
+toggleLike(post: Post) {
+
+  post.toggleLike();
+
+
+  this.feedService.toggleLike(post.postId).subscribe({
+    next: () => {
+   
+    },
+    error: (err: HttpErrorResponse) => {
+      console.error('Like failed', err);
+
+      post.toggleLike();
+    }
+  });
+}
+
+  toggleBookmark(post: Post) {
+    post.toggleBookmark();
+  
+    this.feedService.toggleBookmark(post.postId).subscribe({
+      next: () => {
+    
+      },
+      error: (err: HttpErrorResponse) => {
+        console.error('bookmark failed', err);
+
+        post.toggleBookmark();
+      }
+    });
   }
 }

@@ -20,8 +20,8 @@ public class PostsController(IPostService postService) : ControllerBase
              return Unauthorized();
         }
 
-        bool myPosts = view.ToLower() == "my";
-        var (posts, totalCount) = await postService.GetPostsAsync(page, pageSize, myPosts, userId);
+        var postType = view.ToLower();
+        var (posts, totalCount) = await postService.GetPostsAsync(page, pageSize, postType, userId);
         
         return Ok(new 
         {
@@ -30,6 +30,16 @@ public class PostsController(IPostService postService) : ControllerBase
             page,
             pageSize
         });
+    }
+    
+    [HttpPost("{postId}/like")]
+    public async Task<IActionResult> ToggleLike(Guid postId)
+    {
+        var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value; // however you extract from JWT
+
+        await postService.ToggleLikeAsync(postId, Guid.Parse(userId));
+
+        return Ok();
     }
 
     [HttpPost]

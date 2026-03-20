@@ -16,4 +16,8 @@ public class Comment
 
     public User User { get; set; }
     public Posts Post { get; set; }
+    public Guid? ParentCommentId { get; set; }
+    public Comment ParentComment { get; set; }
+
+    public ICollection<Comment> Replies { get; set; }
 }

@@ -426,6 +426,68 @@
   text-align: center;
 }
 
+
+.action-bar {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 0.5px solid #e5e7eb;
+}
+
+.action-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 10px;
+  border: none;
+  background: transparent;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 13px;
+  color: #6b7280;
+  transition: background 0.15s, color 0.15s;
+}
+
+.action-btn:hover {
+  background: #f3f4f6;
+  color: #111827;
+}
+
+.action-btn svg {
+  width: 16px;
+  height: 16px;
+}
+
+.action-btn.active-like { color: #E24B4A; }
+.action-btn.active-bookmark { color: #378ADD; }
+
+.bookmark-right {
+  margin-left: auto;
+}
+
+
+
+/* for comments */
+
+
+.commentsection {
+  max-height: 250px; /* fixed height */
+  overflow-y: auto; /* vertical scroll if too many comments */
+  border-top: 1px solid #ddd; /* optional separator */
+  margin-top: 10px;
+  padding: 5px;
+  background-color: #f9f9f9; /* optional background */
+  border-radius: 4px;
+}
+
+.comments-container {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
 /* Animations */
 @keyframes fadeIn {
   from {

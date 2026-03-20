@@ -41,26 +41,43 @@ public class PostService(PostRepo postRepo) : IPostService
             UserId = userId,
             Title = createPostDto.Title,
             Content = createPostDto.Content,
-            Created = DateTime.UtcNow, // Use UTC
+            Created = DateTime.UtcNow, 
             hasImage = imagePath != null,
             ImagePath = imagePath ?? string.Empty,
             PostCategory = ""
         };
 
         var createdPost = await postRepo.CreatePostAsync(post);
-        return MapToDto(createdPost);
+        return MapToDto(createdPost,userId);
     }
 
-    public async Task<(List<PostDto> Posts, int TotalCount)> GetPostsAsync(int page, int pageSize, bool myPosts, Guid userId)
+    public async Task<(List<PostDto> Posts, int TotalCount)> GetPostsAsync(int page, int pageSize, string myPosts, Guid userId)
     {
-        var (posts, totalCount) = await postRepo.GetPostsAsync(page, pageSize, myPosts, userId);
-        var postDtos = posts.Select(MapToDto).ToList();
+        var value = 0;
+        if (myPosts == "my")
+        {
+            value = 1;
+        }else if(myPosts == "bookmarks")
+        {
+            value = 2;
+        }
+        var (posts, totalCount) = await postRepo.GetPostsAsync(page, pageSize, value, userId);
+        var postDtos = posts.Select(p=>MapToDto(p,userId)).ToList();
         return (postDtos, totalCount);
     }
 
+    public async Task ToggleLikeAsync(Guid postId, Guid userId)
+    {
+        await postRepo.ToggleLikeAsync(postId, userId);
+    }
+
+    public async Task ToggleBookmarkAsync(Guid postId, Guid userId)
+    {
+        await postRepo.ToggleBookmarkAsync(postId, userId);
+    }
   
 
-    private PostDto MapToDto(AgroLink.Domain.Entities.Posts post)
+    private PostDto MapToDto(Posts post, Guid currentUserId)
     {
         return new PostDto
         {
@@ -68,18 +85,22 @@ public class PostService(PostRepo postRepo) : IPostService
             Title = post.Title,
             Content = post.Content,
             Created = post.Created,
-            ImagePath = post.ImagePath, // Map properly
+            ImagePath = post.ImagePath,
             Author = new PostUserDto
             {
                 UserId = post.UserId,
-                Username = post.User?.Username ?? "Unknown", 
-                ProfilePictureUrl = post.User?.Profile?.ProfilePicture , // Assuming Profile exists and has ProfilePictureUrl
+                Username = post.User?.Username ?? "Unknown",
+                ProfilePictureUrl = post.User?.Profile?.ProfilePicture,
                 Role = post.User?.UserType
             },
             PostCategory = post.PostCategory,
-            LikesCount = 0, // Implement real count if entity has it
-            CommentsCount = 0,
-            IsLiked = false 
+
+            LikesCount = post.Likes?.Count ?? 0,
+            IsLiked = post.Likes?.Any(l => l.UserId == currentUserId) ?? false,
+            IsBookmarked = post.Bookmarks?.Any(b => b.UserId == currentUserId) ?? false,
+            BookmarksCount = post.Bookmarks?.Count ?? 0,
+
+            CommentsCount = post.Comments?.Count ?? 0
         };
     }
     

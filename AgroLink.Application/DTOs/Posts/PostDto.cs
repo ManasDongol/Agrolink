@@ -14,6 +14,8 @@ public class PostDto
     public bool IsLiked { get; set; } 
     public int LikesCount { get; set; }
     public int CommentsCount { get; set; }
+    public bool IsBookmarked { get; set; }
+    public int BookmarksCount { get; set; }
 }
 
 public class PostUserDto 
