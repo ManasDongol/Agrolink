@@ -65,6 +65,57 @@ public class PostService(PostRepo postRepo) : IPostService
         var postDtos = posts.Select(p=>MapToDto(p,userId)).ToList();
         return (postDtos, totalCount);
     }
+    
+    public async Task<PostDto> UpdatePostAsync(Guid postId, UpdatePostDto updatePostDto, Guid userId)
+    {
+        // Get the existing post
+        var post = await postRepo.GetPostByIdAsync(postId);
+        if (post == null) throw new Exception("Post not found");
+
+
+        if (post.UserId != userId) throw new UnauthorizedAccessException("You cannot edit this post");
+
+        // Update basic fields
+        post.Title = updatePostDto.Title;
+        post.Content = updatePostDto.Content;
+        post.PostCategory = updatePostDto.PostCategory;
+
+        // Handle image replacement (optional)
+        if (updatePostDto.Image != null)
+        {
+            // Delete old image if exists
+            if (!string.IsNullOrEmpty(post.ImagePath))
+            {
+                var oldPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", post.ImagePath.TrimStart('/').Replace('/', Path.DirectorySeparatorChar));
+                if (File.Exists(oldPath))
+                {
+                    File.Delete(oldPath);
+                }
+            }
+
+            // Save new image
+            var fileName = $"{Guid.NewGuid()}{Path.GetExtension(updatePostDto.Image.FileName)}";
+            var uploadPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "uploads", "images", "UserPosts");
+            if (!Directory.Exists(uploadPath))
+            {
+                Directory.CreateDirectory(uploadPath);
+            }
+
+            var filePath = Path.Combine(uploadPath, fileName);
+            using (var stream = new FileStream(filePath, FileMode.Create))
+            {
+                await updatePostDto.Image.CopyToAsync(stream);
+            }
+
+            post.ImagePath = $"/uploads/images/UserPosts/{fileName}";
+            post.hasImage = true;
+        }
+
+        // Save changes
+        var updatedPost = await postRepo.UpdatePostAsync(post);
+
+        return MapToDto(updatedPost, userId);
+    }
 
     public async Task ToggleLikeAsync(Guid postId, Guid userId)
     {
@@ -74,6 +125,11 @@ public class PostService(PostRepo postRepo) : IPostService
     public async Task ToggleBookmarkAsync(Guid postId, Guid userId)
     {
         await postRepo.ToggleBookmarkAsync(postId, userId);
+    }
+
+    public async Task DeletePost(Guid postId)
+    {
+        await postRepo.DeletePostAsync(postId);
     }
   
 

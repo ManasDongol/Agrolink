@@ -2,6 +2,7 @@ import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { Post, PostResponse } from './feed.models';
+import { ReturnStatement } from '@angular/compiler';
 
 @Injectable({
     providedIn: 'root'
@@ -14,7 +15,11 @@ export class FeedService {
 
     constructor() { }
 
-    
+    updatePost(postId: string,formData:FormData){
+        
+        return this.http.post<PostResponse>(`${this.baseUrl}/${postId}/update`,formData);
+
+    }
 
     getPosts(page: number, pageSize: number, view: 'all' | 'my'|'bookmarks'): Observable<PostResponse> {
         let params = new HttpParams()
@@ -35,5 +40,9 @@ export class FeedService {
 
      toggleBookmark(postId: string) {
   return this.http.post(`${this.BookmarkUrl}/${postId}/bookmark`, {});
+    }
+
+    deletePost(postId:string){
+        return this.http.delete<Post>(`${this.baseUrl}/${postId}/delete`);
     }
 }

@@ -6,7 +6,7 @@ import { FeedService } from './feed.service';
 import { Post } from './feed.models';
 import { environment } from '../../../environments/environments';
 import { HttpErrorResponse } from '@angular/common/http';
-
+import { Auth } from '../../core/Services/Auth/auth';
 @Component({
   selector: 'app-feed',
   standalone: true,
@@ -23,12 +23,18 @@ export class Feed implements OnInit {
   pageSize: number = 10;
   totalPages: number = 0;
   isLoading: boolean = false;
+  deletepost:boolean = false;
+  editingPost:Post | null = null;;
 
   toggleNewPost: boolean = false;
+  editpost:boolean = false;
   postForm: FormGroup;
   selectedFile: File | null = null;
   imagePreview: string | null = null;
   successMessage: string = '';
+
+  myuserId:string="";
+  currentpostId: string ="";
 
   commentsForm: { [postId: string]: FormGroup } = {};
 
@@ -37,7 +43,8 @@ export class Feed implements OnInit {
   constructor(
     private feedService: FeedService,
     private fb: FormBuilder,
-    private router: Router
+    private router: Router,
+    private auth: Auth
   ) {
     this.postForm = this.fb.group({
       title: ['', [Validators.required, Validators.minLength(5)]],
@@ -48,6 +55,14 @@ export class Feed implements OnInit {
 
   ngOnInit(): void {
     this.loadPosts();
+    this.auth.checkAuth().subscribe({
+      next:(res)=>{
+        this.myuserId=res.id
+      },
+      error:(err)=>{
+        console.log(err);
+      }
+    })
   }
 
   loadPosts() {
@@ -72,6 +87,40 @@ export class Feed implements OnInit {
         this.isLoading = false;
       }
     });
+  }
+
+ editPost(post: Post) {
+  this.editingPost = post;       // store which post we are editing
+  this.toggleNewPost = true;     // open the modal
+  this.postForm.patchValue({
+    title: post.title,
+    content: post.content,
+    postcategory: post.postcategory
+  });
+
+  this.imagePreview = post.imagePath ? this.apiurl + post.imagePath : null;
+  this.selectedFile = null; // clear any new selected file
+}
+
+  deletePostForm(postId:string){
+this.currentpostId=postId;
+      this.deletepost=!this.deletepost;
+  }
+  deletePost(){
+  console.log(this.currentpostId);
+   if(this.currentpostId!=null){
+    this.feedService.deletePost(this.currentpostId).subscribe({
+      next:(res)=>{
+         this.deletepost=!this.deletepost;
+         this.posts = this.posts.filter(p => p.postId !== this.currentpostId);
+        this.currentpostId="";
+        
+
+      }
+      
+    })
+   }
+
   }
 
   changeView(view: 'all' | 'my'|'bookmarks') {
@@ -101,35 +150,56 @@ export class Feed implements OnInit {
     }
   }
 
-  submitPost() {
-    if (this.postForm.valid) {
-      const formData = new FormData();
-      formData.append('title', this.postForm.get('title')?.value);
-      formData.append('content', this.postForm.get('content')?.value);
-      formData.append('postcategory', this.postForm.get('postcategory')?.value);
-
-      if (this.selectedFile) {
-        formData.append('image', this.selectedFile);
-      }
-
-      this.isLoading = true;
-      this.feedService.createPost(formData).subscribe({
-        next: (newPost) => {
-          this.isLoading = false;
-          this.successMessage = "Post created successfully!";
-          this.togglePostForm();
-          this.loadPosts();
-          setTimeout(() => this.successMessage = '', 3000);
-        },
-        error: (err) => {
-          console.error('Error creating post', err);
-          this.isLoading = false;
-        }
-      });
-    } else {
-      this.postForm.markAllAsTouched();
-    }
+ submitPost() {
+  if (!this.postForm.valid) {
+    this.postForm.markAllAsTouched();
+    return;
   }
+
+  const formData = new FormData();
+  formData.append('title', this.postForm.get('title')?.value);
+  formData.append('content', this.postForm.get('content')?.value);
+  formData.append('postcategory', this.postForm.get('postcategory')?.value);
+
+  if (this.selectedFile) {
+    formData.append('image', this.selectedFile);
+  }
+
+  this.isLoading = true;
+
+  if (this.editingPost) {
+    // Update existing post
+    this.feedService.updatePost(this.editingPost.postId, formData).subscribe({
+      next: (updatedPost) => {
+        this.isLoading = false;
+        this.successMessage = "Post updated successfully!";
+        this.toggleNewPost = false;
+        this.editingPost = null;
+        this.loadPosts();
+        setTimeout(() => this.successMessage = '', 3000);
+      },
+      error: (err) => {
+        console.error('Error updating post', err);
+        this.isLoading = false;
+      }
+    });
+  } else {
+    // Create new post
+    this.feedService.createPost(formData).subscribe({
+      next: (newPost) => {
+        this.isLoading = false;
+        this.successMessage = "Post created successfully!";
+        this.toggleNewPost = false;
+        this.loadPosts();
+        setTimeout(() => this.successMessage = '', 3000);
+      },
+      error: (err) => {
+        console.error('Error creating post', err);
+        this.isLoading = false;
+      }
+    });
+  }
+}
 
   resetForm() {
     this.postForm.reset();

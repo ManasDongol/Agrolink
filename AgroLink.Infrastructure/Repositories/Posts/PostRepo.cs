@@ -40,6 +40,40 @@ public class PostRepo(AgroLinkDbContext dbContext)
 
         return (posts, totalCount);
     }
+
+    public async Task DeletePostAsync(Guid postId)
+    {
+         dbContext.Posts.Remove(await dbContext.Posts.FindAsync(postId));
+         await dbContext.SaveChangesAsync();
+    }
+    
+    public async Task<Domain.Entities.Posts> UpdatePostAsync(Domain.Entities.Posts updatedPost)
+    {
+        // Fetch existing post from DB
+        var existingPost = await dbContext.Posts
+            .FirstOrDefaultAsync(p => p.PostId == updatedPost.PostId);
+
+        if (existingPost == null)
+            throw new Exception("Post not found");
+
+        // Update fields
+        existingPost.Title = updatedPost.Title;
+        existingPost.Content = updatedPost.Content;
+        existingPost.PostCategory = updatedPost.PostCategory;
+        existingPost.ImagePath = updatedPost.ImagePath;
+        existingPost.hasImage = updatedPost.hasImage;
+
+        // Save changes
+        await dbContext.SaveChangesAsync();
+
+        // Load navigation properties for mapping to DTO
+        await dbContext.Entry(existingPost).Reference(p => p.User).LoadAsync();
+        await dbContext.Entry(existingPost).Collection(p => p.Likes).LoadAsync();
+        await dbContext.Entry(existingPost).Collection(p => p.Bookmarks).LoadAsync();
+        await dbContext.Entry(existingPost).Collection(p => p.Comments).LoadAsync();
+
+        return existingPost;
+    }
     
    
     

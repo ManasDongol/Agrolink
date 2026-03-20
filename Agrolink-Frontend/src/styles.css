@@ -202,6 +202,23 @@ body[data-theme="dark"] {
   color: white;
   border: none;
 }
+.btn-neutral{
+  background: rgb(222, 222, 222);
+  color: grey;
+  border: none;
+}
+
+.btn-negative {
+  background: var(--negative-color);
+  color: white;
+  border: none;
+}
+
+.btn-negative:hover {
+  background: red;
+}
+
+
 
 .btn-primary:hover {
   background: var(--primary-hover);

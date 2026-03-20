@@ -1,4 +1,92 @@
+@if(deletepost){
+  <div class="translucent-background">
+  <div class="card floatingcard">
+    <div class="card-header">
+      <h3>Delete post confirmation</h3>
+      </div>
+       <div style="display: flex;justify-content: space-around;">
+      <button class="btn btn-negative" (click)="deletePost()">confirm</button>
+     
+        <button class="btn btn-neutral" (click)="deletePostForm(currentpostId)">cancel</button>
+      </div>
+      </div>
+      </div>
 
+
+}
+
+@if(editpost){
+  <div class="translucent-background">
+  <div class="card floatingcard create-post-card">
+    <div class="card-header">
+      <h3>edit Post</h3>
+      <button class="btn-close" (click)="togglePostForm()">&#10005;</button>
+    </div>
+
+    <form [formGroup]="postForm" (ngSubmit)="submitPost()">
+      <div class="form-group">
+        <label for="title">Title</label>
+        <input type="text" id="title" formControlName="title" class="form-control" placeholder="Enter post title">
+        @if(postForm.get('title')?.invalid && postForm.get('title')?.touched) {
+        <small class="error-text">Title is required (min 5 chars).</small>
+        }
+      </div>
+
+      <div class="form-group">
+        <label for="content">Content</label>
+        <textarea id="content" formControlName="content" class="form-control" rows="4"
+          placeholder="What's on your mind?"></textarea>
+        @if(postForm.get('content')?.invalid && postForm.get('content')?.touched) {
+        <small class="error-text">Content is required (min 10 chars).</small>
+        }
+      </div>
+
+      <div class="form-group">
+        <label for="tag">Post Category</label>
+        <select id="tag" formControlName="postcategory" class="form-control">
+          <option value="" disabled>Select a post category</option>
+         <option value="Help" >
+          Help
+         </option>
+         <option value="Information" >
+          Information
+         </option>
+          <option value="Query" >
+            Query
+         </option>
+          <option value="Ad" >
+            Ad
+         </option>
+        </select>
+        @if(postForm.get('postcategory')?.invalid && postForm.get('postcategory')?.touched) {
+        <small class="error-text">Please select a category.</small>
+        }
+      </div>
+
+      <div class="form-group">
+        <label for="image">Image (Optional)</label>
+        <input type="file" id="image" (change)="onFileSelected($event)" accept="image/*" class="form-control-file">
+        @if(imagePreview) {
+        <div class="image-preview">
+          <img [src]="imagePreview" alt="Preview">
+        </div>
+        }
+      </div>
+
+      <div class="form-actions">
+        <button type="button" class="btn-secondary" (click)="togglePostForm()">Cancel</button>
+        <button type="submit" class="btn-primary" [disabled]="postForm.invalid || isLoading">
+          {{ isLoading ? 'Posting...' : 'Post' }}
+        </button>
+      </div>
+
+      @if(successMessage) {
+      <div class="success-message">{{ successMessage }}</div>
+      }
+    </form>
+  </div>
+</div>
+}
 @if(toggleNewPost){
 <div class="translucent-background">
   <div class="card floatingcard create-post-card">
@@ -72,6 +160,9 @@
 </div>
 }
 
+
+
+
 <div class="feed-page">
 
   <div class="feed-left">
@@ -112,7 +203,31 @@
                     <span class="post-date">{{ post.created | date:'mediumDate' }}</span>
                   </div>
                 </div>
-                <button class="view-profile-btn" (click)="viewUserProfile(post.author.userId)">View Profile</button>
+                @if(post.author.userId!=myuserId){
+                     <button class="view-profile-btn" (click)="viewUserProfile(post.author.userId)">View Profile</button>
+                }@else{
+                  <div style="display:flex; justify-content: space-around;">
+
+     
+                      <button class="action-btn" (click)="editPost(post)">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+                          <path d="M12 20h9"/>
+                          <path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4 12.5-12.5z"/>
+                        </svg>
+                      </button>
+
+                    <button class="action-btn-neg" (click)="deletePostForm(post.postId)">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+                        <polyline points="3 6 5 6 21 6"/>
+                        <path d="M19 6l-1 14H6L5 6"/>
+                        <path d="M10 11v6"/>
+                        <path d="M14 11v6"/>
+                        <path d="M9 6V4h6v2"/>
+                      </svg>
+                    </button>
+             </div>
+                }
+               
               </div>
 
               <h3 class="post-title">{{ post.title }}</h3>

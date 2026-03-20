@@ -62,5 +62,34 @@ public class PostsController(IPostService postService) : ControllerBase
         }
     }
 
+    [HttpDelete("{postId}/delete")]
+    public async Task<IActionResult> DeletePost(Guid postId)
+    {
+        await postService.DeletePost(postId);
+        return NoContent();
+    }
+    
+    [HttpPost("{postId}/update")]
+    public async Task<IActionResult> updatePost([FromForm] UpdatePostDto updatePostDto,[FromRoute] string postId)
+    {
+        var userIdString = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        if (!Guid.TryParse(userIdString, out var userId))
+        {
+            return Unauthorized();
+        }
+
+        Guid.TryParse(postId, out var PostId);
+
+        try
+        {
+            var createdPost = await postService.UpdatePostAsync(PostId, updatePostDto, userId);
+            return CreatedAtAction(nameof(GetPosts), new { id = createdPost.PostId }, createdPost);
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(ex.Message);
+        }
+    }
+
   
 }

@@ -449,11 +449,35 @@
   color: #6b7280;
   transition: background 0.15s, color 0.15s;
 }
+.action-btn-neg{
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 10px;
+  border: none;
+  background: transparent;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 13px;
+  color: #6b7280;
+  transition: background 0.15s, color 0.15s;
+  
+}
+
+.action-btn-neg:hover{
+  background-color: var(--negative-color);
+  color:white;
+}
 
 .action-btn:hover {
   background: #f3f4f6;
   color: #111827;
 }
+.action-btn-neg svg {
+  width: 16px;
+  height: 16px;
+}
+
 
 .action-btn svg {
   width: 16px;
