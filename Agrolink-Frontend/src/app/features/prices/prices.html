@@ -1,0 +1,63 @@
+@if(isLoading){
+  <app-spinner></app-spinner>
+}
+<div class="crops-page">
+
+  <div class="card crop-price-card">
+
+    <div class="card-header">
+
+      <div>
+        <h2 class="card-title">Latest Crop Prices</h2>
+        <span class="muted-text">last updated on : 20/12/2025</span>
+      </div>
+
+      <div class="search-box">
+        <input type="text"  class="search-input"
+            placeholder="Search crops / markets..."
+            [formControl]="SearchControl" />
+        <button class="btn btn-primary" (click)="searchCrop()">Search</button>
+      </div>
+
+    </div>
+
+    <div class="table-wrapper">
+
+      <table class="crop-table">
+
+        <thead>
+          
+          <tr>
+            <th>Commodity</th>
+            <th>Unit (Per)</th>
+            <th>Minimum (Nrs/रु)</th>
+            <th>Maximum (Nrs/रु)</th>
+            <th>Average (Nrs/रु)</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          @for(crops of priceList;track crops){
+            <tr>
+              <td>{{crops.commodity}}</td>
+              <td>{{crops.unit}}</td>
+              <td>{{crops.minimum}}</td>
+              <td>{{crops.maximum}}</td>
+              <td>{{crops.average}}</td>
+          </tr>
+          }
+         
+
+         
+
+        </tbody>
+
+      </table>
+
+    </div>
+
+  </div>
+  </div>
+
+
+

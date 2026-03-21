@@ -13,6 +13,7 @@ import { DefaultLayout } from './layouts/default-layout/default-layout';
 import { EmptyLayout } from './layouts/empty-layout/empty-layout';
 import { combineLatest } from 'rxjs';
 import { Component } from '@angular/core';
+import { Prices } from './features/prices/prices';
 
 export const routes: Routes = [
     { path: "feed", component:DefaultLayout,children: [{path:'',component:Feed}] , canActivate: [routeGuardGuard] },
@@ -22,7 +23,9 @@ export const routes: Routes = [
     { path: "userProfile", component:DefaultLayout,children: [{path:'',component:UserProfile}], canActivate: [routeGuardGuard] },
      { path: "userProfile/:id", component:DefaultLayout,children: [{path:'',component:UserProfile}], canActivate: [routeGuardGuard] },
     { path: "crop",  component:DefaultLayout,children: [{path:'',component:Crop}], canActivate: [routeGuardGuard] },
+     { path: "prices",  component:DefaultLayout,children: [{path:'',component:Prices}], canActivate: [routeGuardGuard] },
       
+   
     { path: "buildProfile/:id", component:Profile },
      
   
