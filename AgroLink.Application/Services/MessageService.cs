@@ -1,8 +1,11 @@
-﻿using AgroLink.Application.DTOs;
+﻿
+
+using AgroLink.Application.DTOs;
 using AgroLink.Domain.Entities;
 using AgroLink.Infrastructure.Data;
 using AgroLink.Infrastructure.Repositories;
 using Microsoft.EntityFrameworkCore;
+using UserConversationDto = AgroLink.Infrastructure.repoDTO.UserConversationDto;
 
 namespace AgroLink.Application.Services;
 
@@ -10,7 +13,7 @@ public class MessageService(MessagesRepo repo,AgroLinkDbContext _dbContext)
 {
     public async Task<List<UserConversationDto>> GetUserConversations(Guid userId)
     {
-        var conversations = await _dbContext.Conversations
+       /* var conversations = await _dbContext.Conversations
             .Where(c => c.User1Id == userId || c.User2Id == userId)
             .Select(c => new UserConversationDto {
                 Id = c.Id,
@@ -23,7 +26,8 @@ public class MessageService(MessagesRepo repo,AgroLinkDbContext _dbContext)
                     SenderId = m.SenderId,
                     Sent = m.Sent
                 }).ToList()
-            }).ToListAsync();
+            }).ToListAsync();*/
+       var conversations = await repo.GetUserConversations(userId);
 
         return conversations;
     }

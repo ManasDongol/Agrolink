@@ -1,16 +1,63 @@
+<div class="card">
+<h2>Messages</h2>
+
 <div class="messages-card">
   <!-- Left: recent conversations -->
   <div class="recent-chats">
-    <div style="display: flex; border-bottom: 1.5px solid #e5e5e5;">
-      <h3>Chats</h3>
+   <div style="display: flex; border-bottom: 1.5px solid #e5e5e5;padding:9px; position: relative;">
+  
+  <input 
+    type="text"
+    style="margin-right: 5px;flex: 1;"
+    [(ngModel)]="searchQuery"
+    (input)="onSearch()"
+  />
+  
+  <button class="btn btn-primary">search</button>
+
+  <!-- 🔥 SEARCH OVERLAY -->
+  <div class="search-results" *ngIf="isSearching">
+
+    <!-- Chats -->
+    <div *ngIf="filteredConversations.length > 0">
+      <p class="section-title">Chats</p>
+
+      <div 
+        class="chat-card"
+        *ngFor="let conv of filteredConversations"
+        (click)="selectConversation(conv)"
+      >
+        <img class="profilepic" [src]="getUserprofile(conv.partnerProfile)" />
+        <strong>{{ conv.partnerName }}</strong>
+      </div>
     </div>
+
+    <!-- People -->
+    <div *ngIf="filteredConnections.length > 0">
+      <p class="section-title">People</p>
+
+      <div class="connection-card" *ngFor="let conn of filteredConnections">
+        <img [src]="apiurl + conn.profileImage" class="profile-img" />
+        <span>{{ conn.name }}</span>
+        <button (click)="startChatFromSearch(conn)">Chat</button>
+      </div>
+    </div>
+
+    <!-- Empty -->
+    <div *ngIf="filteredConnections.length === 0 && filteredConversations.length === 0">
+      <p style="padding:10px; color:#888;">No results found</p>
+    </div>
+
+  </div>
+</div>
 
     <div class="chat-list">
 
       @if (HasConversation) {
         @for (conv of recentConversations; track conv.id) {
           <div class="chat-card" (click)="selectConversation(conv)">
-            <strong>{{ conv.id }}</strong>
+           <img class="profilepic" [src]="getUserprofile(conv.partnerProfile)"/>
+            <strong>{{ conv.partnerName }}</strong>
           </div>
         }
       } @else {
@@ -44,7 +91,12 @@
   <!-- Right: opened messages -->
   <div class="opened-chat">
     <div style="display: flex; border-bottom: 1.5px solid #e5e5e5;">
-      <h3>Chat with Friend</h3>
+      @if(OpenedConversation){
+          <h3> {{OpenedConversationUsername}}</h3>
+      }@else {
+           <h3>Chat with Friend</h3>
+      }
+     
     </div>
 
     @if (!OpenedConversation) {
@@ -70,4 +122,6 @@
       <button (click)="sendMessage()">Send</button>
     </div>
   </div>
+</div>
+
 </div>

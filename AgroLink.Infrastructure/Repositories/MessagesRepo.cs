@@ -1,16 +1,33 @@
 ﻿using AgroLink.Domain.Entities;
 using AgroLink.Infrastructure.Data;
+using AgroLink.Infrastructure.repoDTO;
 using Microsoft.EntityFrameworkCore;
 
 namespace AgroLink.Infrastructure.Repositories;
 
 public class MessagesRepo(AgroLinkDbContext _dbContext)
 {
-    public async Task<List<Conversation>> GetUserConversations(Guid userId)
+    public async Task<List<UserConversationDto>> GetUserConversations(Guid currentUserId)
     {
         return await _dbContext.Conversations
-            .Where(c => c.User1Id == userId || c.User2Id == userId)
-            .Include(c => c.Messages.OrderByDescending(m => m.Sent).Take(1)) // last message
+            .Where(c => c.User1Id == currentUserId || c.User2Id == currentUserId)
+            .Select(c => new UserConversationDto
+            {
+                Id = c.Id,
+                // Determine the "other user"
+                PartnerId = c.User1Id == currentUserId ? c.User2Id : c.User1Id,
+                PartnerName = c.User1Id == currentUserId ? c.User2.Username : c.User1.Username,
+                PartnerProfile = c.User1Id == currentUserId ? c.User2.Profile.ProfilePicture : c.User1.Profile.ProfilePicture,
+                LastMessage = c.Messages
+                    .OrderByDescending(m => m.Sent)
+                    .Select(m => new MessageDto
+                    {
+                        MessageId = m.MessageId,
+                        Content = m.Content,
+                        Sent = m.Sent
+                    })
+                    .FirstOrDefault()
+            })
             .ToListAsync();
     }
 

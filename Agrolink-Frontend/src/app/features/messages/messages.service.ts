@@ -13,8 +13,16 @@ export interface MessageDto {
 
 export interface Conversation {
   id: string;
-  user1Id: string;
-  user2Id: string;
+  partnerId: string;
+  partnerName: string;
+  partnerProfile: string;
+  lastMessage?: MessageDto;
+}
+
+export interface MessageDto {
+  messageId: string;
+  content: string;
+  sent: string; // ISO string from backend
 }
 
 export interface Connection {
