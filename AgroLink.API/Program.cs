@@ -92,6 +92,9 @@ builder.Services.AddScoped<MessageService>();
 builder.Services.AddScoped<PDFreportDto>();
 builder.Services.AddScoped<PDFservice>();
 
+builder.Services.AddScoped<CommentService>();
+builder.Services.AddScoped<CommentRepo>();
+
 
 
 builder.Services.AddStackExchangeRedisCache(options =>

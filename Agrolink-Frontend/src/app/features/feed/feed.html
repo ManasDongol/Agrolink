@@ -273,13 +273,67 @@
 
               
               <div class="commentsection">
-                <div class="comments-container" style="border: 2px solid red; padding: 8px;">
-                  Comments box sdf!
-                  <div *ngFor="let comment of post.comments">
-                    <p><strong>{{comment.author.username}}:</strong> {{comment.content}}</p>
-                  </div>
+                <div class="comments-container">
+           
+                <div class="comment" *ngFor="let comment of post.comments">
+  
+  <!-- Avatar -->
+  <img 
+    class="comment-avatar"
+    [src]="getProfileImage(comment.author?.profilePictureUrl)" 
+   
+  />
+
+  <!-- Content -->
+  <div class="comment-body">
+
+    <!-- Top row -->
+    <div class="comment-header">
+      <span class="comment-username">
+        {{ comment.author?.username }}
+      </span>
+
+      <!-- Delete button (only if author) -->
+      <button 
+        *ngIf="comment.author?.userId === myuserId"
+        class="comment-delete-btn"
+        (click)="deleteComment(comment)">
+        ⋮
+      </button>
+    </div>
+
+    <!-- Text -->
+    <div class="comment-content">
+      {{ comment.content }}
+    </div>
+
+    <!-- Bottom row -->
+    <div class="comment-footer">
+      <span class="comment-date">
+        {{ comment.created | date:'short' }}
+      </span>
+
+      <button 
+        class="comment-reply-btn"
+        (click)="replyTo(comment)">
+        Reply
+      </button>
+    </div>
+
+  </div>
+</div>
+
+
                 </div>
+             
               </div>
+                 <div style="display: flex;padding: 10px;">
+                  <input class="primary-text" type="text"  #commentInput>
+               <button 
+                    class="btn-primary" 
+                    (click)="Addcomments(post, commentInput.value)">
+                    post
+                  </button>      </div>
                }
                 
               </div>

@@ -3,10 +3,12 @@ import { CommonModule } from '@angular/common';
 import { RouterLink, Router } from "@angular/router";
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { FeedService } from './feed.service';
-import { Post } from './feed.models';
+import { Post, CommentCreateDto, Comment } from './feed.models';
 import { environment } from '../../../environments/environments';
 import { HttpErrorResponse } from '@angular/common/http';
 import { Auth } from '../../core/Services/Auth/auth';
+import {CommentService} from './Comments/comment.service';
+
 @Component({
   selector: 'app-feed',
   standalone: true,
@@ -18,6 +20,7 @@ import { Auth } from '../../core/Services/Auth/auth';
 export class Feed implements OnInit {
 
   posts: Post[] = [];
+  
  currentView: 'all' | 'my' | 'bookmarks' = 'all';
   currentPage: number = 1;
   pageSize: number = 10;
@@ -36,6 +39,8 @@ export class Feed implements OnInit {
   myuserId:string="";
   currentpostId: string ="";
 
+  newCommentContent: string = '';
+
   commentsForm: { [postId: string]: FormGroup } = {};
 
   apiurl: string = environment.apiUrl;
@@ -44,7 +49,8 @@ export class Feed implements OnInit {
     private feedService: FeedService,
     private fb: FormBuilder,
     private router: Router,
-    private auth: Auth
+    private auth: Auth,
+    private commentService: CommentService
   ) {
     this.postForm = this.fb.group({
       title: ['', [Validators.required, Validators.minLength(5)]],
@@ -227,7 +233,38 @@ this.currentpostId=postId;
 
   openComments(post: Post) {
     post.toggleComments();
+      if (post.commentsOpen && post.comments.length === 0) {
+    this.commentService.getComments(post.postId).subscribe((res) => {
+      post.comments = res.map(c => new Comment(c as Partial<Comment>));
+    });
   }
+  }
+
+
+  getProfileImage(path?: string): string {
+  if (!path) return 'assets/default-avatar.png';
+
+  return this.apiurl + path;
+}
+
+Addcomments(post: Post, content: string) {
+  if (!content.trim()) return;
+
+  const dto: CommentCreateDto = {
+    postId: post.postId,
+    content: content
+  };
+
+  this.commentService.addComment(dto).subscribe((res) => {
+    const newComment = new Comment(res as Partial<Comment>); //  map to class
+
+    post.comments.push(newComment);
+    post.commentsCount++;
+
+    this.newCommentContent = ''; // optional clear
+  });
+}
+
 toggleLike(post: Post) {
 
   post.toggleLike();
@@ -258,5 +295,13 @@ toggleLike(post: Post) {
         post.toggleBookmark();
       }
     });
+  }
+
+  replyTo(comment : Comment){
+
+  }
+
+  deleteComment(comment: Comment){
+
   }
 }

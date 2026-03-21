@@ -64,3 +64,7 @@ export interface PostResponse {
   page: number;
   pageSize: number;
 }
+export interface CommentCreateDto{
+  postId: string,
+  content:string
+}

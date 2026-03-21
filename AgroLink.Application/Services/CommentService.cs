@@ -1,7 +1,7 @@
-﻿using AgroLink.Domain.Entities;
+﻿using AgroLink.Application.DTOs.Posts;
+using AgroLink.Domain.Entities;
 using AgroLink.Infrastructure.Data;
-
-namespace AgroLink.Application.Services;
+using Microsoft.EntityFrameworkCore;
 
 public class CommentService
 {
@@ -11,9 +11,15 @@ public class CommentService
     {
         _context = context;
     }
-    
-    public async Task AddComment(Guid postId, Guid userId, string content, Guid? parentCommentId = null)
+
+    public async Task<CommentReturnDto> AddComment(Guid postId, Guid userId, string content, Guid? parentCommentId = null)
     {
+        var user = await _context.Users
+            .Include(u => u.Profile) // ✅ IMPORTANT
+            .FirstOrDefaultAsync(u => u.UserId == userId);
+
+        if (user == null)
+            throw new Exception("User not found");
         var comment = new Comment
         {
             CommentId = Guid.NewGuid(),
@@ -25,7 +31,59 @@ public class CommentService
 
         _context.Comments.Add(comment);
         await _context.SaveChangesAsync();
+
+
+        var newComment = new CommentReturnDto
+        {
+            CommentId = comment.CommentId,
+            PostId = comment.PostId,
+            Content = comment.Content,
+            ParentCommentId = parentCommentId,
+            Author =new CommentAuthorDto 
+            {
+                UserId = user.UserId,
+                Username = user.Username,
+                ProfilePictureUrl = user.Profile.ProfilePicture
+            },
+            Created = comment.CreatedAt,
+
+        };
+        return newComment;
     }
 
-   
+    // Get all comments for a post including replies
+    public async Task<List<CommentReturnDto>> GetCommentsByPost(Guid postId)
+    {
+        return await _context.Comments
+            .Where(c => c.PostId == postId)
+            .Include(c => c.User)
+            .ThenInclude(u => u.Profile)
+            .OrderByDescending(c => c.CreatedAt)
+            .Select(c => new CommentReturnDto
+            {
+                CommentId = c.CommentId,
+                PostId = c.PostId,
+                Content = c.Content,
+                ParentCommentId = c.ParentCommentId,
+                Created = c.CreatedAt,
+                Author = new CommentAuthorDto
+                {
+                    UserId = c.User.UserId,
+                    Username = c.User.Username,
+                    ProfilePictureUrl = c.User.Profile.ProfilePicture
+                }
+            })
+            .ToListAsync();
+    }
+
+    // Delete a comment
+    public async Task DeleteComment(Guid commentId)
+    {
+        var comment = await _context.Comments.FindAsync(commentId);
+        if (comment != null)
+        {
+            _context.Comments.Remove(comment);
+            await _context.SaveChangesAsync();
+        }
+    }
 }

@@ -46,6 +46,28 @@ body,html{
 
 }
 
+.primary-text{
+
+  padding-left:5px;
+  margin-right:5px;
+  max-width: 680px;
+  flex:1;
+
+}
+
+input:focus,
+textarea:focus,
+select:focus {
+  outline-color: var(--lightgreen-color); /* removes default blue outline */
+  border: 2px solid #4CAF50;
+   max-width: 680px;
+
+ 
+}
+.primary-text:focus{
+  border-style:solid var(--primary-color);
+}
+
 h2{
    font-family: 'Outfit-Medium'
 }
