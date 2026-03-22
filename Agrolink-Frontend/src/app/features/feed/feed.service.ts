@@ -45,4 +45,6 @@ export class FeedService {
     deletePost(postId:string){
         return this.http.delete<Post>(`${this.baseUrl}/${postId}/delete`);
     }
+
+    
 }

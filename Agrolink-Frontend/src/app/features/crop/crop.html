@@ -85,9 +85,28 @@
     <div class="recommend-footer">
 
       <div class="recommend-result">
-        <h4>Recommendation :</h4>
-        <p><strong>Crop :</strong> {{ crop }}</p>
-        <p><strong>Fertilizer :</strong> {{ fertilizer }}</p>
+        <div *ngIf="results?.length > 0"class="results-container">
+
+  <div *ngFor="let item of results || []" class="crop-card">
+
+    <h3>{{ item.crop }}</h3>
+    <p>Probability: {{ item.crop_prob }}</p>
+    <p>Yield: {{ item.yield_ }}</p>
+
+    <div class="fertilizer-section">
+      <h4>Recommended Fertilizers:</h4>
+
+      <div *ngFor="let fert of item.fertilizers" class="fert-card">
+        <p><strong>{{ fert.fertilizer }}</strong></p>
+        <p>Probability: {{ fert.fert_prob }}</p>
+        <p>Score: {{ fert.score }}</p>
+      </div>
+
+    </div>
+
+  </div>
+
+</div>
       </div>
 
       <div>
@@ -103,7 +122,18 @@
 
     </div>
 
+
+
+
+
+
   </form>
+
+  <form class="card">
+     <h2 class="card-title">Disease recommendation system</h2>
+  </form>
+  <input type="file"/>
+  <button class="btn btn-primary">submit</button>
 
 
 

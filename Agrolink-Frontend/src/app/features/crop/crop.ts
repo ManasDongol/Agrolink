@@ -8,6 +8,20 @@ import { PDFReportDto } from '../../core/Dtos/PDFReportDto';
 
 import { Spinner } from '../../shared/spinner/spinner';
 
+
+interface Fertilizer {
+  fertilizer: string;
+  fert_prob: number;
+  score: number;
+}
+
+interface CropResult {
+  crop: string;
+  crop_prob: number;
+  yield_: number;
+  fertilizers: Fertilizer[];
+}
+
 @Component({
   selector: 'app-crop',
   standalone: true,
@@ -24,7 +38,7 @@ export class Crop implements OnInit {
   RecomendationForm!: FormGroup;
   SearchControl !: FormControl;
   loading:Boolean = false;
-  results: any[] = [];
+ results: CropResult[] = [];
 
   isLoading : boolean = false;
 
@@ -84,7 +98,7 @@ export class Crop implements OnInit {
       Fertilizer : this.fertilizer
     };
 
-    console.log("lolll" + this.crop + " "+this.fertilizer+" "+form.Nitrogen);
+  
     this.cropService.report(dto).subscribe({
       next:(res:Blob)=>{
         const blob = new Blob([res], { type: 'application/pdf' });
@@ -147,18 +161,24 @@ export class Crop implements OnInit {
       rainfall: parseFloat(form.Rainfall)
     };
 
-    this.cropService.Predict(dto).subscribe({
-      next: (res) => {
-        
-        this.crop = res.crop;
-        this.fertilizer = res.fertilizer;
-        this.newRecommendationGenerated =true;
-        console.log(this.crop);// adjust to match API response
-      },
-      error: (err) => {
-        console.error('Prediction failed:', err);
-      }
-    });
+   this.cropService.Predict(dto).subscribe({
+  next: (res) => {
+    
+    console.log(res); //  ADD THIS
+
+    this.results = res?.results || [];
+
+    this.newRecommendationGenerated = true;
+
+    if (this.results.length > 0) {
+      this.crop = this.results[0].crop;
+      this.fertilizer = this.results[0].fertilizers?.[0]?.fertilizer || '';
+    }
+  },
+  error: (err) => {
+    console.error('Prediction failed:', err);
+  }
+});
 
   }
 

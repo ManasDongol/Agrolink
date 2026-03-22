@@ -1,8 +1,8 @@
 .profile-container {
-  background: #173c1f;
+  
   min-height: 100vh;
-  padding: 40px;
-  padding-top: 90px; /* Account for fixed navbar */
+  padding-bottom: 30px;
+  /* Account for fixed navbar */
 }
 
 .loading, .error-message {

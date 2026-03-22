@@ -5,6 +5,22 @@ import { Observable } from 'rxjs';
 import { PredictionRequestDto } from '../../Dtos/PredictionRequestDto';
 import { PDFReportDto } from '../../Dtos/PDFReportDto';
 
+interface Fertilizer {
+  fertilizer: string;
+  fert_prob: number;
+  score: number;
+}
+
+interface CropResult {
+  crop: string;
+  crop_prob: number;
+  yield_: number;
+  fertilizers: Fertilizer[];
+}
+
+interface PredictionResponse {
+  results: CropResult[];
+}
 @Injectable({
   providedIn: 'root',
 })
@@ -17,9 +33,9 @@ export class CropService{
   private reportURL = "http://localhost:5131/api/Crops/report";
     
   
-  Predict(dto: PredictionRequestDto): Observable<any>{
-    return this.http.post(`${this.baseUrl}`, dto);
-  }
+Predict(dto: PredictionRequestDto): Observable<PredictionResponse>{
+  return this.http.post<PredictionResponse>(`${this.baseUrl}`, dto);
+}
   Prices():Observable<any>{
     return this.http.get(`${this.priceUrl}`);
   }

@@ -1,27 +1,46 @@
 from fastapi import FastAPI
 from pydantic import BaseModel
 from typing import List
-from predict import predict_crop, predict_fertilizer
+from predict import predict
 
 app = FastAPI()
 
 
+# --------------------
+# Request schema
+# --------------------
 class CropRequest(BaseModel):
-    features: List[float]
+    features: List[float]  # [N,P,K,temp,humidity,ph,rainfall]
 
 
-class PredictionResponse(BaseModel):
-    crop: int
-    fertilizer: int
+# --------------------
+# Response schema
+# --------------------
+class Fertilizer(BaseModel):
+    fertilizer: str
+    fert_prob: float
+    score: float
 
 
-@app.post("/predict", response_model=PredictionResponse)
-def predict(data: CropRequest):
+class CropResult(BaseModel):
+    crop: str
+    crop_prob: float
+    yield_: float
+    fertilizers: List[Fertilizer]
 
-    crop_id = predict_crop(data.features)
-    fert_id = predict_fertilizer(data.features, crop_id)
+
+# --------------------
+# Endpoint
+# --------------------
+@app.post("/predict")
+def get_prediction(data: CropRequest):
+
+    results = predict(data.features)
+
+    # rename "yield" -> "yield_" (because yield is reserved in python)
+    for r in results:
+        r["yield_"] = r.pop("yield")
 
     return {
-        "crop": crop_id,
-        "fertilizer": fert_id
+        "results": results
     }

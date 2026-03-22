@@ -23,7 +23,7 @@
 /* ================= Page Wrapper ================= */
 
 .crops-page {
-  padding: var(--space-lg);
+ 
   background: var(--main-color);
   min-height: 100vh;
 }

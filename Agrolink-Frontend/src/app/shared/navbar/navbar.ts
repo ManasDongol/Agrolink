@@ -21,6 +21,18 @@ export class Navbar implements OnInit {
     private router: Router
   ) {}
 
+   
+menuOpen = false;
+ 
+toggleMenu() {
+  this.menuOpen = !this.menuOpen;
+}
+ 
+closeMenu() {
+  this.menuOpen = false;
+}
+ 
+
   ngOnInit(): void {
     
     this.authSubscription = this.auth.isAuthenticated$.subscribe(isAuth => {

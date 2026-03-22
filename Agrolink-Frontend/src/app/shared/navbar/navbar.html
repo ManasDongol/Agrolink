@@ -1,56 +1,42 @@
-
 <div class="navbar-card">
+  <div class="navbar-inner">
     <div class="logo">Agrolink</div>
-    <div class="navbar-nav">
-        <ul id="navbar-list">
-        
 
-           @if(isAuthenticated){
-                 <li  routerLinkActive="activePage">
-                <a routerLink="/feed"
-               >Feed</a>
-            </li>
-            <li routerLinkActive="activePage">
-                <a routerLink="/network">My Network</a>
-            </li>
-            <li routerLinkActive="activePage">
-                <a routerLink="/messages">Messages</a>
-            </li>
-              <li routerLinkActive="activePage">
-                <a routerLink="/prices">Prices</a>
-            </li>
-             <li routerLinkActive="activePage">
-                <a routerLink="/crop">Crop</a>
-            </li>
-            
-           }
-       
-           
-        </ul>
-        <div>
-          @if(!isAuthenticated){
+    <!-- Hamburger -->
+    <button class="hamburger" (click)="toggleMenu()" [class.open]="menuOpen" aria-label="Toggle menu">
+      <span></span>
+      <span></span>
+      <span></span>
+    </button>
 
-         
-            <ng-container >
-                <button class="loginbutton" type="button">
-                    <a style="color:#66D136;" routerLink="/login">log in</a>
-                </button>
-                <button class="signupbutton" type="button">
-                    <a routerLink="/signup">create your account</a>
-                </button>
-            </ng-container>
-        } @else {
-
-      
-            <ng-container >
-                <button class="loginbutton" type="button">
-                    <a style="color:#66D136;" [routerLink]="['/userProfile',this.UserId]">Profile</a>
-                </button>
-                <button class="signupbutton" type="button" (click)="logout()">
-                    Logout
-                </button>
-            </ng-container>
+    <div class="navbar-nav" [class.open]="menuOpen">
+      <ul id="navbar-list">
+        @if(isAuthenticated){
+          <li routerLinkActive="activePage"><a routerLink="/feed" (click)="closeMenu()">Feed</a></li>
+          <li routerLinkActive="activePage"><a routerLink="/network" (click)="closeMenu()">My Network</a></li>
+          <li routerLinkActive="activePage"><a routerLink="/messages" (click)="closeMenu()">Messages</a></li>
+          <li routerLinkActive="activePage"><a routerLink="/prices" (click)="closeMenu()">Prices</a></li>
+          <li routerLinkActive="activePage"><a routerLink="/crop" (click)="closeMenu()">Ai</a></li>
         }
-        </div>
+      </ul>
+
+      <div class="auth-buttons">
+        @if(!isAuthenticated){
+          <button class="loginbutton" type="button">
+            <a style="color:#66D136;" routerLink="/login" (click)="closeMenu()">Log in</a>
+          </button>
+          <button class="signupbutton" type="button">
+            <a routerLink="/signup" (click)="closeMenu()">Create account</a>
+          </button>
+        } @else {
+          <button class="loginbutton" type="button">
+            <a style="color:#66D136;" [routerLink]="['/userProfile', this.UserId]" (click)="closeMenu()">Profile</a>
+          </button>
+          <button class="signupbutton" type="button" (click)="logout(); closeMenu()">
+            Logout
+          </button>
+        }
+      </div>
     </div>
+  </div>
 </div>

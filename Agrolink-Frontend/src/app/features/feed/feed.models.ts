@@ -1,3 +1,5 @@
+
+import { ReturnComment } from "./Comments/comment.models";
 export class Author {
   userId!: string;
   username!: string;
@@ -8,12 +10,19 @@ export class Author {
     Object.assign(this, init);
   }
 }
-
 export class Comment {
   commentId!: string;
-  author!: Author;
+  postId!: string;
   content!: string;
+  parentCommentId?: string | null;
   created!: string;
+
+  author!: {
+    userId: string;
+    username: string;
+    profilePictureUrl?: string;
+  };
+
   showReplies: boolean = false;
   replies: Comment[] = [];
 
@@ -36,13 +45,15 @@ export class Post {
   likesCount: number = 0;
   commentsCount: number = 0;
   isBookmarked: boolean = false;
-  comments: Comment[] = [];
+  
   commentsOpen: boolean = false;
 
-  constructor(init?: Partial<Post>) {
-    Object.assign(this, init);
-    this.comments = init?.comments?.map(c => new Comment(c)) || [];
-  }
+ comments: Comment[] = [];
+
+constructor(init?: Partial<Post>) {
+  Object.assign(this, init);
+  this.comments = init?.comments?.map(c => new Comment(c)) || [];
+}
 
   toggleComments() {
     this.commentsOpen = !this.commentsOpen;
