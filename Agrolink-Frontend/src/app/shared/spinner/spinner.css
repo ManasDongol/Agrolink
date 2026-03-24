@@ -1,14 +1,12 @@
 
 .spinner-container {
+    position: fixed;   /* ← was absolute, now sticks to viewport */
+    inset: 0;          /* shorthand for top/right/bottom/left: 0 */
     display: flex;
     justify-content: center;
     align-items: center;
-    height: 100vh;
-    width:100vw; 
-    z-index:  9999;
-    background: rgb(0, 0, 0,0.5);
-
-    position: absolute;
+    z-index: 9999;
+    background: rgba(0, 0, 0, 0.5);
 }
 .spinner {
     border: 4px solid #f3f3f3;

@@ -9,29 +9,35 @@
     <div class="divider"></div>
 
     <form [formGroup]="loginForm" class="login-form">
+    <div class="field-group">
+
+   
       <label>Username:</label>
       <input type="text" formControlName="username" placeholder="AgroLinkUser....." />
-      
-      @if(this.loginForm.controls['username']?.touched && this.loginForm.controls['username']?.errors?.['required']){
-           <p class="error"> username is required</p>
-      }
-      
-     @if(this.loginForm.controls['username']?.touched && this.loginForm.controls['username']?.errors?.['minlength']){
-          <p class="error">username must be at least 8 characters
-      </p>
-    }
+      <p class="error">
+        {{
+            this.loginForm.controls['username']?.touched && this.loginForm.controls['username']?.errors?.['required']
+            ?"username is required"
+            :this.loginForm.controls['username']?.touched && this.loginForm.controls['username']?.errors?.['minlength']
+            ?"username must be 8 characters long":""
+          
+        }}
+    
+     </div>
+       <div class="field-group">
       <label>Password :</label>
       <input type="password" formControlName="password" placeholder="agrolink@123....." />
       
-      @if(this.loginForm.controls['password']?.touched && this.loginForm.controls['password']?.errors?.['required']){
-           <p class="error"> Password is required</p>
-      }
-      
-     @if(this.loginForm.controls['password']?.touched && this.loginForm.controls['password']?.errors?.['minlength']){
-          <p class="error">Password must be at least 8 characters
-      </p>
-     }
-
+     <p class="error">
+  {{ 
+    loginForm.controls['password']?.touched && loginForm.controls['password']?.errors?.['required']
+      ? 'Password is required'
+      : loginForm.controls['password']?.touched && loginForm.controls['password']?.errors?.['minlength']
+        ? 'Password must be at least 8 characters'
+        : '' 
+  }}
+</p>
+    </div>
         
 
       <button class="login-btn" (click)="onlogin()" type="submit" [disabled]="loginForm.invalid">log in</button>

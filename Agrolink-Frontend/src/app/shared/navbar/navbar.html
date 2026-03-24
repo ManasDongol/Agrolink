@@ -1,6 +1,23 @@
 <div class="navbar-card">
   <div class="navbar-inner">
-    <div class="logo">Agrolink</div>
+    <div class="logo">
+      
+      <svg width="32" height="32" viewBox="0 0 680 680" xmlns="http://www.w3.org/2000/svg">
+  <g transform="translate(340,340)">
+    <ellipse cx="0" cy="-155" rx="52" ry="95" fill="#3ec73e"/>
+    <ellipse cx="0" cy="-155" rx="52" ry="95" fill="#3ec73e" transform="rotate(45)"/>
+    <ellipse cx="0" cy="-155" rx="52" ry="95" fill="#3ec73e" transform="rotate(90)"/>
+    <ellipse cx="0" cy="-155" rx="52" ry="95" fill="#3ec73e" transform="rotate(135)"/>
+    <ellipse cx="0" cy="-155" rx="52" ry="95" fill="#3ec73e" transform="rotate(180)"/>
+    <ellipse cx="0" cy="-155" rx="52" ry="95" fill="#3ec73e" transform="rotate(225)"/>
+    <ellipse cx="0" cy="-155" rx="52" ry="95" fill="#3ec73e" transform="rotate(270)"/>
+    <ellipse cx="0" cy="-155" rx="52" ry="95" fill="#3ec73e" transform="rotate(315)"/>
+    <circle cx="0" cy="0" r="72" fill="#FFD700"/>
+    <circle cx="0" cy="0" r="56" fill="#FFC000"/>
+  </g>
+</svg>
+  Agrolink
+</div>
 
     <!-- Hamburger -->
     <button class="hamburger" (click)="toggleMenu()" [class.open]="menuOpen" aria-label="Toggle menu">
@@ -13,7 +30,7 @@
       <ul id="navbar-list">
         @if(isAuthenticated){
           <li routerLinkActive="activePage"><a routerLink="/feed" (click)="closeMenu()">Feed</a></li>
-          <li routerLinkActive="activePage"><a routerLink="/network" (click)="closeMenu()">My Network</a></li>
+          <li routerLinkActive="activePage"><a routerLink="/network" (click)="closeMenu()">Network</a></li>
           <li routerLinkActive="activePage"><a routerLink="/messages" (click)="closeMenu()">Messages</a></li>
           <li routerLinkActive="activePage"><a routerLink="/prices" (click)="closeMenu()">Prices</a></li>
           <li routerLinkActive="activePage"><a routerLink="/crop" (click)="closeMenu()">Ai</a></li>

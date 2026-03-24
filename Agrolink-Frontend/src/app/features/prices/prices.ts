@@ -14,9 +14,9 @@ import { Spinner } from '../../shared/spinner/spinner';
 })
 export class Prices {
 
-
+  filteredList: WebscraperDataDto[] = [];
   priceList : WebscraperDataDto[] = [];
-
+  currenttime: Date = new Date();
   SearchControl !: FormControl;
   loading:Boolean = false;
   results: any[] = [];
@@ -29,44 +29,56 @@ export class Prices {
   ) {}
 
 
-  ngOnInit(){
-    this.isLoading = true;
+  // display this in the template
 
-    this.SearchControl = new FormControl('');
+ngOnInit() {
+  this.isLoading = true;
+  this.SearchControl = new FormControl('');
 
-      this.cropService.Prices().subscribe({
-      next:(res) =>{
-        this.priceList = res;
-        this.isLoading = false
-      },
-      error:(err)=>{
-        
-            this.isLoading = false
-      }
-    });
+  // load once
+  this.cropService.Prices().subscribe({
+    next: (res) => {
+      this.priceList = res;
+      this.filteredList = res;  // initially show all
+      this.isLoading = false;
+    },
+    error: () => { this.isLoading = false; }
+  });
+
+  // filter in memory on every keystroke
+  this.SearchControl.valueChanges.subscribe(query => {
+    if (!query || query.length < 2) {
+      this.filteredList = this.priceList;  // reset
+      return;
+    }
+    this.filteredList = this.priceList.filter(item =>
+      item.commodity?.toLowerCase().includes(query.toLowerCase())
+    );
+  });
+
 
 
   }
   
    searchCrop(): void {
-        this.isLoading = true;
-  const query = this.SearchControl.value;
+          this.isLoading = true;
+    const query = this.SearchControl.value;
 
-  if (!query || query.length < 2) return;
+    if (!query || query.length < 2) return;
 
-  this.loading = true;
+    this.loading = true;
 
-  this.cropService.search(query).subscribe({
-    next: (res) => {
-      this.priceList = res;
-      this.loading = false;
-          this.isLoading = false
-    },
-    error: () => {
-      this.loading = false;
-          this.isLoading = false
-    },
-  });
+    this.cropService.search(query).subscribe({
+      next: (res) => {
+        this.priceList = res;
+        this.loading = false;
+            this.isLoading = false
+      },
+      error: () => {
+        this.loading = false;
+            this.isLoading = false
+      },
+    });
 }
 
   

@@ -10,14 +10,9 @@
           <svg class="field-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
           </svg>
-          <input type="text" [(ngModel)]="searchUsername" (keyup.enter)="onSearch()" placeholder="Search by username">
+          <input type="text" [(ngModel)]="searchUsername" (keyup.enter)="onSearch()" placeholder="Search by username or role">
         </div>
-        <div class="search-field">
-          <svg class="field-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>
-          </svg>
-          <input type="text" [(ngModel)]="searchRole" (keyup.enter)="onSearch()" placeholder="Filter by role">
-        </div>
+      
         <button class="search-btn" (click)="onSearch()">
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
             <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>

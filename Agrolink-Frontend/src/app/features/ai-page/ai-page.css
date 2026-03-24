@@ -1,5 +1,6 @@
 /* ===== Layout ===== */
 .ai-layout {
+    margin-top: 60px;
   display: flex;
   height: calc(100vh - 64px); /* subtract navbar height */
   background:  var(--main-color);;

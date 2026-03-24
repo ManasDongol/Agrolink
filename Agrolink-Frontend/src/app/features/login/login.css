@@ -102,12 +102,8 @@ input::placeholder {
   background-size: cover;
   background-position: center;
 }
-.error {
-  color: #e53935;
-  font-size: 12px;
-  margin: 4px 0 0;
-  line-height: 1.4;
-  font-family: 'Outfit-medium';
+.error{
+  height: 20px;
 }
 
 a{

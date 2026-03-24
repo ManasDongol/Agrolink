@@ -4,34 +4,48 @@
     <h1 class="title">Create Account</h1>
     <div class="divider"></div>
 
-    <form [formGroup]="signupForm" class="signup-form">
+    <form [formGroup]="signupForm" class="signup-form" (ngSubmit)="register()">
+      
+      <!-- Username -->
       <label>Username:</label>
       <input type="text" placeholder="example....." formControlName="Username" />
+      <p class="error">
+        {{ getUsernameError() }}
+      </p>
 
+      <!-- Email -->
       <label>Email:</label>
-      <input type="email" placeholder="example@email.com" formControlName="Email"  />
+      <input type="email" placeholder="example@email.com" formControlName="Email" />
+      <p class="error">
+        {{ getEmailError() }}
+      </p>
 
+      <!-- Password -->
       <label>Password:</label>
       <input type="password" placeholder="********" formControlName="Password" />
+      <p class="error">
+        {{ getPasswordError() }}
+      </p>
 
+      <!-- Confirm Password -->
       <label>Confirm Password:</label>
-      <input type="password" placeholder="********" formControlName="SecondPassword"/>
+      <input type="password" placeholder="********" formControlName="SecondPassword" />
+      <p class="error">
+        {{ getConfirmPasswordError() }}
+      </p>
 
-      <input type="hidden" formControlName="UserType"/>
-      
-        <p *ngIf="Password && SecondPassword && Password !== SecondPassword" 
-   style="color: red; font-size: 10px;">
-  Passwords don't match!
-</p>
-      <button class="signup-btn" type="submit" (click)="register()">sign up</button>
+      <!-- Hidden UserType -->
+      <input type="hidden" formControlName="UserType" />
+
+      <button class="signup-btn" type="submit" [disabled]="signupForm.invalid">Sign Up</button>
     </form>
 
     <p class="login-text">
-      already have an account?
-      <span class="login-link"><a routerLink="/login">log in</a></span>
+      Already have an account?
+      <span class="login-link"><a routerLink="/login">Log in</a></span>
     </p>
   </div>
 
-
+  <!-- RIGHT -->
   <div class="signup-right"></div>
 </div>

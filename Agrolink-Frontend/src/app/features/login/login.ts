@@ -11,11 +11,12 @@ import { LoginRequestDto } from '../../core/Dtos/LoginRequestDto';
 import { RouterLink, Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { Spinner } from '../../shared/spinner/spinner';
+import { ToastService } from '../../shared/toast/toast.service';
 
 @Component({
   selector: 'app-login',
   standalone: true,
-  imports: [FormsModule, RouterLink, ReactiveFormsModule, CommonModule,Spinner],
+  imports: [FormsModule, RouterLink, ReactiveFormsModule, CommonModule, Spinner],
   templateUrl: './login.html',
   styleUrl: './login.css',
 })
@@ -27,7 +28,8 @@ export class Login implements OnInit {
   constructor(
     private fb: FormBuilder,
     private auth: Auth,
-    private router: Router
+    private router: Router,
+    private ToastService : ToastService
   ) {}
 
   ngOnInit(): void {
@@ -63,20 +65,23 @@ export class Login implements OnInit {
         this.auth.checkAuth().subscribe({
           next: user => {
             if (user.userType === 'Admin' || user.userType === 'SuperAdmin') {
+                this.ToastService.success('login successful!','welcome to agrolink!');
               this.router.navigate(['/admin']);
             } else {
+                this.ToastService.success('login successful!','welcome to agrolink!');
               this.router.navigate(['/feed']);
             }
           },
           error: () => {
             // Fallback to normal user feed if role cannot be determined
+          
             this.router.navigate(['/feed']);
           }
         });
       },
       error: err => {
          this.isLoading =false;
-        alert('Unable to login!');
+        this.ToastService.error('login failed!','password or username doesnt match!');
         this.clearTextfields();
         console.error(err);
       },

@@ -1,32 +1,41 @@
 @if(isLoading){
   <app-spinner></app-spinner>
 }
+
 <div class="crops-page">
+  <div class="prices-card">
 
-  <div class="card crop-price-card">
-
-    <div class="card-header">
-
+    <!-- Header -->
+    <div class="prices-header">
       <div>
-        <h2 class="card-title">Latest Crop Prices</h2>
-        <span class="muted-text">last updated on : 20/12/2025</span>
+        <h2 class="prices-title">Latest Crop Prices</h2>
+        <span class="prices-meta">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
+          </svg>
+          Last updated: {{currenttime}}
+        </span>
       </div>
 
-      <div class="search-box">
-        <input type="text"  class="search-input"
-            placeholder="Search crops / markets..."
-            [formControl]="SearchControl" />
-        <button class="btn btn-primary" (click)="searchCrop()">Search</button>
+      <div class="search-wrap">
+        <svg class="search-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+        </svg>
+        <input
+          type="text"
+          class="search-input"
+          placeholder="Search crops / markets..."
+          [formControl]="SearchControl"
+          (keyup.enter)="searchCrop()"
+        />
+       <!-- <button class="search-btn" (click)="searchCrop()">Search</button>-->
       </div>
-
     </div>
 
+    <!-- Table -->
     <div class="table-wrapper">
-
       <table class="crop-table">
-
         <thead>
-          
           <tr>
             <th>Commodity</th>
             <th>Unit (Per)</th>
@@ -35,29 +44,19 @@
             <th>Average (Nrs/रु)</th>
           </tr>
         </thead>
-
         <tbody>
-          @for(crops of priceList;track crops){
+          @for(crops of filteredList; track crops) {
             <tr>
-              <td>{{crops.commodity}}</td>
-              <td>{{crops.unit}}</td>
-              <td>{{crops.minimum}}</td>
-              <td>{{crops.maximum}}</td>
-              <td>{{crops.average}}</td>
-          </tr>
+              <td class="commodity-cell">{{ crops.commodity }}</td>
+              <td>{{ crops.unit }}</td>
+              <td>{{ crops.minimum }}</td>
+              <td>{{ crops.maximum }}</td>
+              <td class="avg-cell">{{ crops.average }}</td>
+            </tr>
           }
-         
-
-         
-
         </tbody>
-
       </table>
-
     </div>
 
   </div>
-  </div>
-
-
-
+</div>
