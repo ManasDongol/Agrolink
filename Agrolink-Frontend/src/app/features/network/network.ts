@@ -19,6 +19,8 @@ export class Network implements OnInit {
   networkData: NetworkPageDto | null = null;
   users: NetworkUserDto[] = [];
   requests: ConnectionRequestDto[] = [];
+
+  sentrequests : ConnectionRequestDto[]=[];
   myProfile: ProfileStatsDto | null = null;
   apiurl:string= environment.apiUrl;
 
@@ -26,12 +28,17 @@ export class Network implements OnInit {
   searchRole = '';
   currentPage = 1;
   totalPages = 1;
-
+  activeRequestTab: 'received' | 'sent' = 'received';
   loading = false;
 
   ngOnInit() {
     this.loadNetwork();
   }
+
+  filterByRole(role: string): void {
+  this.searchUsername = role;
+  this.onSearch();
+}
 
   loadNetwork() {
     this.loading = true;
@@ -41,9 +48,11 @@ export class Network implements OnInit {
           this.networkData = data;
           this.users = data.users;
           this.requests = data.requests;
+          this.sentrequests = data.sentRequests;
           this.myProfile = data.myProfile;
           this.totalPages = data.totalPages;
           this.loading = false;
+          console.log(data.sentRequests)
         },
         error: (err) => {
           console.error(err);
@@ -92,6 +101,10 @@ export class Network implements OnInit {
       },
       error: (err) => console.error(err)
     });
+  }
+
+  WithdrawRequest(){
+
   }
 
 

@@ -11,4 +11,5 @@ public class ConnectionRequests
     public DateTime SentDate { get; set; }
     public Boolean Accepted { get; set; } = false;
     public User User { get; set; }
+    public User ConnectionUser { get; set; }
 }

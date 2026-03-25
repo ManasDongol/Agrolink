@@ -24,7 +24,10 @@
   background: #ffffff;
   border: 1px solid #e2e8de;
   border-radius: 14px;
-  padding: 16px 20px;
+  padding: 16px 20px 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
 }
 
 .search-row {
@@ -91,6 +94,58 @@
 .search-btn:hover {
   background: #2db82d;
   transform: translateY(-1px);
+}
+
+/* ===== Quick filter tags ===== */
+.filter-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  padding-top: 2px;
+  border-top: 1px solid #f0f2ef;
+}
+
+.filter-label {
+  font-size: 12.5px;
+  color: #9ca3af;
+  font-weight: 500;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.filter-tags {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.filter-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 5px 13px;
+  border-radius: 999px;
+  border: 1.5px solid #3ec73e;
+  background: #ffffff;
+  color: #2d7a2d;
+  font-size: 12.5px;
+  font-weight: 600;
+  font-family: inherit;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s, transform 0.1s, box-shadow 0.15s;
+  white-space: nowrap;
+}
+
+.filter-tag:hover {
+  background: #3ec73e;
+  color: #ffffff;
+ 
+ 
+}
+
+.filter-tag:active {
+  transform: translateY(0);
 }
 
 /* ===== Users grid ===== */
@@ -355,7 +410,7 @@
   display: flex;
   align-items: center;
   gap: 8px;
-  margin-bottom: 14px;
+  margin-bottom: 12px;
 }
 
 .requests-header h3 {
@@ -375,6 +430,44 @@
   line-height: 1.4;
 }
 
+/* ===== Requests tabs ===== */
+.requests-tabs {
+  display: flex;
+  gap: 0;
+  margin-bottom: 14px;
+  border: 1.5px solid #e2e8de;
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.req-tab {
+  flex: 1;
+  padding: 7px 0;
+  border: none;
+  background: #ffffff;
+  font-size: 13px;
+  font-weight: 600;
+  font-family: inherit;
+  color: #9ca3af;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+}
+
+.req-tab + .req-tab {
+  border-left: 1.5px solid #e2e8de;
+}
+
+.req-tab.active {
+  background: #3ec73e;
+  color: #ffffff;
+}
+
+.req-tab:not(.active):hover {
+  background: #f5faf5;
+  color: #2d7a2d;
+}
+
+/* Requests list */
 .requests-list {
   display: flex;
   flex-direction: column;
@@ -394,6 +487,10 @@
 
 .request-item:hover {
   border-color: #3ec73e;
+}
+
+.sent-item:hover {
+  border-color: #fca5a5;
 }
 
 .request-item img {
@@ -541,5 +638,8 @@
   }
   .users-grid {
     grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  }
+  .filter-tags {
+    gap: 6px;
   }
 }

@@ -30,6 +30,7 @@ export interface NetworkPageDto {
     myProfile: ProfileStatsDto;
     users: NetworkUserDto[];
     requests: ConnectionRequestDto[];
+    sentRequests:ConnectionRequestDto[];
     totalUsers: number;
     currentPage: number;
     totalPages: number;

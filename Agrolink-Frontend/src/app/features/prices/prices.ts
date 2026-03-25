@@ -59,27 +59,7 @@ ngOnInit() {
 
 
   }
-  
-   searchCrop(): void {
-          this.isLoading = true;
-    const query = this.SearchControl.value;
 
-    if (!query || query.length < 2) return;
-
-    this.loading = true;
-
-    this.cropService.search(query).subscribe({
-      next: (res) => {
-        this.priceList = res;
-        this.loading = false;
-            this.isLoading = false
-      },
-      error: () => {
-        this.loading = false;
-            this.isLoading = false
-      },
-    });
-}
 
   
 
