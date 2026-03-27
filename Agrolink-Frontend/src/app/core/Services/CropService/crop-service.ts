@@ -36,6 +36,7 @@ export class CropService{
 Predict(dto: PredictionRequestDto): Observable<PredictionResponse>{
   return this.http.post<PredictionResponse>(`${this.baseUrl}`, dto);
 }
+
   Prices():Observable<any>{
     return this.http.get(`${this.priceUrl}`);
   }

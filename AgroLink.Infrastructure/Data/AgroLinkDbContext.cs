@@ -16,6 +16,9 @@ public class AgroLinkDbContext(DbContextOptions<AgroLinkDbContext> options) : Db
    public DbSet<Comment> Comments { get; set; }
    public DbSet<Like> Likes { get; set; }
   
+   public DbSet<AiSession> AiSessions { get; set; }
+   public DbSet<AiMessage> AiMessages { get; set; }
+
     
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -78,6 +81,19 @@ public class AgroLinkDbContext(DbContextOptions<AgroLinkDbContext> options) : Db
             .WithMany(c => c.Replies)
             .HasForeignKey(c => c.ParentCommentId)
             .OnDelete(DeleteBehavior.Restrict);
+        
+        
+        modelBuilder.Entity<AiSession>()
+            .HasOne(s => s.User)
+            .WithMany()
+            .HasForeignKey(s => s.UserId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        modelBuilder.Entity<AiMessage>()
+            .HasOne(m => m.AiSession)
+            .WithMany(s => s.AiMessages)
+            .HasForeignKey(m => m.AiSessionId)
+            .OnDelete(DeleteBehavior.Cascade);
         
         
        

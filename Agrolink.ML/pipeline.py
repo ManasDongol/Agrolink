@@ -85,6 +85,7 @@ Retrieved information:
 Instructions:
 - Answer naturally using the information above, if they are not useful answer in your own way
 - if the crop names doesnt match with the query DON'T use the information above
+- Dont mention about provided information
 - Synthesise multiple options if relevant.
 - Fill gaps with your own agricultural knowledge.
 - Never reference "option 1" etc., just answer directly.

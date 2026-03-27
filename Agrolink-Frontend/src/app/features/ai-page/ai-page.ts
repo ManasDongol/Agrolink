@@ -1,12 +1,14 @@
-import { Component, ViewChild, ElementRef, AfterViewChecked } from '@angular/core';
+import { Component, ViewChild, ElementRef, AfterViewChecked, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { AiService } from '../../core/Services/AiService/ai-service';
-import { AiResponseDto } from '../../core/Dtos/AiResponseDto';
 
 interface Message {
   role: 'user' | 'ai';
   content: string;
+  isImage?: boolean;
+  imagePreview?: string;
+  imagePath?: string;
 }
 
 interface ChatHistory {
@@ -22,7 +24,7 @@ interface ChatHistory {
   templateUrl: './ai-page.html',
   styleUrl: './ai-page.css',
 })
-export class AiPage implements AfterViewChecked {
+export class AiPage implements AfterViewChecked, OnInit {
   @ViewChild('messagesContainer') private messagesContainer!: ElementRef;
   @ViewChild('inputField') private inputField!: ElementRef;
 
@@ -30,24 +32,23 @@ export class AiPage implements AfterViewChecked {
   messages: Message[] = [];
   isLoading = false;
   sidebarCollapsed = false;
-  
+  conversationLocked = false;
+  queriesUsed = 0;
+  queriesRemaining = 10;
 
   activeChatId: string | null = null;
-  
-   constructor(
-   
-    private service: AiService
-  ) {}
+  selectedImage: File | null = null;
+  imagePreview: string | null = null;
 
-  
-
-  chatHistory: ChatHistory[] = [
-    { id: '1', title: 'Crop rotation strategies', messages: [] },
-    { id: '2', title: 'Soil pH for tomatoes', messages: [] },
-    { id: '3', title: 'Wheat disease identification', messages: [] },
-  ];
+  chatHistory: ChatHistory[] = [];
 
   private shouldScrollToBottom = false;
+
+  constructor(private service: AiService) {}
+
+  ngOnInit() {
+    this.loadSessions();
+  }
 
   ngAfterViewChecked() {
     if (this.shouldScrollToBottom) {
@@ -56,25 +57,83 @@ export class AiPage implements AfterViewChecked {
     }
   }
 
+  // ── Sidebar ──────────────────────────────────────────
   toggleSidebar() {
     this.sidebarCollapsed = !this.sidebarCollapsed;
+  }
+
+  loadSessions() {
+    this.service.GetSessions().subscribe({
+      next: (sessions) => {
+        this.chatHistory = sessions.map(s => ({
+          id: s.id,
+          title: s.title,
+          messages: []
+        }));
+      }
+    });
+  }
+
+  loadChat(id: string) {
+    this.service.GetSession(id).subscribe({
+      next: (msgs) => {
+        this.activeChatId = id;
+        this.conversationLocked = false;
+      this.messages = msgs.map((m): Message => ({
+  role: m.role === 'user' ? 'user' : 'ai',
+  content: m.content ?? '',
+  isImage: m.isImage,
+  imagePath: m.imagePath ?? undefined
+}));
+
+        // Count how many user messages to restore limit state
+        const userCount = this.messages.filter(m => m.role === 'user').length;
+        this.queriesUsed = userCount;
+        this.queriesRemaining = 10 - userCount;
+        if (userCount >= 10) this.conversationLocked = true;
+
+        this.shouldScrollToBottom = true;
+      }
+    });
   }
 
   startNewChat() {
     this.messages = [];
     this.activeChatId = null;
     this.userInput = '';
+    this.conversationLocked = false;
+    this.queriesUsed = 0;
+    this.queriesRemaining = 10;
+    this.clearImage();
   }
 
-  loadChat(id: string) {
-    const chat = this.chatHistory.find(c => c.id === id);
-    if (chat) {
-      this.activeChatId = id;
-      this.messages = [...chat.messages];
-      this.shouldScrollToBottom = true;
+  deleteSession(id: string, event: Event) {
+    event.stopPropagation();
+    this.service.DeleteSession(id).subscribe({
+      next: () => {
+        this.chatHistory = this.chatHistory.filter(c => c.id !== id);
+        if (this.activeChatId === id) this.startNewChat();
+      }
+    });
+  }
+
+  // ── Image ─────────────────────────────────────────────
+  onImageSelected(event: Event) {
+    const input = event.target as HTMLInputElement;
+    if (input.files?.[0]) {
+      this.selectedImage = input.files[0];
+      const reader = new FileReader();
+      reader.onload = () => this.imagePreview = reader.result as string;
+      reader.readAsDataURL(this.selectedImage);
     }
   }
 
+  clearImage() {
+    this.selectedImage = null;
+    this.imagePreview = null;
+  }
+
+  // ── Messaging ─────────────────────────────────────────
   sendSuggestion(text: string) {
     this.userInput = text;
     this.sendMessage();
@@ -87,58 +146,95 @@ export class AiPage implements AfterViewChecked {
     }
   }
 
-  async sendMessage() {
+  sendMessage() {
     const text = this.userInput.trim();
-    if (!text || this.isLoading) return;
+    if ((!text && !this.selectedImage) || this.isLoading || this.conversationLocked) return;
 
-    // Add user message
-    this.messages.push({ role: 'user', content: text });
+    // Push user message to UI
+    this.messages.push({
+      role: 'user',
+      content: text,
+      isImage: !!this.selectedImage,
+      imagePreview: this.imagePreview ?? undefined
+    });
+
     this.userInput = '';
     this.isLoading = true;
     this.shouldScrollToBottom = true;
 
-    // Auto-save to history if new chat
-    if (!this.activeChatId) {
-      const newId = Date.now().toString();
-      const title = text.length > 40 ? text.substring(0, 40) + '...' : text;
-      const newChat: ChatHistory = { id: newId, title, messages: [] };
-      this.chatHistory.unshift(newChat);
-      this.activeChatId = newId;
+    if (this.selectedImage) {
+      this.sendImageMessage(text);
+    } else {
+      this.sendTextMessage(text);
     }
+  }
 
-    try {
-      
-        
-      var response = this.service.Ask(text).subscribe(
-        {
-          next:(res)=>{
-              const aiText = res.answer; 
-              console.log(res.answer)
-
-              this.messages.push({ role: 'ai', content: aiText });
-
-          }
+  private sendTextMessage(text: string) {
+    this.service.Ask(text, this.activeChatId ?? undefined).subscribe({
+      next: (res) => {
+        // If new chat, add to sidebar
+        if (!this.activeChatId) {
+          this.chatHistory.unshift({ id: res.sessionId, title: res.sessionTitle, messages: [] });
         }
-      );
+        this.activeChatId = res.sessionId;
 
-     
-     
+        this.messages.push({ role: 'ai', content: res.answer });
+        this.queriesUsed = res.queriesUsed;
+        this.queriesRemaining = res.queriesRemaining;
 
-      // Save messages to active chat history
-      const activeChat = this.chatHistory.find(c => c.id === this.activeChatId);
-      if (activeChat) {
-        activeChat.messages = [...this.messages];
+        if (res.conversationEnded) {
+          this.conversationLocked = true;
+          this.messages.push({
+            role: 'ai',
+            content: '⚠️ This conversation has reached the 10 question limit. Please start a new chat.'
+          });
+        }
+
+        this.isLoading = false;
+        this.shouldScrollToBottom = true;
+      },
+      error: (err) => {
+        const msg = err?.error?.message ?? 'Sorry, something went wrong. Please try again.';
+        this.messages.push({ role: 'ai', content: msg });
+        this.isLoading = false;
+        this.shouldScrollToBottom = true;
       }
+    });
+  }
 
-    } catch (error) {
-      this.messages.push({
-        role: 'ai',
-        content: 'Sorry, I encountered an error connecting to the AI service. Please check your connection and try again.'
-      });
-    } finally {
-      this.isLoading = false;
-      this.shouldScrollToBottom = true;
-    }
+  private sendImageMessage(text: string) {
+    const image = this.selectedImage!;
+    this.clearImage();
+
+    this.service.AskWithImage(image, text, this.activeChatId ?? undefined).subscribe({
+      next: (res) => {
+        if (!this.activeChatId) {
+          this.chatHistory.unshift({ id: res.sessionId, title: res.sessionTitle, messages: [] });
+        }
+        this.activeChatId = res.sessionId;
+
+        this.messages.push({ role: 'ai', content: res.answer });
+        this.queriesUsed = res.queriesUsed;
+        this.queriesRemaining = res.queriesRemaining;
+
+        if (res.conversationEnded) {
+          this.conversationLocked = true;
+          this.messages.push({
+            role: 'ai',
+            content: '⚠️ This conversation has reached the 10 question limit. Please start a new chat.'
+          });
+        }
+
+        this.isLoading = false;
+        this.shouldScrollToBottom = true;
+      },
+      error: (err) => {
+        const msg = err?.error?.message ?? 'Sorry, something went wrong. Please try again.';
+        this.messages.push({ role: 'ai', content: msg });
+        this.isLoading = false;
+        this.shouldScrollToBottom = true;
+      }
+    });
   }
 
   private scrollToBottom() {

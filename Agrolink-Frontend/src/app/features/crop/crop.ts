@@ -164,7 +164,7 @@ export class Crop implements OnInit {
    this.cropService.Predict(dto).subscribe({
   next: (res) => {
     
-    console.log(res); //  ADD THIS
+   
 
     this.results = res?.results || [];
 
