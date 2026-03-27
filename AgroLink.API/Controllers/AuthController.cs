@@ -64,12 +64,9 @@ public class AuthController(IAuthService authService, UserRepo UserRepo, Hashing
     [HttpGet("me")]
     public async Task<ActionResult<UserDto>> Me()
     {
-        
         if (!Request.Cookies.TryGetValue("jwt", out string? token))
             return Unauthorized(new { message = "Not authenticated" });
 
-        
-      
         var tokenHandler = new JwtSecurityTokenHandler();
         var key = Encoding.UTF8.GetBytes(configuration.GetValue<string>("token:Key")!);
 
@@ -89,21 +86,25 @@ public class AuthController(IAuthService authService, UserRepo UserRepo, Hashing
             // Extract user ID from claims
             var jwtToken = (JwtSecurityToken)validatedToken;
             var userIdClaim = jwtToken.Claims.First(x => x.Type == ClaimTypes.NameIdentifier);
-            var userId = userIdClaim.Value;
+            var userId = Guid.Parse(userIdClaim.Value);
 
-     
-            var user =  UserRepo.GetUserByIdAsync(userId);
+            var user = await UserRepo.GetUserByIdAsync(userId);
+
             if (user == null)
                 return NotFound(new { message = "User not found" });
 
-           Console.WriteLine("token returned successfully");
-            return Ok(new UserDto(user.UserId.ToString(), user.Email, user.Username, user.UserType));
+            Console.WriteLine("token returned successfully");
+
+            return Ok(new UserDto(
+                user.UserId.ToString(),
+                user.Email,
+                user.Username,
+                user.UserType
+            ));
         }
         catch
         {
             return Unauthorized(new { message = "Invalid token" });
         }
     }
-
-
 }

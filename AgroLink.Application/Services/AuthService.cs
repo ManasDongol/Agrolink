@@ -10,35 +10,34 @@ public class AuthService(UserRepo userRepo, HashingService hashingService,TokenS
     
     //when a user logs in i must generate a new access token !
     
-    public async Task<LoginResponseDto?> LoginUser(LoginRequestDto  loginDto)
-    {
-        var username = loginDto.username;
-        var enteredpassword = loginDto.password;
-        var storedSalt = "";
-        
-        var user =  userRepo.CheckUsernameExists(username);
-        if (user == null)
-        {
-            return new LoginResponseDto(null, null,"Username doesn't exist");
-        }
-        else
-        {
-            storedSalt = user.salt;
-        }
-
-        var storedhashedpassword = user.Password;
-        var hashedpassword = hashingService.ReHashPassword(loginDto.password,storedhashedpassword,storedSalt);
-        
-        if (!hashedpassword)
-        {
-            return new LoginResponseDto(null,null, "Unable to hash password");
-        }
-        var token = tokenService.createToken(user);
+   public async Task<LoginResponseDto?> LoginUser(LoginRequestDto loginDto)
+   {
+       var username = loginDto.username;
    
-        Console.WriteLine($"Token created: {token}");
-        return new LoginResponseDto(loginDto, token,"User created successfully!");
-
-    }
+       var user = await userRepo.CheckUsernameExists(username);
+   
+       if (user == null)
+       {
+           return new LoginResponseDto(null, null, "Username doesn't exist");
+       }
+   
+       var isPasswordValid = hashingService.ReHashPassword(
+           loginDto.password,
+           user.Password,
+           user.salt
+       );
+   
+       if (!isPasswordValid)
+       {
+           return new LoginResponseDto(null, null, "Invalid password");
+       }
+   
+       var token = tokenService.createToken(user);
+   
+       Console.WriteLine($"Token created: {token}");
+   
+       return new LoginResponseDto(loginDto, token, "Login successful");
+   }
     
     
     // no tokens generated during registration i nneed to redirect to login

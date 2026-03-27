@@ -7,64 +7,69 @@ namespace AgroLink.Infrastructure.Repositories;
 
 public class UserRepo(AgroLinkDbContext dbContext)
 {
-    public void loginUser(User user)
-    {
-        var result =  dbContext.Users.Add(user);
-    }
-
+    // -----------------------------
+    // Register User
+    // -----------------------------
     public async Task<User?> RegisterUser(User user)
     {
-        var result  =  dbContext.Users.Add(user);
+        dbContext.Users.Add(user);
+
         try
         {
             var rowsInserted = await dbContext.SaveChangesAsync();
-            if (rowsInserted > 0)
-            {
-                return user;
-            }
-
-            return user;
+            return rowsInserted > 0 ? user : null;
         }
         catch (DbUpdateException ex)
         {
-            if (ex.InnerException is PostgresException pg &&
-                pg.SqlState == "23505")
+            if (ex.InnerException is PostgresException pg && pg.SqlState == "23505")
             {
-                Console.WriteLine("same username or email");
-                // Unique constraint violation
-                return null; 
+                Console.WriteLine("Same username or email already exists.");
+                return null;
             }
+
+            throw; // rethrow unexpected DB errors
         }
-
-        return user;
-
     }
-    public User? CheckUsernameExists(string username)
+
+    // -----------------------------
+    // Check if username exists
+    // -----------------------------
+    public async Task<User?> CheckUsernameExists(string username)
     {
-        var result = dbContext.Users.FirstOrDefault(x => x.Username == username);
-        return result;
+        return await dbContext.Users
+            .AsNoTracking()
+            .FirstOrDefaultAsync(x => x.Username == username);
     }
 
-    public User? GetUserByEmail(string email)
+    // -----------------------------
+    // Get user by email
+    // -----------------------------
+    public async Task<User?> GetUserByEmail(string email)
     {
-        var result = dbContext.Users.FirstOrDefault(x => x.Email == email);
-        return result;
+        return await dbContext.Users
+            .AsNoTracking()
+            .FirstOrDefaultAsync(x => x.Email == email);
     }
 
-    public string? getUserSalt(string username){
-        var result = dbContext.Users.FirstOrDefault(x => x.Username == username);
-        if (result == null)
-        {
-            return null;
-        }
-        return result.salt;
-        
-    }
-
-    public User GetUserByIdAsync(string userID)
+    // -----------------------------
+    // Get user salt by username
+    // -----------------------------
+    public async Task<string?> GetUserSalt(string username)
     {
-        var result =  dbContext.Users.FirstOrDefault(x => x.UserId.ToString() == userID);
-        return result;
+        return await dbContext.Users
+            .AsNoTracking()
+            .Where(x => x.Username == username)
+            .Select(x => x.salt)
+            .FirstOrDefaultAsync();
     }
-  
+
+    // -----------------------------
+    // Get user by ID
+    // -----------------------------
+    public async Task<User?> GetUserByIdAsync(Guid userId)
+    {
+        return await dbContext.Users
+            .AsNoTracking()
+            .FirstOrDefaultAsync(x => x.UserId == userId);
+    }
 }
