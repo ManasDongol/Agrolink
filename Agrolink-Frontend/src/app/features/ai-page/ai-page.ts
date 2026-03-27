@@ -1,6 +1,8 @@
 import { Component, ViewChild, ElementRef, AfterViewChecked } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { AiService } from '../../core/Services/AiService/ai-service';
+import { AiResponseDto } from '../../core/Dtos/AiResponseDto';
 
 interface Message {
   role: 'user' | 'ai';
@@ -28,7 +30,16 @@ export class AiPage implements AfterViewChecked {
   messages: Message[] = [];
   isLoading = false;
   sidebarCollapsed = false;
+  
+
   activeChatId: string | null = null;
+  
+   constructor(
+   
+    private service: AiService
+  ) {}
+
+  
 
   chatHistory: ChatHistory[] = [
     { id: '1', title: 'Crop rotation strategies', messages: [] },
@@ -96,35 +107,22 @@ export class AiPage implements AfterViewChecked {
     }
 
     try {
-      const response = await fetch('https://api.anthropic.com/v1/messages', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          model: 'claude-sonnet-4-20250514',
-          max_tokens: 1000,
-          system: `You are AgroLink AI, an expert agricultural assistant. 
-You help farmers and agricultural professionals with:
-- Crop recommendations based on soil conditions
-- Disease identification and treatment
-- Weather impact on farming
-- Soil health and fertilization
-- Sustainable farming practices
-- Market price insights for crops
+      
+        
+      var response = this.service.Ask(text).subscribe(
+        {
+          next:(res)=>{
+              const aiText = res.answer; 
+              console.log(res.answer)
 
-Keep answers practical, concise and farmer-friendly. Use simple language.`,
-          messages: this.messages
-            .filter(m => m.role === 'user' || m.role === 'ai')
-            .map(m => ({
-              role: m.role === 'ai' ? 'assistant' : 'user',
-              content: m.content
-            }))
-        })
-      });
+              this.messages.push({ role: 'ai', content: aiText });
 
-      const data = await response.json();
-      const aiText = data.content?.[0]?.text ?? 'Sorry, I could not get a response. Please try again.';
+          }
+        }
+      );
 
-      this.messages.push({ role: 'ai', content: aiText });
+     
+     
 
       // Save messages to active chat history
       const activeChat = this.chatHistory.find(c => c.id === this.activeChatId);

@@ -35,3 +35,13 @@ export interface NetworkPageDto {
     currentPage: number;
     totalPages: number;
 }
+
+
+export interface connectionsDto{
+     
+
+    connectedUserID: string;
+    connectedUserName : string;
+    connectedProfileUrl : string;
+
+}

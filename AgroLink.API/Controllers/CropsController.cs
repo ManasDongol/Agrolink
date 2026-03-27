@@ -52,6 +52,17 @@ public class CropsController : ControllerBase
             $"AgroLink-CropReport-{DateTime.Now:yyyyMMddHHmm}.pdf"
         );
     }
+
+    [HttpPost("ask")]
+    public async Task<IActionResult> Ask([FromBody] QueryRequest payload)
+    {
+        
+        var response = await _httpClient.PostAsJsonAsync("http://localhost:8000/ask",payload);
+        var result = await response.Content.ReadFromJsonAsync<Dictionary<string, string>>();
+
+        Console.WriteLine(new {answer=result["answer"]});
+        return Ok(new {answer=result["answer"]});
+    }
     
     [HttpPost("predict")]
     public async Task<IActionResult> Predict([FromBody] CropRequestDto request)
@@ -117,4 +128,9 @@ public class CropResponse
 public class CropApiResponse
 {
     public List<CropResponseDto> Results { get; set; }
+}
+
+public class QueryRequest
+{
+    public string query { get; set; }
 }

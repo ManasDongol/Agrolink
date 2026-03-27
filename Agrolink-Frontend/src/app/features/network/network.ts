@@ -13,6 +13,8 @@ import { environment } from '../../../environments/environments';
   templateUrl: './network.html',
   styleUrl: './network.css'
 })
+
+
 export class Network implements OnInit {
   networkService = inject(NetworkService);
 
@@ -30,6 +32,8 @@ export class Network implements OnInit {
   totalPages = 1;
   activeRequestTab: 'received' | 'sent' = 'received';
   loading = false;
+
+  
 
   ngOnInit() {
     this.loadNetwork();
@@ -109,3 +113,4 @@ export class Network implements OnInit {
 
 
 }
+

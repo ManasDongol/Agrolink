@@ -1,4 +1,3 @@
-
 <!-- Profile Card -->
 <div class="profile-container">
   <div *ngIf="loading" class="loading">
@@ -11,19 +10,18 @@
   </div>
 
   <div *ngIf="profile && !loading" class="profile-card">
+
     <!-- Cover Image -->
     <div class="cover" [style.background-image]="profile.profileBackground ? 'url('+apiurl + profile.profileBackground + ')' : 'none'">
-      <div *ngIf="!profile.profileBackground" class="cover-placeholder">
-        <p>No background image</p>
-      </div>
+      <div *ngIf="!profile.profileBackground" class="cover-placeholder"></div>
     </div>
 
     <!-- Profile Header -->
     <div class="profile-header">
       <div class="avatar">
-        <img 
-          [src]="apiurl+profile.profilePicture" 
-          [alt]="profile.firstName + ' ' + profile.lastName" 
+        <img
+          [src]="apiurl+profile.profilePicture"
+          [alt]="profile.firstName + ' ' + profile.lastName"
           onerror="this.src='/uploads/images/profilePictures/5568f450-758f-4c78-9eb3-06b07a60be71.jpg'"
         />
       </div>
@@ -32,7 +30,12 @@
         <h2>{{ profile.firstName }} {{ profile.lastName }}</h2>
         <p class="username">@{{ profile.firstName.toLowerCase() }}{{ profile.lastName.toLowerCase() }}</p>
         <p class="role" *ngIf="profile.role">{{ profile.role }}</p>
-        <p class="address" *ngIf="profile.address">{{ profile.address }}</p>
+        <p class="address" *ngIf="profile.address">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/>
+          </svg>
+          {{ profile.address }}
+        </p>
       </div>
 
       <div class="header-actions">
@@ -41,38 +44,150 @@
           <small>connections</small>
         </div>
         @if(isOwnProfile){
-               <button class="edit-btn" (click)="navigateToEditProfile()">Edit Profile</button>
+          <button class="edit-btn" (click)="navigateToEditProfile()">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+              <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+              <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+            </svg>
+            Edit Profile
+          </button>
         }@else{
           @if(requestSent){
-
-             <button class="grey-btn" disabled>pending</button>
-          }@else {
-
-              <button class="edit-btn" (click)="sendConnection()">Connect</button>
+            <button class="pending-btn" disabled>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
+              </svg>
+              Pending
+            </button>
+          }@else{
+            <button class="edit-btn" (click)="sendConnection()">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
+              </svg>
+              Connect
+            </button>
           }
-               
         }
-     
       </div>
     </div>
 
-    <!-- Profile Body -->
-    <div class="profile-body">
-      <div class="section" *ngIf="profile.description">
-        <h3>Description</h3>
-        <p>{{ profile.description }}</p>
-      </div>
+    <!-- ===== Tab Switcher ===== -->
+    <div class="profile-tabs">
+      <button class="profile-tab" [class.active]="activeTab === 'about'" (click)="activeTab = 'about'">About</button>
+      <button class="profile-tab" [class.active]="activeTab === 'posts'" (click)="activeTab = 'posts'">Posts</button>
+      <button class="profile-tab" [class.active]="activeTab === 'connections'" (click)="activeTab = 'connections'">Connections</button>
+    </div>
 
-      <div class="section" *ngIf="profile.achievement">
-        <h3>Achievements</h3>
-        <p>{{ profile.achievement }}</p>
+    <!-- ===== ABOUT TAB ===== -->
+    <div class="tab-content" *ngIf="activeTab === 'about'">
+      <div class="profile-body" *ngIf="profile.description || profile.achievement">
+        <div class="section" *ngIf="profile.description">
+          <h3>Description</h3>
+          <p>{{ profile.description }}</p>
+        </div>
+        <div class="section" *ngIf="profile.achievement">
+          <h3>Achievements</h3>
+          <p>{{ profile.achievement }}</p>
+        </div>
+      </div>
+      <div *ngIf="!profile.description && !profile.achievement" class="empty-state">
+        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#c8d4c4" stroke-width="1.5">
+          <circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/>
+        </svg>
+        <p>No description or achievements yet.
+          <button class="link-btn" (click)="navigateToEditProfile()" *ngIf="isOwnProfile">Add them now</button>
+        </p>
       </div>
     </div>
 
-    <!-- Show message if no description or achievements -->
-    <div *ngIf="!profile.description && !profile.achievement" class="empty-state">
-      <p>No description or achievements yet. <button class="link-btn" (click)="navigateToEditProfile()">Add them now</button></p>
+    <!-- ===== POSTS TAB ===== -->
+    <div class="tab-content" *ngIf="activeTab === 'posts'">
+      @if(userposts.length ==0){
+            <div class="empty-state">
+        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#c8d4c4" stroke-width="1.5">
+          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+          <polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/>
+          <line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/>
+        </svg>
+        <p>No posts yet.</p>
+      </div>
+      }@else
+      {
+        @for(post of userposts;track post){
+
+            <div class="post-card">
+                  <h3 class="post-title">{{ post.title }}</h3>
+            <span class="post-tag">{{ post.postcategory }}</span>
+
+            @if(post.imagePath) {
+              <div class="post-image-container">
+                <img [src]="apiurl + post.imagePath" alt="Post Image" class="post-image">
+              </div>
+            }
+
+            <p class="post-content">{{ post.content }}</p>
+
+
+          </div>
+
+        }
+       
+
+      }
+    
     </div>
 
+    <!-- ===== CONNECTIONS TAB ===== -->
+    <div class="tab-content" *ngIf="activeTab === 'connections'">
+      <div class="connections-grid" *ngIf="connectionsList.length > 0; else noConnections">
+        <div class="connection-card">
+          @for( conn of connectionsList;track conn){
+                <img [src]="apiurl + (conn.connectedProfileUrl)" alt="avatar" >
+          <div class="connection-info">
+            <h4>{{ conn.connectedUserName }}</h4>
+            
+          </div>
+          <button
+            *ngIf="isOwnProfile"
+            class="remove-btn"
+            (click)="confirmRemove(conn.connectedUserID)"
+            title="Remove connection">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+              <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+            </svg>
+          </button>
+          }
+          
+        </div>
+      </div>
+      <ng-template #noConnections>
+        <div class="empty-state">
+          <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#c8d4c4" stroke-width="1.5">
+            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/>
+            <path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+          </svg>
+          <p>No connections yet.</p>
+        </div>
+      </ng-template>
+    </div>
+
+  </div><!-- /profile-card -->
+</div><!-- /profile-container -->
+
+<!-- ===== Confirm Remove Modal ===== -->
+<div class="modal-overlay" *ngIf="showRemoveModal" (click)="cancelRemove()">
+  <div class="modal-card" (click)="$event.stopPropagation()">
+    <div class="modal-icon">
+      <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="2">
+        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/>
+        <line x1="23" y1="11" x2="17" y2="11"/>
+      </svg>
+    </div>
+    <h3>Remove Connection</h3>
+    <p>Are you sure you want to remove <strong>{{ connectionToRemove?.name }}</strong> from your connections?</p>
+    <div class="modal-actions">
+      <button class="modal-cancel" (click)="cancelRemove()">Cancel</button>
+      <button class="modal-confirm" (click)="removeConnection()">Remove</button>
+    </div>
   </div>
 </div>

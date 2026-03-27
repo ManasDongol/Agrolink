@@ -211,4 +211,24 @@ public class NetworkService(AgroLinkDbContext context) : INetworkService
         await context.SaveChangesAsync();
         return true;
     }
+
+    public async Task<List<ConnectionListDto>> GetConnectionList(Guid currentUserId)
+    {
+        var connectionList = await context.Connections
+            .Where(c => c.UserID == currentUserId || c.ConnectionUserId == currentUserId)
+            .Select(c => new
+            {
+                ConnectedUser = c.UserID == currentUserId ? c.ConnectionUser : c.User,
+                ConnectedUserId = c.UserID == currentUserId ? c.ConnectionUserId : c.UserID
+            })
+            .Select(x => new ConnectionListDto
+            {
+                ConnectedUserID = x.ConnectedUserId,
+                ConnectedProfileUrl = x.ConnectedUser.Profile.FirstName,
+                ConnectedUserName = x.ConnectedUser.Username
+            })
+            .ToListAsync();
+
+        return connectionList;
+    }
 }

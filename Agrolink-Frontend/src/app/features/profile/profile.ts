@@ -7,6 +7,7 @@ import { ProfileResponseDto } from '../../core/Dtos/ProfileResponseDto';
 import { ProfileService } from '../../core/Services/ProfileService/profileService';
 import { ActivatedRoute } from '@angular/router';
 
+
 @Component({
   selector: 'app-profile',
   standalone:true,
@@ -27,6 +28,7 @@ export class Profile implements OnInit{
   backgroundImagePreview: string | null = null;
   profileImageFile: File | null = null;
   backgroundImageFile: File | null = null;
+  
 
   ngOnInit(): void {
     this.profileForm = this.fb.group({

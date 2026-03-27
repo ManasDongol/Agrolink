@@ -1,7 +1,9 @@
 from fastapi import FastAPI
 from pydantic import BaseModel
 from typing import List
-from predict import predict
+
+
+from pipeline import run_pipeline
 
 app = FastAPI()
 
@@ -11,6 +13,8 @@ app = FastAPI()
 # --------------------
 class CropRequest(BaseModel):
     features: List[float]  # [N,P,K,temp,humidity,ph,rainfall]
+class QueryRequest(BaseModel):
+    query: str
 
 
 # --------------------
@@ -32,15 +36,14 @@ class CropResult(BaseModel):
 # --------------------
 # Endpoint
 # --------------------
-@app.post("/predict")
-def get_prediction(data: CropRequest):
 
-    results = predict(data.features)
 
-    # rename "yield" -> "yield_" (because yield is reserved in python)
-    for r in results:
-        r["yield_"] = r.pop("yield")
 
-    return {
-        "results": results
-    }
+@app.get("/")
+def root():
+    return {"status": "AgroLink RAG API is running"}
+
+@app.post("/ask")
+def ask(request: QueryRequest):
+    answer = run_pipeline(request.query)
+    return {"answer": answer}

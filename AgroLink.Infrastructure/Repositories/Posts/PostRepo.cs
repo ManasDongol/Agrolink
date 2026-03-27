@@ -88,6 +88,41 @@ public class PostRepo(AgroLinkDbContext dbContext)
             .FirstOrDefaultAsync(p => p.PostId == postId);
     }
 
+    public async Task<List<PostDto>> GetUserPostsAsync(Guid userid)
+    {
+        return await dbContext.Posts
+            .Where(r => r.UserId == userid)
+            .Include(p => p.User)
+            .ThenInclude(u => u.Profile)
+            .Include(p => p.Likes)
+            .Include(p => p.Comments)
+            .Include(p => p.Bookmarks)
+            .Select(x=>new PostDto
+            {
+                PostId = x.PostId,
+                Title = x.Title,
+                Content = x.Content,
+                PostCategory = x.PostCategory,
+                ImagePath = x.ImagePath,
+                Author = new PostUserDto
+                {
+                    ProfilePictureUrl = x.User.Profile.ProfilePicture,
+                    Role = x.User.Profile.Role,
+                    UserId = x.User.UserId,
+                    Username = x.User.Username,
+                },
+                Created = x.Created,
+                LikesCount = x.Likes.Count,
+                CommentsCount = x.Comments.Count,
+                BookmarksCount = x.Bookmarks.Count
+                
+                
+                
+            })
+            .ToListAsync();
+
+    }
+
     public async Task ToggleLikeAsync(Guid postId, Guid userId)
     {
         var existingLike = await dbContext.Set<Like>()
@@ -137,4 +172,28 @@ public class PostRepo(AgroLinkDbContext dbContext)
 
         await dbContext.SaveChangesAsync();
     }
+}
+
+public class PostDto
+{
+    public Guid PostId { get; set; }
+    public string Title { get; set; }
+    public string Content { get; set; }
+    public DateTime Created { get; set; }
+    public string? ImagePath { get; set; }
+    public PostUserDto Author { get; set; }
+    public string PostCategory { get; set; }
+    public bool IsLiked { get; set; } 
+    public int LikesCount { get; set; }
+    public int CommentsCount { get; set; }
+    public bool IsBookmarked { get; set; }
+    public int BookmarksCount { get; set; }
+}
+
+public class PostUserDto 
+{
+    public Guid UserId { get; set; }
+    public string Username { get; set; }
+    public string? ProfilePictureUrl { get; set; }
+    public string? Role { get; set;}
 }

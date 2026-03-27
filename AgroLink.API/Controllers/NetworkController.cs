@@ -2,6 +2,7 @@ using AgroLink.Application.Services;
 using AgroLink.Application.DTOs.Network;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
+using AgroLink.Domain.Entities;
 
 namespace Controllers;
 
@@ -99,6 +100,17 @@ public class NetworkController(NetworkService networkService) : ControllerBase
         {
             return StatusCode(500, new { message = "Error accepting request", error = ex.Message });
         }
+    }
+
+    [HttpGet("{userid}/all")]
+    public async Task<List<ConnectionListDto>> getAllConnections()
+    {
+        var userid = RouteData?.Values["userid"]?.ToString();
+        var connectionList = await networkService.GetConnectionList(Guid.Parse(userid));
+        Console.WriteLine(connectionList[0].ConnectedProfileUrl);
+        Console.WriteLine(connectionList[0].ConnectedUserName);
+        return connectionList;
+
     }
     
     

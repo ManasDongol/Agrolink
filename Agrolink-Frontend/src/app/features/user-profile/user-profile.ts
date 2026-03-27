@@ -8,7 +8,9 @@ import { Auth } from '../../core/Services/Auth/auth';
 import { environment } from '../../../environments/environments';
 import { Observable,map } from 'rxjs';
 import { NetworkService } from '../../core/Services/Network/network';
-
+import { FeedService } from '../feed/feed.service';
+import { Post } from '../feed/feed.models';
+import { connectionsDto } from '../../core/Dtos/NetworkDtos';
 
 
 @Component({
@@ -29,16 +31,62 @@ export class UserProfile implements OnInit {
   isOwnProfile:boolean = false;
   requestSent:boolean=false;
 
+  userposts: Post[] =[];
+
+  
   constructor(
     private profileService: ProfileService,
     private networkService : NetworkService,
+  
+    private postService : FeedService,
     private router: Router,
     private auth: Auth,
     private route : ActivatedRoute
   ) {}
 
+  activeTab: 'about' | 'posts' | 'connections' = 'about';
+ 
+showRemoveModal: boolean = false;
+connectionToRemove: { id: string; name: string; role: string; profilePicture: string } | null = null;
+ 
+
+connectionsList:connectionsDto[] = [];
+
   ngOnInit(): void {
+  
+  this.getUserIdFromToken().subscribe({next:(res)=>{
+    this.userid = res;
+    console.log("the user id is "+res );
+     this.getUserConnections(res);
+  }});
+
     this.loadProfile();
+    this.getUserPosts();
+
+  
+  }
+
+  public getUserPosts(){
+   this.postService.getPosts(1,10,"my").subscribe((res)=>{
+    this.userposts=res.posts;
+   
+    
+    
+   });
+    
+
+  }
+  public getUserConnections(currentuserid : string){
+      this.profileService.getUserConnections(currentuserid).subscribe(
+        {
+          next:(res)=>{
+            this.connectionsList = res;
+            console.log("asdsda"+this.connectionsList[0].connectedProfileUrl);
+            console.log(res)
+              console.log(res)
+          }
+        }
+      )
   }
 
   private getUserIdFromToken(): Observable<string> {
@@ -51,7 +99,7 @@ export class UserProfile implements OnInit {
     this.loading = true;
     this.error = null;
 
-   //let userId = this.getUserIdFromToken();
+
 
    const routeId = this.route.snapshot.paramMap.get('id');
 
@@ -75,10 +123,9 @@ export class UserProfile implements OnInit {
 
     this.profileService.GetProfileByUserId(routeId).subscribe({
       next: (data) => {
-        console.log(routeId);
+  
         this.profile = data;
-        console.log(this.profile.profilePicture);
-        console.log(this.profile.profileBackground);
+       
         this.loading = false;
       },
       error: (err) => {
@@ -129,9 +176,45 @@ export class UserProfile implements OnInit {
     });
 
   }
+
+  confirmRemove(userID:string): void {
+  //this.connectionToRemove = ;
+  //this.showRemoveModal = true;
+}
+ 
+cancelRemove(): void {
+  this.showRemoveModal = false;
+  this.connectionToRemove = null;
+}
+ 
+removeConnection(): void {
+  if (!this.connectionToRemove) return;
+ 
+  // TODO: wire up real API call, e.g.:
+  // this.networkService.removeConnection(this.connectionToRemove.id).subscribe(...)
+ 
+  // For now remove from local list
+  //this.connectionsList = this.connectionsList.filter(c => c.id !== this.connectionToRemove!.id);
+  //this.connections = Math.max(0, this.connections - 1);
+  //this.cancelRemove();
+}
 }
 
 
+export class posts{
+   
+    content!: string;
+    created!: string;
+    imagePath?: string;
+
+    postcategory!: string;
+  
+    isLiked: boolean = false;
+    likesCount: number = 0;
+    commentsCount: number = 0;
+    isBookmarked: boolean = false;
+  
+}
   
     
   

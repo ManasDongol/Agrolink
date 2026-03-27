@@ -3,6 +3,8 @@ using AgroLink.Application.DTOs.Posts;
 using AgroLink.Application.Interfaces.Posts;
 using AgroLink.Domain.Entities;
 using AgroLink.Infrastructure.Repositories.Posts;
+using PostDto = AgroLink.Application.DTOs.Posts.PostDto;
+using PostUserDto = AgroLink.Application.DTOs.Posts.PostUserDto;
 
 namespace AgroLink.Application.Services;
 
@@ -49,6 +51,13 @@ public class PostService(PostRepo postRepo) : IPostService
 
         var createdPost = await postRepo.CreatePostAsync(post);
         return MapToDto(createdPost,userId);
+    }
+    
+    public async Task<List<Infrastructure.Repositories.Posts.PostDto>> getUserPost(string UserId)
+    {
+        var userGuid = Guid.Parse(UserId);
+        var userPosts = await postRepo.GetUserPostsAsync(userGuid);
+        return userPosts;
     }
 
     public async Task<(List<PostDto> Posts, int TotalCount)> GetPostsAsync(int page, int pageSize, string myPosts, Guid userId)

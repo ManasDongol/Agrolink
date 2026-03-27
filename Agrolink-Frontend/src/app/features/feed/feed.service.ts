@@ -46,5 +46,9 @@ export class FeedService {
         return this.http.delete<Post>(`${this.baseUrl}/${postId}/delete`);
     }
 
+    getUserPosts(UserID:string){
+        return this.http.get<Post[]>(`${this.baseUrl}/${UserID}/getposts`)
+    }
+
     
 }
