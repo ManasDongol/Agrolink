@@ -8,6 +8,9 @@ public class Conversation
     public Guid User2Id { get; set; }
 
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+    
+    public string? LastMessage { get; set; }       // ← add
+    public DateTime? LastMessageTime { get; set; }
 
     public ICollection<Message> Messages { get; set; } = new List<Message>();
 

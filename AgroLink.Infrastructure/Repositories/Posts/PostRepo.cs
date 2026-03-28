@@ -123,6 +123,19 @@ public class PostRepo(AgroLinkDbContext dbContext)
 
     }
 
+    
+    public async Task<List<Domain.Entities.Posts>> GetUserPostsByIdAsync(Guid userid)
+    {
+        return await dbContext.Posts
+            .Where(r => r.UserId == userid)
+            .Include(p => p.User)
+            .ThenInclude(u => u.Profile)
+            .Include(p => p.Likes)
+            .Include(p => p.Comments)
+            .Include(p => p.Bookmarks)
+            .ToListAsync();
+    }
+
     public async Task ToggleLikeAsync(Guid postId, Guid userId)
     {
         var existingLike = await dbContext.Set<Like>()

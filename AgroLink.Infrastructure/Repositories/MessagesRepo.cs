@@ -11,6 +11,8 @@ public class MessagesRepo(AgroLinkDbContext _dbContext)
     {
         return await _dbContext.Conversations
             .Where(c => c.User1Id == currentUserId || c.User2Id == currentUserId)
+            .OrderByDescending(c => c.Messages               // ← sort convs by last message
+                .Max(m => (DateTime?)m.Sent) ?? c.CreatedAt)
             .Select(c => new UserConversationDto
             {
                 Id = c.Id,

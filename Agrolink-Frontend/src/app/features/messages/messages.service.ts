@@ -110,6 +110,12 @@ export class MessagesService {
   sendMessage(senderId: string, receiverId: string, content: string) {
     if (!this.hubConnection || this.hubConnection.state !== signalR.HubConnectionState.Connected) {
       console.warn("Hub not connected yet!");
+      if(!this.hubConnection){
+        console.warn("lololol");
+      }
+      if( this.hubConnection.state !== signalR.HubConnectionState.Connected){
+        console.warn("nonoonon");
+      }
       return;
     }
 

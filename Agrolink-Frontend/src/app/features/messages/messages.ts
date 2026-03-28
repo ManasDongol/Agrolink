@@ -26,6 +26,7 @@ export class MessagesComponent implements OnInit, AfterViewChecked {
   HasConversation: boolean = false;
   apiurl: string = environment.apiUrl;
   receiverId: string = '';
+  selectedConversationIndex: number = -1;
 
   OpenedConversationUsername: string = "";
   OpenedConversationProfile: string = "";
@@ -97,7 +98,7 @@ private searchSubject = new Subject<string>();
       .subscribe(conv => {
         this.recentConversations.push(conv);
         this.HasConversation = true;
-        this.selectConversation(conv);
+        this.selectConversation(conv,0);
       }, err => console.error('Error creating conversation', err));
   }
 
@@ -105,11 +106,12 @@ private searchSubject = new Subject<string>();
     this.scrollToBottom();
   }
 
-  selectConversation(conv: Conversation) {
+  selectConversation(conv: Conversation,index:number) {
     this.OpenedConversation = true;
     this.OpenedConversationUsername= conv.partnerName;
     this.messagesService.openConversation(conv.id);
     this.receiverId = conv.partnerId;
+     this.selectedConversationIndex = index;
   }
 
 
@@ -120,11 +122,35 @@ private searchSubject = new Subject<string>();
 
   }
 
-  sendMessage() {
-    if (!this.newMessage.trim()) return;
-    this.messagesService.sendMessage(this.UserId, this.receiverId, this.newMessage);
-    this.newMessage = '';
+ sendMessage() {
+  if (!this.newMessage.trim() || this.selectedConversationIndex < 0) return;
+
+  const messageToSend = this.newMessage.trim();
+
+  // Send via service
+  this.messagesService.sendMessage(this.UserId, this.receiverId, messageToSend);
+
+  // Update last message locally for the sidebar
+  const conv = this.recentConversations[this.selectedConversationIndex];
+  if (conv) {
+    // If lastMessage doesn't exist yet, create it
+     var currentdate = new Date();
+    if (conv.lastMessage) {
+   
+      conv.lastMessage.content = messageToSend;
+      conv.lastMessage.sent = currentdate.toString();
+      conv.lastMessage.senderId = this.UserId;
+    }
+
+    // Move the conversation to the top if you want "recent first"
+    this.recentConversations.splice(this.selectedConversationIndex, 1);
+    this.recentConversations.unshift(conv);
+    this.selectedConversationIndex = 0;
   }
+
+  // Clear input after updating
+  this.newMessage = '';
+}
 
   private scrollToBottom() {
     try {
@@ -184,7 +210,7 @@ startChatFromSearch(conn: any) {
 
   this.recentConversations.unshift(newConv);
 
-  this.selectConversation(newConv);
+  this.selectConversation(newConv,0);
 }
 
 

@@ -27,7 +27,7 @@
       <div class="search-results" *ngIf="isSearching">
         <div *ngIf="filteredConversations.length > 0">
           <p class="results-label">Chats</p>
-          <div class="sidebar-item" *ngFor="let conv of filteredConversations" (click)="selectConversation(conv)">
+          <div class="sidebar-item" *ngFor="let conv of filteredConversations; let i =index" (click)="selectConversation(conv,i)">
             <div class="item-avatar">
               <img [src]="getUserprofile(conv.partnerProfile)" alt="{{ conv.partnerName }}" />
             </div>
@@ -63,23 +63,30 @@
       <!-- Conversation / Connection list -->
       <div class="chat-list" *ngIf="!isSearching">
 
-        <!-- Has conversations -->
-        <ng-container *ngIf="HasConversation">
-          <p class="list-label">Recent</p>
-          <div
-            class="sidebar-item"
-            *ngFor="let conv of recentConversations"
-            (click)="selectConversation(conv)"
-            [class.active]="OpenedConversationUsername === conv.partnerName">
-            <div class="item-avatar">
-              <img [src]="getUserprofile(conv.partnerProfile)" alt="{{ conv.partnerName }}" />
-            </div>
-            <div class="item-info">
-              <span class="item-name">{{ conv.partnerName }}</span>
-            </div>
-          </div>
-        </ng-container>
-
+       <!-- Has conversations -->
+<ng-container *ngIf="HasConversation">
+  <p class="list-label">Recent</p>
+  <div
+    class="sidebar-item"
+    *ngFor="let conv of recentConversations;let i = index"
+    (click)="selectConversation(conv,i)"
+    [class.active]="OpenedConversationUsername === conv.partnerName">
+    <div class="item-avatar">
+      <img [src]="getUserprofile(conv.partnerProfile)" alt="{{ conv.partnerName }}" />
+    </div>
+    <div class="item-info">
+      <div class="item-top-row">
+        <span class="item-name">{{ conv.partnerName }}</span>
+        <span class="item-time" *ngIf="conv.lastMessage">
+          {{ conv.lastMessage.sent | date:'shortTime' }}
+        </span>
+      </div>
+      <p class="item-last-msg">
+        {{ conv.lastMessage ? conv.lastMessage.content : 'Start a conversation' }}
+      </p>
+    </div>
+  </div>
+</ng-container>
         <!-- No conversations yet — show connections -->
         <ng-container *ngIf="!HasConversation">
           <p class="list-label">Start a chat</p>

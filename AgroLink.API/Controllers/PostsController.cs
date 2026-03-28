@@ -91,5 +91,14 @@ public class PostsController(IPostService postService) : ControllerBase
         }
     }
 
+    [HttpGet("{userId}/all")]
+    public async Task<ActionResult<List<PostDto>>> GetPosts(Guid userId)
+    {
+        Console.WriteLine("this has been hit" + userId);
+        var userposts = await postService.GetUserPosts(userId);
+        return Ok(userposts);
+        
+    }
+
   
 }

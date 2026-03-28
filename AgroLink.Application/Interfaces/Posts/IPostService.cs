@@ -10,5 +10,6 @@ public interface IPostService
     Task ToggleLikeAsync(Guid postId, Guid userId);
     Task ToggleBookmarkAsync(Guid postId, Guid userId);
     Task<PostDto> UpdatePostAsync(Guid postId, UpdatePostDto updatePostDto, Guid userId);
+    Task<List<DTOs.Posts.PostDto>> GetUserPosts(Guid userid);
 
 }

@@ -17,5 +17,5 @@ public class UserConversationDto
    // public string User2Name { get; set; }    
     //public string User2Profile { get; set; }
 
-    public MessageDto LastMessage { get; set; } // Optional: last message for preview
+    public MessageDto? LastMessage { get; set; } // Optional: last message for preview
 }

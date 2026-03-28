@@ -13,6 +13,8 @@ import { Post } from '../feed/feed.models';
 import { connectionsDto } from '../../core/Dtos/NetworkDtos';
 
 
+
+
 @Component({
   selector: 'app-user-profile',
   standalone: true,
@@ -22,14 +24,16 @@ import { connectionsDto } from '../../core/Dtos/NetworkDtos';
 })
 export class UserProfile implements OnInit {
   profile: ProfileResponseDto | null = null;
+    id: string | null = null;
   loading: boolean = true;
   error: string | null = null;
   showEditForm: boolean = false;
-  connections: number = 12; // Static for now
+  connections: number = 0; // Static for now
   userid:string = "";
   apiurl:string= environment.apiUrl;
   isOwnProfile:boolean = false;
   requestSent:boolean=false;
+  connectionExists:boolean = false;
 
   userposts: Post[] =[];
 
@@ -53,22 +57,29 @@ connectionToRemove: { id: string; name: string; role: string; profilePicture: st
 connectionsList:connectionsDto[] = [];
 
   ngOnInit(): void {
+    
   
   this.getUserIdFromToken().subscribe({next:(res)=>{
     this.userid = res;
     console.log("the user id is "+res );
-     this.getUserConnections(res);
+    this.getUserConnections(res);
+     this.getUserPosts(res);
+
   }});
 
     this.loadProfile();
-    this.getUserPosts();
+   
 
   
   }
 
-  public getUserPosts(){
-   this.postService.getPosts(1,10,"my").subscribe((res)=>{
-    this.userposts=res.posts;
+  public getUserPosts(profileuserid:string){
+      this.id = this.route.snapshot.paramMap.get('id');
+      console.log(this.id)
+   this.postService.getPostsByID(this.id!
+   ).subscribe((res)=>{
+    this.userposts=res;
+    console.log(this.userposts)
    
     
     
@@ -77,13 +88,14 @@ connectionsList:connectionsDto[] = [];
 
   }
   public getUserConnections(currentuserid : string){
-      this.profileService.getUserConnections(currentuserid).subscribe(
+     this.id = this.route.snapshot.paramMap.get('id');
+      this.profileService.getUserConnections(this.id!).subscribe(
         {
           next:(res)=>{
             this.connectionsList = res;
-            console.log("asdsda"+this.connectionsList[0].connectedProfileUrl);
-            console.log(res)
-              console.log(res)
+            this.connections=this.connectionsList.length;
+          
+         
           }
         }
       )

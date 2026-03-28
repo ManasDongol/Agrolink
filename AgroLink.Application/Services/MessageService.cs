@@ -50,7 +50,15 @@ public class MessageService(MessagesRepo repo,AgroLinkDbContext _dbContext)
             Sent = DateTime.UtcNow
         };
 
-        return await repo.AddMessage(message);
+        // ← sync the conversation entity fields
+        var conversation = await _dbContext.Conversations.FindAsync(Guid.Parse(conversationId));
+        if (conversation != null)
+        {
+            conversation.LastMessage = content;
+            conversation.LastMessageTime = DateTime.UtcNow;
+        }
+
+        return await repo.AddMessage(message);  // SaveChangesAsync inside here saves both
     }
     
     public async Task<ConversationDto> CreateConversation(Guid user1Id, Guid user2Id)

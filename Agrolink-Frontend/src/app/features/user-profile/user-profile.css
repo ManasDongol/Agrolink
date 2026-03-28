@@ -262,20 +262,20 @@
 
 /* ===== Connections Tab ===== */
 .connections-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-  gap: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
   padding: 28px 36px 36px;
 }
 
 .connection-card {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 14px;
   background: #f8faf7;
   border: 1px solid #e2e8de;
   border-radius: 12px;
-  padding: 14px;
+  padding: 14px 16px;
   transition: border-color 0.15s, box-shadow 0.15s;
 }
 
@@ -552,4 +552,26 @@
     grid-template-columns: 1fr;
     padding: 20px 16px 28px;
   }
+}
+
+/* ===== Posts Tab ===== */
+.tab-content .post-card {
+  background: #f8faf7;
+  border: 1px solid #e2e8de;
+  border-radius: 12px;
+  padding: 20px 24px;
+  margin: 0;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+
+.tab-content .post-card:hover {
+  border-color: #3ec73e;
+  box-shadow: 0 3px 10px rgba(62,199,62,0.08);
+}
+
+.posts-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 28px 36px 36px;
 }

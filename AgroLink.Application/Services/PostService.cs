@@ -75,6 +75,36 @@ public class PostService(PostRepo postRepo) : IPostService
         return (postDtos, totalCount);
     }
     
+    public async Task<List<DTOs.Posts.PostDto>> GetUserPosts( Guid userId)
+    {
+       
+      
+        var postlist = await postRepo.GetUserPostsByIdAsync( userId);
+        
+        var userPostList = postlist.Select(x=> new PostDto{
+            PostId = x.PostId,
+            Title = x.Title,
+            Content = x.Content,
+            PostCategory = x.PostCategory,
+            ImagePath = x.ImagePath,
+            Author = new PostUserDto
+            {
+                ProfilePictureUrl = x.User.Profile.ProfilePicture,
+                Role = x.User.Profile.Role,
+                UserId = x.User.UserId,
+                Username = x.User.Username,
+            },
+            Created = x.Created,
+            LikesCount = x.Likes.Count,
+            CommentsCount = x.Comments.Count,
+            BookmarksCount = x.Bookmarks.Count
+            }).ToList();
+        
+        return userPostList;
+    }
+    
+    
+    
     public async Task<PostDto> UpdatePostAsync(Guid postId, UpdatePostDto updatePostDto, Guid userId)
     {
         // Get the existing post

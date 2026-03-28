@@ -27,7 +27,13 @@ public class MessageController(MessageService _service): ControllerBase
     public async Task<IActionResult> SendMessage([FromBody] SendMessageDto dto)
     {
         var result = await _service.SendMessage((dto.SenderId).ToString(), (dto.ConversationId).ToString(), dto.Content);
-        return Ok(result);
+       return Ok(new {
+            messageId = result.MessageId,
+            senderId = result.SenderId,
+            conversationId = result.ConversationId,
+            content = result.Content,
+            sent = result.Sent
+        });
     }
     
     [HttpGet("connections/{userId}")]
