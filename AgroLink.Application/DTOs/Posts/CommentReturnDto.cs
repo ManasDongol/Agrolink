@@ -14,4 +14,5 @@ public class CommentReturnDto
     
     public CommentAuthorDto  Author { get; set; }
     public DateTime Created { get; set; }
+    public List<CommentReturnDto> Replies { get; set; } = new();
 }

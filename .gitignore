@@ -33,3 +33,35 @@ dist/
 # ===== OS =====
 Thumbs.db
 .DS_Store
+
+
+# =========================
+AgroLink.ML/raw/
+raw/
+*.zip
+
+# Trained models
+trained_models/
+*.pth
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Python
+__pycache__/
+*.pyc
+
+# Virtual env
+.venv/
+venv/
+
+
+# Folder.DotSettings.user (JetBrains per-user settings)
+*.DotSettings.user
+
+# wwwroot static/uploaded files (the untracked folder in your git status)
+AgroLink.API/wwwroot/
+
+# Python egg/build artifacts
+*.egg-info/
+__pycache__/

@@ -11,7 +11,7 @@ public class WebscraperService
 {
     private static readonly HttpClient _client = new HttpClient(new HttpClientHandler
     {
-        // TODO: Remove once ramropatro.com renews their SSL certificate
+        
         ServerCertificateCustomValidationCallback =
             HttpClientHandler.DangerousAcceptAnyServerCertificateValidator
     });

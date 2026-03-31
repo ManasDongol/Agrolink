@@ -11,27 +11,32 @@ export class Author {
   }
 }
 export class Comment {
-  commentId!: string;
-  postId!: string;
-  content!: string;
-  parentCommentId?: string | null;
-  created!: string;
+  commentId: string;
+  postId: string;
+  content: string;
+  created: string;
+  author: { userId: string; username: string; profilePictureUrl: string };
+  replies: Comment[] = [];        // ← sub-comments
+  showReplies: boolean = false;   // ← toggle visibility
+  showReplyInput: boolean = false; // ← toggle input box
 
-  author!: {
-    userId: string;
-    username: string;
-    profilePictureUrl?: string;
-  };
-
-  showReplies: boolean = false;
-  replies: Comment[] = [];
-
-  constructor(init?: Partial<Comment>) {
-    Object.assign(this, init);
-    this.replies = init?.replies?.map(r => new Comment(r)) || [];
+  constructor(partial: Partial<Comment>) {
+    this.commentId = partial.commentId ?? '';
+    this.postId = partial.postId ?? '';
+    this.content = partial.content ?? '';
+    this.created = partial.created ?? '';
+    this.author = partial.author ?? { userId: '', username: '', profilePictureUrl: '' };
+    this.replies = (partial.replies ?? []).map(r => new Comment(r));
+    this.showReplies = false;
+    this.showReplyInput = false;
   }
 }
 
+export interface CommentCreateDto {
+  postId: string;
+  content: string;
+  parentCommentId?: string;  // ← nullable, only set for replies
+}
 export class Post {
   postId!: string;
   title!: string;

@@ -1,9 +1,11 @@
 ﻿
 
+using System.Security.Claims;
 using AgroLink.Application.DTOs;
 using AgroLink.Domain.Entities;
 using AgroLink.Infrastructure.Data;
 using AgroLink.Infrastructure.Repositories;
+using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using UserConversationDto = AgroLink.Infrastructure.repoDTO.UserConversationDto;
 
@@ -34,9 +36,20 @@ public class MessageService(MessagesRepo repo,AgroLinkDbContext _dbContext)
     
    
 
-    public async Task<List<Message>> GetMessages(Guid conversationId)
+    public async Task<List<MessageDto>> GetMessages(Guid conversationId)
     {
-        return await repo.GetMessages(conversationId);
+        var messages = await repo.GetMessages(conversationId);
+
+        return messages.Select(m => new MessageDto
+        {
+            MessageId = m.MessageId,
+            ConversationId = m.ConversationId,
+            SenderId = m.SenderId,
+            Sent = m.Sent,
+            IsImage = m.HasAttachment,
+            // if it's an image, content = the path; otherwise normal text content
+            Content = m.HasAttachment ? m.AttachmentPath : m.Content
+        }).ToList();
     }
 
     public async Task<Message> SendMessage(string senderId, string conversationId, string content)
@@ -115,5 +128,55 @@ public class MessageService(MessagesRepo repo,AgroLinkDbContext _dbContext)
                     : c.User.Profile.ProfilePicture
             })
             .ToListAsync();
+    }
+
+    public async Task<string> UploadImage(IFormFile file, string userId, string conversationId)
+    {
+        // Validate extension
+        var allowedExtensions = new[] { ".jpg", ".jpeg", ".png", ".gif", ".webp" };
+        var ext = Path.GetExtension(file.FileName).ToLowerInvariant();
+        if (!allowedExtensions.Contains(ext))
+            throw new InvalidOperationException("File type not allowed.");
+
+        // Build unique filename to avoid collisions
+        var uniqueFileName = $"{Guid.NewGuid()}{ext}";
+
+        var uploadPath = Path.Combine(
+            Directory.GetCurrentDirectory(), "wwwroot", "images", "UserMessages", userId
+        );
+        Directory.CreateDirectory(uploadPath);
+
+        var filePath = Path.Combine(uploadPath, uniqueFileName);
+
+        // Write file to disk
+        await using (var stream = new FileStream(filePath, FileMode.Create))
+        {
+            await file.CopyToAsync(stream);
+        }
+
+        // Relative URL to return to the client
+        var imageUrl = $"/images/UserMessages/{userId}/{uniqueFileName}";
+
+        // Save as a message record in the DB (content = the image URL)
+        var message = new Message
+        {
+            MessageId = Guid.NewGuid(),
+            SenderId = Guid.Parse(userId),
+            ConversationId = Guid.Parse(conversationId),
+            AttachmentPath = imageUrl,       // store the path as message content
+            HasAttachment = true,           // flag so the client knows to render <img>
+            Sent = DateTime.UtcNow
+        };
+
+        var conversation = await _dbContext.Conversations.FindAsync(Guid.Parse(conversationId));
+        if (conversation != null)
+        {
+            conversation.LastMessage = "📷 Image";
+            conversation.LastMessageTime = DateTime.UtcNow;
+        }
+
+        await repo.AddMessage(message);
+
+        return imageUrl;
     }
 }

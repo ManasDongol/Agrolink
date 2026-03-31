@@ -1,62 +1,165 @@
-
 <div class="profile-page">
-  <span style="font-size: 24px; cursor: pointer;">&#8592;</span>
-  <!-- LEFT -->
-  <div class="profile-left">
-    <h1 class="title">Build Your Profile</h1>
-    <div class="divider"></div>
 
-    <form  [formGroup]="profileForm" class="profile-form">
-      <div style="display:flex;">
-        <div>
-            <label>First Name:</label>
-            <input formControlName="firstname" type="text" placeholder="John" />
+  <div class="profile-card">
 
+    <!-- HEADER -->
+    <div class="card-header">
+      <a class="back-link" routerLink="/..">
+        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
+          stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M19 12H5"/><path d="m12 19-7-7 7-7"/>
+        </svg>
+        Back
+      </a>
+     
+      <h1 class="heading">Build Your Profile</h1>
+     
+    </div>
+
+    <!-- FORM -->
+    <form [formGroup]="profileForm" class="profile-form" (ngSubmit)="updateProfile($event)">
+
+      <div class="form-grid">
+
+        <!-- First Name -->
+        <div class="field-group">
+          <label class="field-label">First Name</label>
+          <div class="input-wrapper" [class.error-border]="profileForm.get('firstname')?.invalid && profileForm.get('firstname')?.touched">
+            <svg class="input-icon" xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24"
+              fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>
+            </svg>
+            <input type="text" placeholder="John" formControlName="firstname" />
+          </div>
+          <p class="error-msg" *ngIf="profileForm.get('firstname')?.invalid && profileForm.get('firstname')?.touched">First name is required</p>
         </div>
-        <div>
-              <label>Last Name:</label>
-      <input formControlName="lastname" type="text" placeholder="Doe" />
+
+        <!-- Last Name -->
+        <div class="field-group">
+          <label class="field-label">Last Name</label>
+          <div class="input-wrapper" [class.error-border]="profileForm.get('lastname')?.invalid && profileForm.get('lastname')?.touched">
+            <svg class="input-icon" xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24"
+              fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>
+            </svg>
+            <input type="text" placeholder="Doe" formControlName="lastname" />
+          </div>
+          <p class="error-msg" *ngIf="profileForm.get('lastname')?.invalid && profileForm.get('lastname')?.touched">Last name is required</p>
         </div>
-          
-    
+
+        <!-- Address -->
+        <div class="field-group">
+          <label class="field-label">Address</label>
+          <div class="input-wrapper">
+            <svg class="input-icon" xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24"
+              fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M20 10c0 6-8 12-8 12S4 16 4 10a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/>
+            </svg>
+            <input type="text" placeholder="Kathmandu, Nepal" formControlName="address" />
+          </div>
+        </div>
+
+        <!-- Phone Number -->
+        <div class="field-group">
+          <label class="field-label">Phone Number</label>
+          <div class="input-wrapper">
+            <svg class="input-icon" xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24"
+              fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.64 11a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.55 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 9.91a16 16 0 0 0 6.18 6.18l1.27-.91a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92Z"/>
+            </svg>
+            <input type="text" placeholder="+977 98XXXXXXXX" formControlName="phone" />
+          </div>
+        </div>
+
+        <!-- Role — full width -->
+        <div class="field-group field-full">
+          <label class="field-label">Role</label>
+          <div class="input-wrapper select-wrapper" [class.error-border]="profileForm.get('role')?.invalid && profileForm.get('role')?.touched">
+            <svg class="input-icon" xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24"
+              fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <rect width="20" height="14" x="2" y="7" rx="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/>
+            </svg>
+            <select formControlName="role">
+              <option value="" disabled selected>Select your role</option>
+              <option value="Farmer">Farmer</option>
+              <option value="Agronomist">Agronomist</option>
+              <option value="Soil Scientist">Soil Scientist</option>
+              <option value="Agricultural Engineer">Agricultural Engineer</option>
+              <option value="Agricultural Equipments Supplier">Agricultural Equipments Supplier</option>
+            </select>
+            <svg class="chevron-icon" xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24"
+              fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="m6 9 6 6 6-6"/>
+            </svg>
+          </div>
+          <p class="error-msg" *ngIf="profileForm.get('role')?.invalid && profileForm.get('role')?.touched">Please select a role</p>
+        </div>
+
+        <!-- Profile Image -->
+        <div class="field-group">
+          <label class="field-label">Profile Picture</label>
+          <div class="upload-wrapper" (click)="profileInput.click()">
+            <input #profileInput type="file" accept="image/*" class="file-input-hidden" (change)="onProfileImageChange($event)" />
+            <div class="upload-preview" *ngIf="profileImagePreview">
+              <img [src]="profileImagePreview" alt="Profile preview" class="image-preview round-preview" />
+              <span class="preview-label">Click to change</span>
+            </div>
+            <div class="upload-content" *ngIf="!profileImagePreview">
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" class="upload-icon">
+                <circle cx="12" cy="8" r="4"/><path d="M20 21a8 8 0 1 0-16 0"/>
+              </svg>
+              <span class="upload-main-text">Upload photo</span>
+              <span class="upload-hint">JPG, PNG (max 5MB)</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Background Image -->
+        <div class="field-group">
+          <label class="field-label">Background Image</label>
+          <div class="upload-wrapper" (click)="bgInput.click()">
+            <input #bgInput type="file" accept="image/*" class="file-input-hidden" (change)="onBackgroundImageChange($event)" />
+            <div class="upload-preview" *ngIf="backgroundImagePreview">
+              <img [src]="backgroundImagePreview" alt="Background preview" class="image-preview banner-preview" />
+              <span class="preview-label">Click to change</span>
+            </div>
+            <div class="upload-content" *ngIf="!backgroundImagePreview">
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" class="upload-icon">
+                <rect width="18" height="18" x="3" y="3" rx="2"/><circle cx="9" cy="9" r="2"/>
+                <path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/>
+              </svg>
+              <span class="upload-main-text">Upload banner</span>
+              <span class="upload-hint">JPG, PNG (max 5MB)</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Description — full width -->
+        <div class="field-group field-full">
+          <label class="field-label">Description</label>
+          <div class="textarea-wrapper">
+            <textarea formControlName="description" placeholder="Tell the community about yourself, your work, and your expertise..." rows="3"></textarea>
+          </div>
+        </div>
+
+        <!-- Achievements — full width -->
+        <div class="field-group field-full">
+          <label class="field-label">Achievements</label>
+          <div class="textarea-wrapper">
+            <textarea formControlName="achievements" placeholder="Awards, certifications, milestones, years of experience..." rows="3"></textarea>
+          </div>
+        </div>
+
       </div>
 
-        <label>Address:</label>
-      <input formControlName="address" type="text" placeholder="kathmandu, nepal" />
+      <button class="save-btn" type="submit" [disabled]="profileForm.invalid">
+        Save Profile
+      </button>
 
-        <label>Phonenumber:</label>
-      <input formControlName="phone" type="text" placeholder="kathmandu, nepal" />
-
-    
-
-      
-     <label>Profile Image:</label>
-      <input type="file" (change)="onProfileImageChange($event)" />
-
-      <label>Profile Background Image URL:</label>
-     <input type="file" (change)="onBackgroundImageChange($event)" />
-
-      <label>Role:</label>
-     <select formControlName="role" type="text"  placeholder="Farmer / Agronomist / Researcher">
-        <option value="Farmer">Farmer</option>
-        <option value="Agronomist">Agronomist</option>
-        <option value="Soil Scientist">Soil Scientist</option>
-        <option value="Agricultural Engineer">Agricultural Engineer</option>
-        <option value="Agricultural Equipments Supplier">Agricultural Equipments Supplier</option>
-      </select>
-
-      <label>Description:</label>
-      <textarea formControlName="description" placeholder="Tell us about yourself..."></textarea>
-
-      <label>Achievements:</label>
-      <textarea formControlName="achievements" placeholder="Awards, experience, milestones..."></textarea>
-
-    
-      <button class="profile-btn" (click)="updateProfile($event)" type="submit">save profile</button>
     </form>
+
   </div>
 
-  <!-- RIGHT -->
-  <div class="profile-right"></div>
 </div>
-

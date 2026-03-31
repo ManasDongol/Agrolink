@@ -253,36 +253,87 @@
               </div>
 
               <!-- Comments section -->
-              @if(post.commentsOpen) {
-                <div class="comments-section">
-                  <div class="comments-list">
-                    <div class="comment-item" *ngFor="let comment of post.comments">
-                      <img class="comment-avatar" [src]="getProfileImage(comment.author?.profilePictureUrl)" alt="" />
-                      <div class="comment-body">
-                        <div class="comment-top">
-                          <span class="comment-username">{{ comment.author?.username }}</span>
-                          <span class="comment-date">{{ comment.created | date:'short' }}</span>
-                          <button
-                            *ngIf="comment.author?.userId === myuserId"
-                            class="comment-menu-btn"
-                            (click)="deleteComment(comment)"
-                            title="Delete">
-                            ⋮
-                          </button>
-                        </div>
-                        <p class="comment-text">{{ comment.content }}</p>
-                        <button class="comment-reply-btn" (click)="replyTo(comment)">Reply</button>
-                      </div>
-                    </div>
-                  </div>
+             @if(post.commentsOpen) {
+  <div class="comments-section">
+    <div class="comments-list">
+      <div class="comment-item" *ngFor="let comment of post.comments">
+        <img class="comment-avatar" [src]="getProfileImage(comment.author?.profilePictureUrl)" alt=""/>
+        <div class="comment-body">
+          <div class="comment-top">
+            <span class="comment-username">{{ comment.author?.username }}</span>
+            <span class="comment-date">{{ comment.created | date:'short' }}</span>
+            <button
+              *ngIf="comment.author?.userId === myuserId"
+              class="comment-menu-btn"
+              (click)="deleteComment(comment)"
+              title="Delete">⋮
+            </button>
+          </div>
+          <p class="comment-text">{{ comment.content }}</p>
 
-                  <!-- Add comment input -->
-                  <div class="comment-input-row">
-                    <input class="comment-input" type="text" placeholder="Write a comment..." #commentInput />
-                    <button class="btn-green-sm" (click)="Addcomments(post, commentInput.value)">Post</button>
+          <div class="comment-actions">
+            <button class="comment-reply-btn" (click)="replyTo(comment)">
+              Reply {{ comment.replies.length > 0 ? '(' + comment.replies.length + ')' : '' }}
+            </button>
+            <button
+              *ngIf="comment.replies.length > 0"
+              class="comment-reply-btn"
+              (click)="comment.showReplies = !comment.showReplies">
+              {{ comment.showReplies ? 'Hide replies' : 'Show replies' }}
+            </button>
+          </div>
+
+          <!-- Reply input -->
+          @if(comment.showReplyInput) {
+            <div class="reply-input-row">
+              <input
+                class="comment-input reply-input"
+                type="text"
+                placeholder="Write a reply..."
+                [(ngModel)]="replyContents[comment.commentId]"
+              />
+              <button
+                class="btn-green-sm"
+                (click)="addReply(comment, replyContents[comment.commentId])">
+                Reply
+              </button>
+            </div>
+          }
+
+          <!-- Replies list -->
+          @if(comment.showReplies && comment.replies.length > 0) {
+            <div class="replies-list">
+              <div class="comment-item reply-item" *ngFor="let reply of comment.replies">
+                <img class="comment-avatar comment-avatar-sm"
+                     [src]="getProfileImage(reply.author?.profilePictureUrl)" alt=""/>
+                <div class="comment-body">
+                  <div class="comment-top">
+                    <span class="comment-username">{{ reply.author?.username }}</span>
+                    <span class="comment-date">{{ reply.created | date:'short' }}</span>
+                    <button
+                      *ngIf="reply.author?.userId === myuserId"
+                      class="comment-menu-btn"
+                      (click)="deleteComment(reply)"
+                      title="Delete">⋮
+                    </button>
                   </div>
+                  <p class="comment-text">{{ reply.content }}</p>
                 </div>
-              }
+              </div>
+            </div>
+          }
+
+        </div>
+      </div>
+    </div>
+
+    <!-- Add top-level comment -->
+    <div class="comment-input-row">
+      <input class="comment-input" type="text" placeholder="Write a comment..." #commentInput/>
+      <button class="btn-green-sm" (click)="Addcomments(post, commentInput.value)">Post</button>
+    </div>
+  </div>
+}
             </div>
           </div>
         }

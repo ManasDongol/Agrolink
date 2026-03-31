@@ -43,5 +43,14 @@ export class CommentService {
   // Delete a comment
   deleteComment(commentId: string): Observable<void> {
     return this.http.delete<void>(`${this.baseUrl}/${commentId}`);
-  }
+  }//#endregion
+
+  
+   addReply(dto: CommentCreateDto) {
+  return this.http.post<ReturnComment>(`${this.baseUrl}`, dto);
+}
+
+getReplies(commentId: string) {
+  return this.http.get<Comment[]>(`${this.baseUrl}/${commentId}/replies`);
+}
 }

@@ -37,6 +37,10 @@ isSearching: boolean = false;
 filteredConversations: any[] = [];
 filteredConnections: any[] = [];
 
+imagePreview: string | null = null;
+selectedFile: File | null = null;
+isUploadingImage: boolean = false;
+
 private searchSubject = new Subject<string>();
 
   @ViewChild('messagesList') private messagesList!: ElementRef;
@@ -127,13 +131,12 @@ private searchSubject = new Subject<string>();
 
   const messageToSend = this.newMessage.trim();
 
-  // Send via service
   this.messagesService.sendMessage(this.UserId, this.receiverId, messageToSend);
 
   // Update last message locally for the sidebar
   const conv = this.recentConversations[this.selectedConversationIndex];
   if (conv) {
-    // If lastMessage doesn't exist yet, create it
+   
      var currentdate = new Date();
     if (conv.lastMessage) {
    
@@ -213,5 +216,103 @@ startChatFromSearch(conn: any) {
   this.selectConversation(newConv,0);
 }
 
+
+onFileSelected(event: Event) {
+  const input = event.target as HTMLInputElement;
+  if (!input.files?.length) return;
+
+  const file = input.files[0];
+  const allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
+
+  if (!allowedTypes.includes(file.type)) {
+    alert('Only image files are allowed.');
+    return;
+  }
+
+  this.selectedFile = file;
+
+  // Optimistic preview
+  const reader = new FileReader();
+  reader.onload = () => {
+    this.imagePreview = reader.result as string;
+  };
+  reader.readAsDataURL(file);
+}
+
+cancelImagePreview() {
+  this.selectedFile = null;
+  this.imagePreview = null;
+}
+
+sendImage() {
+  if (!this.selectedFile || !this.currentConversationId) return;
+
+  const file = this.selectedFile;
+
+  // 1. Optimistically add to UI immediately
+  const optimisticMsg: MessageDto = {
+    messageId: 'temp-img-' + Date.now(),
+    conversationId: this.messagesService.currentConversationId,
+    senderId: this.UserId,
+    content: this.imagePreview!,   // local blob URL for instant render
+    sent: new Date().toISOString(),
+    isImage: true
+  };
+  this.openedMessages = [...this.openedMessages, optimisticMsg];
+
+  // Clear preview immediately
+  this.cancelImagePreview();
+
+  // 2. Upload to server
+  this.isUploadingImage = true;
+  this.messagesService.sendImage(file, this.messagesService.currentConversationId, this.UserId)
+    .subscribe({
+      next: ({ imageUrl }) => {
+        this.isUploadingImage = false;
+
+        // Replace blob URL with real server URL in message list
+        const idx = this.openedMessages.findIndex(m => m.messageId === optimisticMsg.messageId);
+        if (idx !== -1) {
+          this.openedMessages[idx] = {
+            ...this.openedMessages[idx],
+            content: this.apiurl + imageUrl,   // real CDN/server URL
+            messageId: 'img-confirmed-' + Date.now()
+          };
+          this.openedMessages = [...this.openedMessages]; // trigger change detection
+        }
+
+        // 3. Notify receiver via SignalR (lightweight — just the URL, no binary)
+        this.messagesService.notifyImageSent(
+          this.receiverId,
+          this.messagesService.currentConversationId,
+          imageUrl
+        );
+
+        // Update sidebar last message
+        const conv = this.recentConversations[this.selectedConversationIndex];
+        if (conv?.lastMessage) {
+          conv.lastMessage.content = '📷 Image';
+          conv.lastMessage.sent = new Date().toString();
+        }
+      },
+      error: (err) => {
+        this.isUploadingImage = false;
+        console.error('Image upload failed', err);
+
+        // Mark optimistic bubble as failed
+        const idx = this.openedMessages.findIndex(m => m.messageId === optimisticMsg.messageId);
+        if (idx !== -1) {
+          this.openedMessages[idx] = {
+            ...this.openedMessages[idx],
+            messageId: 'img-failed-' + Date.now()
+          };
+        }
+      }
+    });
+}
+
+get currentConversationId(): string {
+  return this.messagesService.currentConversationId;
+}
 
 }

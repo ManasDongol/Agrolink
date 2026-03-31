@@ -1,4 +1,6 @@
-﻿using AgroLink.Application.DTOs;
+﻿using System.Security.Claims;
+using AgroLink.Application.DTOs;
+using AgroLink.Application.DTOs.Messages;
 using AgroLink.Application.Services;
 using AgroLink.Domain.Entities;
 using Microsoft.AspNetCore.Mvc;
@@ -16,6 +18,7 @@ public class MessageController(MessageService _service): ControllerBase
         return Ok(result);
     }
 
+    
     [HttpGet("messages/{conversationId}")]
     public async Task<IActionResult> GetMessages(Guid conversationId)
     {
@@ -50,5 +53,21 @@ public class MessageController(MessageService _service): ControllerBase
         var conversation = await _service.CreateConversation(dto.User1Id, dto.User2Id);
     
         return Ok(conversation);
+    }
+
+    [HttpPost("sendImage")]
+    public async Task<IActionResult> SendImage([FromForm] SendImageDto dto)
+    {
+        var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+        if (userId == null)
+            return Unauthorized();
+
+        if (dto.File == null || dto.File.Length == 0)
+            return BadRequest("No file provided.");
+
+        var imageUrl = await _service.UploadImage(dto.File, userId, dto.ConversationId.ToString());
+
+        return Ok(new { imageUrl });
     }
 }

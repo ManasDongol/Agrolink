@@ -23,13 +23,15 @@ import { ToastService } from '../../shared/toast/toast.service';
 export class Login implements OnInit {
   loginForm!: FormGroup;
 
-  isLoading: boolean= false;
+  isLoading: boolean = false;
+  showForgotModal: boolean = false;
+  showPassword: boolean = false;
 
   constructor(
     private fb: FormBuilder,
     private auth: Auth,
     private router: Router,
-    private ToastService : ToastService
+    private ToastService: ToastService
   ) {}
 
   ngOnInit(): void {
@@ -43,11 +45,30 @@ export class Login implements OnInit {
     this.loginForm.reset();
   }
 
+  togglePassword() {
+    this.showPassword = !this.showPassword;
+  }
+
+  openForgotModal() {
+    this.showForgotModal = true;
+  }
+
+  closeForgotModal() {
+    this.showForgotModal = false;
+  }
+
+  onForgotPassword() {
+    // TODO: wire up your password reset service here
+    this.ToastService.success('Reset link sent!', 'Check your registered email for the reset link.');
+    this.closeForgotModal();
+  }
+
   onlogin() {
     this.isLoading = true;
 
     if (this.loginForm.invalid) {
       this.loginForm.markAllAsTouched();
+      this.isLoading = false;
       return;
     }
 
@@ -61,27 +82,24 @@ export class Login implements OnInit {
         this.auth.setAuthenticated(true);
         this.isLoading = false;
 
-        // After successful login, check the current user's type
         this.auth.checkAuth().subscribe({
           next: user => {
             if (user.userType === 'Admin' || user.userType === 'SuperAdmin') {
-                this.ToastService.success('login successful!','welcome to agrolink!');
+              this.ToastService.success('Login successful!', 'Welcome to Agrolink!');
               this.router.navigate(['/admin']);
             } else {
-                this.ToastService.success('login successful!','welcome to agrolink!');
+              this.ToastService.success('Login successful!', 'Welcome to Agrolink!');
               this.router.navigate(['/feed']);
             }
           },
           error: () => {
-            // Fallback to normal user feed if role cannot be determined
-          
             this.router.navigate(['/feed']);
           }
         });
       },
       error: err => {
-         this.isLoading =false;
-        this.ToastService.error('login failed!','password or username doesnt match!');
+        this.isLoading = false;
+        this.ToastService.error('Login failed!', 'Password or username doesn\'t match!');
         this.clearTextfields();
         console.error(err);
       },

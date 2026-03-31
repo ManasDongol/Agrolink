@@ -74,17 +74,19 @@
     <div class="item-avatar">
       <img [src]="getUserprofile(conv.partnerProfile)" alt="{{ conv.partnerName }}" />
     </div>
-    <div class="item-info">
-      <div class="item-top-row">
-        <span class="item-name">{{ conv.partnerName }}</span>
-        <span class="item-time" *ngIf="conv.lastMessage">
-          {{ conv.lastMessage.sent | date:'shortTime' }}
-        </span>
-      </div>
-      <p class="item-last-msg">
-        {{ conv.lastMessage ? conv.lastMessage.content : 'Start a conversation' }}
-      </p>
-    </div>
+   <div class="item-info">
+  <div class="item-top-row">
+    <span class="item-name">{{ conv.partnerName }}</span>
+    <span class="item-time" *ngIf="conv.lastMessage">
+      {{ conv.lastMessage.sent | date:'shortTime' }}  <!-- ← always show time, separate from content -->
+    </span>
+  </div>
+  <p class="item-last-msg">
+    {{ conv.lastMessage 
+        ? (conv.lastMessage.isImage ? 'Sent an image' : conv.lastMessage.content)
+        : 'Start a conversation' }}
+  </p>
+</div>
   </div>
 </ng-container>
         <!-- No conversations yet — show connections -->
@@ -123,7 +125,7 @@
           </div>
           <div class="header-info">
             <h3>{{ OpenedConversationUsername }}</h3>
-            <span class="online-dot"></span><span class="online-label">Online</span>
+           
           </div>
         </ng-container>
         <ng-template #noChat>
@@ -142,34 +144,81 @@
           <p>Select a conversation to start chatting</p>
         </div>
 
-        <div #messagesList class="messages-list" *ngIf="OpenedConversation">
-          <div
-            class="message-bubble"
-            *ngFor="let msg of openedMessages"
-            [class.sent]="msg.senderId === UserId"
-            [class.received]="msg.senderId !== UserId">
-            <p>{{ msg.content }}</p>
-          </div>
-        </div>
-      </div>
+       <div class="messages-list" #messagesList *ngIf="OpenedConversation">
+  <div
+    class="message-bubble"
+    *ngFor="let msg of openedMessages"
+    [class.sent]="msg.senderId === UserId"
+    [class.received]="msg.senderId !== UserId">
+    
+    <!-- Image message -->
+    <img
+      *ngIf="msg.isImage"
+      [src]="msg.content"
+      class="message-image"
+      alt="image"
+    />
+    <!-- Text message -->
+    <p *ngIf="!msg.isImage">{{ msg.content }}</p>
+  </div>
+</div>
 
-      <!-- Input bar -->
-      <div class="input-bar">
-        <input
-          type="text"
-          class="message-input"
-          placeholder="Type a message..."
-          [(ngModel)]="newMessage"
-          (keyup.enter)="sendMessage()"
-          [disabled]="!OpenedConversation"
-        />
-        <button class="send-btn" (click)="sendMessage()" [disabled]="!newMessage.trim() || !OpenedConversation">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-            <line x1="22" y1="2" x2="11" y2="13"/>
-            <polygon points="22 2 15 22 11 13 2 9 22 2"/>
-          </svg>
-        </button>
-      </div>
+     <!-- Replace the existing input-bar -->
+<div class="input-bar">
+
+  <!-- Image preview above input -->
+  <div class="image-preview-bar" *ngIf="imagePreview">
+    <img [src]="imagePreview" class="preview-thumb" alt="preview" />
+    <button class="cancel-preview-btn" (click)="cancelImagePreview()">
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+        <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+      </svg>
+    </button>
+    <span class="uploading-label" *ngIf="isUploadingImage">Sending...</span>
+  </div>
+
+  <div class="input-row">
+    <!-- Hidden file input -->
+    <input
+      type="file"
+      #fileInput
+      accept="image/*"
+      style="display:none"
+      (change)="onFileSelected($event)"
+    />
+
+    <!-- Paperclip button -->
+    <button
+      class="attach-btn"
+      (click)="fileInput.click()"
+      [disabled]="!OpenedConversation"
+      title="Send image">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66L9.41 17.41a2 2 0 0 1-2.83-2.83l8.49-8.49"/>
+      </svg>
+    </button>
+
+    <input
+      type="text"
+      class="message-input"
+      placeholder="Type a message..."
+      [(ngModel)]="newMessage"
+      (keyup.enter)="imagePreview ? sendImage() : sendMessage()"
+      [disabled]="!OpenedConversation"
+    />
+
+    <!-- Send button: sends image if preview exists, otherwise text -->
+    <button
+      class="send-btn"
+      (click)="imagePreview ? sendImage() : sendMessage()"
+      [disabled]="(!newMessage.trim() && !imagePreview) || !OpenedConversation">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+        <line x1="22" y1="2" x2="11" y2="13"/>
+        <polygon points="22 2 15 22 11 13 2 9 22 2"/>
+      </svg>
+    </button>
+  </div>
+</div>
 
     </div>
   </div>

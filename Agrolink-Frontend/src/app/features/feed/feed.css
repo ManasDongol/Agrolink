@@ -805,3 +805,36 @@
   .feed-controls { width: 100%; flex-wrap: wrap; }
   .view-toggles { flex-wrap: wrap; }
 }
+
+.replies-list {
+  margin-left: 28px;
+  margin-top: 8px;
+  border-left: 2px solid var(--color-border-tertiary);
+  padding-left: 12px;
+}
+
+.reply-item {
+  margin-top: 8px;
+}
+
+.comment-avatar-sm {
+  width: 24px;
+  height: 24px;
+}
+
+.reply-input-row {
+  display: flex;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.reply-input {
+  font-size: 13px;
+  padding: 6px 10px;
+}
+
+.comment-actions {
+  display: flex;
+  gap: 12px;
+  margin-top: 4px;
+}

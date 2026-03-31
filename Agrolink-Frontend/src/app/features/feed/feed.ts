@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink, Router } from "@angular/router";
-import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { FeedService } from './feed.service';
 import { Post, CommentCreateDto, Comment } from './feed.models';
 import { environment } from '../../../environments/environments';
@@ -9,10 +9,11 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { Auth } from '../../core/Services/Auth/auth';
 import {CommentService} from './Comments/comment.service';
 
+
 @Component({
   selector: 'app-feed',
   standalone: true,
-  imports: [CommonModule, RouterLink, ReactiveFormsModule],
+  imports: [CommonModule, RouterLink, ReactiveFormsModule,FormsModule],
   templateUrl: './feed.html',
   styleUrl: './feed.css',
   providers: [FeedService]
@@ -45,12 +46,15 @@ export class Feed implements OnInit {
 
   apiurl: string = environment.apiUrl;
 
+  replyContents: { [commentId: string]: string } = {};
+
   constructor(
     private feedService: FeedService,
     private fb: FormBuilder,
     private router: Router,
     private auth: Auth,
     private commentService: CommentService
+    
   ) {
     this.postForm = this.fb.group({
       title: ['', [Validators.required, Validators.minLength(5)]],
@@ -232,13 +236,21 @@ this.currentpostId=postId;
   }
 
   openComments(post: Post) {
-    post.toggleComments();
-      if (post.commentsOpen && post.comments.length === 0) {
+  post.toggleComments();
+  if (post.commentsOpen && post.comments.length === 0) {
     this.commentService.getComments(post.postId).subscribe((res) => {
-      post.comments = res.map(c => new Comment(c as Partial<Comment>));
+      post.comments = res.map(c => {
+        const comment = new Comment(c as Partial<Comment>);
+        // ← map nested replies from the API response
+        if (c.replies && c.replies.length > 0) {
+          comment.replies = c.replies.map(r => new Comment(r as Partial<Comment>));
+          comment.showReplies = true;  // auto-show on load
+        }
+        return comment;
+      });
     });
   }
-  }
+}
 
 
   getProfileImage(path?: string): string {
@@ -297,11 +309,43 @@ toggleLike(post: Post) {
     });
   }
 
-  replyTo(comment : Comment){
+  replyTo(comment: Comment) {
+  // Toggle the reply input for this specific comment
+  comment.showReplyInput = !comment.showReplyInput;
 
+  // Load replies if opening and not yet loaded
+  if (comment.showReplyInput && comment.replies.length === 0) {
+    this.commentService.getReplies(comment.commentId).subscribe(replies => {
+      comment.replies = replies.map(r => new Comment(r as Partial<Comment>));
+      comment.showReplies = true;
+    });
   }
+}
 
-  deleteComment(comment: Comment){
+addReply(comment: Comment, content: string) {
+  if (!content?.trim()) return;
 
-  }
+  const dto: CommentCreateDto = {
+    postId: comment.postId,
+    content: content.trim(),
+    parentCommentId: comment.commentId  // ← key difference from addComment
+  };
+
+  this.commentService.addReply(dto).subscribe(newReply => {
+    comment.replies.push(new Comment(newReply as Partial<Comment>));
+    comment.showReplies = true;
+    this.replyContents[comment.commentId] = ''; // clear input
+  });
+}
+
+deleteComment(comment: Comment) {
+  this.commentService.deleteComment(comment.commentId).subscribe(() => {
+    // Find which post owns this comment and remove it
+    const post = this.posts.find(p => p.postId === comment.postId);
+    if (post) {
+      post.comments = post.comments.filter(c => c.commentId !== comment.commentId);
+      post.commentsCount--;
+    }
+  });
+}
 }

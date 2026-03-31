@@ -18,33 +18,38 @@ namespace AgroLink.API.Controllers
             _service = service;
         }
 
-        // Add a comment
+        // Add a top-level comment OR a reply — same endpoint, ParentCommentId distinguishes them
         [HttpPost]
         public async Task<ActionResult<CommentReturnDto>> AddComment([FromBody] CommentCreateDto dto)
         {
             var userIdString = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
             if (!Guid.TryParse(userIdString, out var userId))
-            {       
                 return Unauthorized();
-            }
 
-            var newcomment=await _service.AddComment(dto.PostId, userId, dto.Content, dto.ParentCommentId);
-            return Ok(newcomment);
+            var comment = await _service.AddComment(dto.PostId, userId, dto.Content, dto.ParentCommentId);
+            return Ok(comment);
         }
 
-        // Get comments for a post
+        // Get top-level comments for a post
         [HttpGet("{postId}")]
         public async Task<IActionResult> GetComments(Guid postId)
         {
-            var comments = await _service.GetCommentsByPost(postId); // we'll add this in service
+            var comments = await _service.GetCommentsByPost(postId);
             return Ok(comments);
         }
 
-        // Delete a comment
+        // ✅ Get replies for a specific comment
+        [HttpGet("{commentId}/replies")]
+        public async Task<IActionResult> GetReplies(Guid commentId)
+        {
+            var replies = await _service.GetRepliesByComment(commentId);
+            return Ok(replies);
+        }
+
         [HttpDelete("{commentId}")]
         public async Task<IActionResult> DeleteComment(Guid commentId)
         {
-            await _service.DeleteComment(commentId); // we'll add this in service
+            await _service.DeleteComment(commentId);
             return NoContent();
         }
     }

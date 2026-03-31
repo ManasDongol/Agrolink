@@ -10,6 +10,28 @@ public class ChatHub: Hub
         Console.WriteLine("Prac CONNECTION ");
         return Task.CompletedTask;
     }
+    public async Task SendImage(string receiverId, string conversationId, string imageUrl)
+    {
+        Console.WriteLine("SendImage HIT");
+        var messageDto = new NewMessageDto
+        {
+            ConversationId = conversationId,
+            SenderId = Context.UserIdentifier,
+            Content = imageUrl,
+            Sent = DateTime.UtcNow,
+            IsImage = true        // ← add this field to NewMessageDto if not there yet
+        };
+
+        try
+        {
+            await Clients.User(receiverId).SendAsync("ReceiveImage", messageDto);
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            throw;
+        }
+    }
     public async Task SendMessage(string receiverId,  string conversationId,string message)
     {
         Console.WriteLine(" SendMessage HIT");

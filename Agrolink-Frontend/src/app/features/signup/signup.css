@@ -1,109 +1,306 @@
 * {
   box-sizing: border-box;
+  margin: 0;
+  padding: 0;
 }
 
-/* PAGE LAYOUT */
+/* ─── PAGE ───────────────────────────────────── */
 .signup-page {
   display: flex;
-  height: 100vh;
+  min-height: 100vh;
   width: 100%;
-}
-
-/* LEFT SIDE */
-.signup-left {
-  width: 50%;
-  padding: 80px 90px;
-  display: flex;
-  flex-direction: column;
+  background-color: #edf2ec;
+  align-items: center;
   justify-content: center;
+  padding: 32px 24px;
 }
 
-.title {
-  font-family: 'Outfit-Semibold';
-  font-size: 36px;
+/* ─── CARD ───────────────────────────────────── */
+.signup-card {
+  background-color: #ffffff;
+  border-radius: 20px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.10);
+  width: 100%;
+  max-width: 780px;
+  padding: 48px 56px 40px;
+}
+
+/* ─── HEADER ─────────────────────────────────── */
+.card-header {
+  display:flex;
+  
+  flex-direction: column;
+  align-items: flex-start;
+  margin-bottom: 32px;
+}
+
+.brand {
+  font-family: 'Outfit', sans-serif;
+  font-weight: 700;
+  font-size: 20px;
   color: #2f7d1f;
-  margin-bottom: 8px;
+  margin-bottom: 16px;
 }
 
-.divider {
-  width: 260px;
-  height: 1px;
-  background-color: #9acb8f;
-  margin-bottom: 40px;
+.heading {
+  font-family: 'Outfit', sans-serif;
+  font-weight: 700;
+  font-size: 30px;
+  color: #1a1a1a;
+  margin-bottom: 4px;
 }
 
-/* FORM */
+.subheading {
+  font-family: 'Outfit', sans-serif;
+  font-weight: 400;
+  font-size: 14px;
+  color: #7a7a7a;
+}
+
+/* ─── FORM GRID ──────────────────────────────── */
 .signup-form {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 0;
 }
 
-label {
-  font-family: 'Outfit-Medium';
-  font-size: 15px;
+.form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  column-gap: 24px;
+  row-gap: 0;
+}
+
+.field-group {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 16px;
+}
+
+/* Upload spans full width */
+.field-full {
+  grid-column: 1 / -1;
+}
+
+/* ─── LABELS ─────────────────────────────────── */
+.field-label {
+  font-family: 'Outfit', sans-serif;
+  font-weight: 500;
+  font-size: 13px;
   color: #2f7d1f;
+  margin-bottom: 6px;
 }
 
-input {
-  height: 36px;
-  border-radius: 6px;
-  border: 1px solid #bdbdbd;
-  padding: 0 12px;
-  font-family: 'Outfit-Medium';
+/* ─── INPUTS ─────────────────────────────────── */
+.input-wrapper {
+  display: flex;
+  align-items: center;
+  height: 46px;
+  border: 1.5px solid #e0e0e0;
+  border-radius: 10px;
+  padding: 0 14px;
+  background-color: #ffffff;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  gap: 10px;
+}
+
+.input-wrapper:focus-within {
+  border-color: #6fd23b;
+  box-shadow: 0 0 0 3px rgba(111, 210, 59, 0.08);
+}
+
+.input-wrapper.error-border {
+  border-color: #e05353;
+}
+
+.input-icon {
+  color: #b0b0b0;
+  flex-shrink: 0;
+}
+
+.input-wrapper input {
+  flex: 1;
+  border: none;
   outline: none;
+  font-family: 'Outfit', sans-serif;
+  font-size: 14px;
+  color: #1a1a1a;
+  background: transparent;
+  height: 100%;
 }
 
-input::placeholder {
-  color: #b5b5b5;
+.input-wrapper input::placeholder {
+  color: #c4c4c4;
 }
 
+/* ─── EYE TOGGLE ─────────────────────────────── */
+.eye-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  color: #b0b0b0;
+  flex-shrink: 0;
+  transition: color 0.15s ease;
+}
 
+.eye-btn:hover {
+  color: #6fd23b;
+}
+
+/* ─── ERROR MSG ──────────────────────────────── */
+.error-msg {
+  font-family: 'Outfit', sans-serif;
+  font-size: 11.5px;
+  color: #e05353;
+  margin-top: 4px;
+  min-height: 16px;
+}
+
+/* ─── UPLOAD ─────────────────────────────────── */
+.upload-wrapper {
+  border: 1.5px dashed #c4ddb8;
+  border-radius: 10px;
+  padding: 20px 16px;
+  cursor: pointer;
+  background-color: #f8fdf5;
+  transition: border-color 0.2s ease, background-color 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 80px;
+}
+
+.upload-wrapper:hover {
+  border-color: #6fd23b;
+  background-color: #f1faeb;
+}
+
+.upload-wrapper.upload-has-file {
+  border-style: solid;
+  border-color: #6fd23b;
+  background-color: #f1faeb;
+}
+
+.file-input-hidden {
+  display: none;
+}
+
+.upload-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+  text-align: center;
+}
+
+.upload-icon {
+  color: #6fd23b;
+}
+
+.upload-main-text {
+  font-family: 'Outfit', sans-serif;
+  font-weight: 500;
+  font-size: 13px;
+  color: #3a3a3a;
+}
+
+.upload-hint {
+  font-family: 'Outfit', sans-serif;
+  font-size: 11.5px;
+  color: #9a9a9a;
+  line-height: 1.5;
+  max-width: 440px;
+}
+
+.upload-file-selected {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+}
+
+.file-icon {
+  color: #2f7d1f;
+  flex-shrink: 0;
+}
+
+.file-name {
+  font-family: 'Outfit', sans-serif;
+  font-size: 13px;
+  font-weight: 500;
+  color: #2f7d1f;
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.file-remove-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #b0b0b0;
+  display: flex;
+  align-items: center;
+  padding: 2px;
+  border-radius: 4px;
+  flex-shrink: 0;
+  transition: color 0.15s ease;
+}
+
+.file-remove-btn:hover {
+  color: #e05353;
+}
+
+/* ─── SUBMIT BUTTON ──────────────────────────── */
 .signup-btn {
-  margin-top: 28px;
-  height: 40px;
+  width: 100%;
+  margin-top: 4px;
+  height: 48px;
   border-radius: 10px;
   border: none;
   background-color: #6fd23b;
-  color: white;
-  font-family: 'Outfit-Semibold';
+  color: #ffffff;
+  font-family: 'Outfit', sans-serif;
+  font-weight: 600;
+  font-size: 15px;
   cursor: pointer;
+  transition: background-color 0.2s ease, transform 0.1s ease;
 }
 
-.signup-btn:hover {
-  background-color: #63c133;
+.signup-btn:hover:not(:disabled) {
+  background-color: #5ec030;
 }
 
+.signup-btn:active:not(:disabled) {
+  transform: scale(0.99);
+}
 
+.signup-btn:disabled {
+  background-color: #b5e89a;
+  cursor: not-allowed;
+}
+
+/* ─── LOGIN LINK ─────────────────────────────── */
 .login-text {
-  margin-top: 22px;
-  font-family: 'Outfit-Medium';
+  margin-top: 20px;
+  font-family: 'Outfit', sans-serif;
   font-size: 14px;
+  color: #6a6a6a;
+  text-align: center;
 }
 
 .login-link {
   color: #6fd23b;
-  cursor: pointer;
-  font-family: 'Outfit-Semibold';
+  font-weight: 600;
+  text-decoration: none;
+  font-family: 'Outfit', sans-serif;
+  margin-left: 4px;
 }
 
-/* RIGHT IMAGE */
-.signup-right {
-  width: 50%;
-  background-image:
-    linear-gradient(
-      rgba(0, 80, 0, 0.6),
-      rgba(0, 80, 0, 0.6)
-    ),
-    url("../../../assets/images/signuppage.jpg");
-  background-size: cover;
-  background-position: center;
-}
-
-
-a{
-    text-decoration: none;
-     color: #6fd23b;
-  cursor: pointer;
-  font-family: 'Outfit-Semibold';
+.login-link:hover {
+  text-decoration: underline;
 }

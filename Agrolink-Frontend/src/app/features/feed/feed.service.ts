@@ -3,6 +3,7 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { Post, PostResponse } from './feed.models';
 import { ReturnStatement } from '@angular/compiler';
+import { CommentCreateDto } from './feed.models';
 
 @Injectable({
     providedIn: 'root'
@@ -54,6 +55,8 @@ export class FeedService {
     getUserPosts(UserID:string){
         return this.http.get<Post[]>(`${this.baseUrl}/${UserID}/getposts`)
     }
+
+
 
     
 }

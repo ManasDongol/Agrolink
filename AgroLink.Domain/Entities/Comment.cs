@@ -19,5 +19,5 @@ public class Comment
     public Guid? ParentCommentId { get; set; }
     public Comment ParentComment { get; set; }
 
-    public ICollection<Comment> Replies { get; set; }
+    public ICollection<Comment> Replies { get; set; } = new List<Comment>();
 }

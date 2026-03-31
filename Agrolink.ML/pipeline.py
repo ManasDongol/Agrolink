@@ -89,6 +89,7 @@ Instructions:
 - Synthesise multiple options if relevant.
 - Fill gaps with your own agricultural knowledge.
 - Never reference "option 1" etc., just answer directly.
+- DONT WRITE "Predicted- crop : , just answer naturally"
 - Be concise and informative.
 """
     response = ollama.chat(
