@@ -7,7 +7,11 @@
   background: #f7f8f5;
   overflow-y: auto;
   box-sizing: border-box;
- /* navbar + tabs */
+  height: 100%;
+}
+
+.disease-container > * {
+  flex-shrink: 0;
 }
 /* ===== Disclaimer Banner ===== */
 .disclaimer-banner {
@@ -179,6 +183,7 @@
   overflow: hidden;
   box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
   animation: fadeInUp 0.3s ease;
+  flex-shrink: 0;
 }
 
 @keyframes fadeInUp {
