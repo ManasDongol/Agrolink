@@ -8,4 +8,5 @@ public class CreatePostDto
     public string Content { get; set; }
     public Guid TagId { get; set; }
     public IFormFile? Image { get; set; }
+    public string Category { get; set; }
 }

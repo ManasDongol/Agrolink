@@ -1,10 +1,15 @@
-
-body,html{
-    padding: 0%;
-    margin: 0%;
-    font-family: 'Outfit-Medium';
+html, body {
+  padding: 0;
+  margin: 0;
+  font-family: 'Outfit-Medium';
+  height: 100%;
+  
 }
 
+app-root {
+  display: block;  /* change from flex to block */
+  height: 100%;
+}
 
 
 
@@ -123,10 +128,10 @@ body[data-theme="dark"] {
     --accent-color: #7aa2ff;
 }
 
-::-webkit-scrollbar {
+.messages-container::-webkit-scrollbar,
+.history-section::-webkit-scrollbar {
     display: none;
 }
-
 .activePage {
     color:aqua;
     size: 200px;;

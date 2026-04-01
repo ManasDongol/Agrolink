@@ -36,12 +36,13 @@
 
     <!-- User grid -->
     <div class="users-grid" *ngIf="!loading; else spinner">
-      <div class="user-card" *ngFor="let user of users">
+      <a [routerLink]="['/userProfile', user.userId]" class="user-card" *ngFor="let user of users">
         <div class="card-avatar">
           <img [src]="apiurl + user.profilePicture || 'assets/default-avatar.png'" alt="User Avatar">
         </div>
         <h3 class="user-name">{{ user.username }}</h3>
         <p class="user-role">{{ user.role }}</p>
+      
         <p class="connections-count">
           <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/>
@@ -66,7 +67,7 @@
           </svg>
           {{ user.isConnected ? 'Connected' : (user.isRequestSent ? 'Pending' : 'Connect') }}
         </button>
-      </div>
+      </a>
     </div>
 
     <!-- Pagination -->
@@ -106,7 +107,7 @@
           <span class="stat-label">Requests</span>
         </div>
       </div>
-      <button class="view-profile-btn">View Profile</button>
+    
     </div>
 
    

@@ -46,7 +46,7 @@ public class PostService(PostRepo postRepo) : IPostService
             Created = DateTime.UtcNow, 
             hasImage = imagePath != null,
             ImagePath = imagePath ?? string.Empty,
-            PostCategory = ""
+            PostCategory = createPostDto.Category
         };
 
         var createdPost = await postRepo.CreatePostAsync(post);

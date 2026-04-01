@@ -1,11 +1,15 @@
-/* ===== Layout ===== */
 .ai-layout {
-    margin-top: 60px;
+  margin-top: 0;  /* remove margin-top */
+  position: fixed;
+  top: 60px;      /* navbar height */
+  left: 0;
+  right: 0;
+  bottom: 0;
   display: flex;
-  height: calc(100vh - 64px); /* subtract navbar height */
-  background:  var(--main-color);;
+  background: var(--main-color);
   font-family: 'DM Sans', 'Segoe UI', sans-serif;
   overflow: hidden;
+
 }
 
 /* ===== Sidebar ===== */
@@ -166,7 +170,7 @@
   flex: 1;
   display: flex;
   flex-direction: column;
-  overflow: hidden;
+ overflow: visible; 
   position: relative;
 }
 
@@ -429,3 +433,178 @@
 .history-section::-webkit-scrollbar-thumb { background: #d1d9cc; border-radius: 4px; }
 .messages-container::-webkit-scrollbar-track,
 .history-section::-webkit-scrollbar-track { background: transparent; }
+
+/* Query counter */
+.query-counter {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 12px;
+  background: white;
+  border-radius: 10px;
+  border: 1px solid #e8ede4;
+  margin-bottom: 4px;
+}
+
+.query-bar {
+  flex: 1;
+  height: 5px;
+  background: #e8ede4;
+  border-radius: 99px;
+  overflow: hidden;
+}
+
+.query-fill {
+  height: 100%;
+  background: #3ec73e;
+  border-radius: 99px;
+  transition: width 0.3s ease;
+}
+
+.query-text {
+  font-size: 11.5px;
+  color: #9ca3af;
+  white-space: nowrap;
+}
+
+/* Image in message */
+.message-image {
+  max-width: 240px;
+  border-radius: 10px;
+  display: block;
+  margin-bottom: 6px;
+}
+
+/* Image preview bar */
+.image-preview-bar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  max-width: 740px;
+  margin-bottom: 4px;
+}
+
+.preview-thumb {
+  width: 52px;
+  height: 52px;
+  object-fit: cover;
+  border-radius: 8px;
+  border: 1.5px solid #e8ede4;
+}
+
+.remove-image-btn {
+  background: #fee2e2;
+  border: none;
+  border-radius: 6px;
+  padding: 5px;
+  cursor: pointer;
+  color: #ef4444;
+  display: flex;
+  align-items: center;
+}
+
+/* Image upload button */
+.image-upload-btn {
+  cursor: pointer;
+  color: #9ca3af;
+  display: flex;
+  align-items: center;
+  padding: 4px;
+  border-radius: 8px;
+  transition: color 0.15s, background 0.15s;
+}
+
+.image-upload-btn:hover {
+  color: #3ec73e;
+  background: #f0faf0;
+}
+
+.image-upload-btn.disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+/* Locked notice */
+.locked-notice {
+  font-size: 13px;
+  color: #d97706;
+  background: #fffbeb;
+  border: 1px solid #fde68a;
+  border-radius: 8px;
+  padding: 8px 14px;
+  width: 100%;
+  max-width: 740px;
+  text-align: center;
+}
+
+.input-wrapper.locked {
+  opacity: 0.6;
+  pointer-events: none;
+}
+
+/* Delete button in sidebar */
+.delete-chat-btn {
+  margin-left: auto;
+  background: none;
+  border: none;
+  color: #9ca3af;
+  cursor: pointer;
+  padding: 3px;
+  border-radius: 4px;
+  display: none;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.history-item:hover .delete-chat-btn {
+  display: flex;
+}
+
+.delete-chat-btn:hover {
+  color: #ef4444;
+  background: #fee2e2;
+}
+
+.mode-tabs {
+  display: flex;
+  gap: 4px;
+  padding: 10px 16px;
+  border-bottom: 1px solid #e8ede4;
+  background: white;
+}
+
+.mode-tab {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  padding: 8px 16px;
+  border: none;
+  border-radius: 8px;
+  font-size: 13.5px;
+  font-weight: 500;
+  color: #6b7280;
+  background: transparent;
+  cursor: pointer;
+  transition: all 0.15s;
+  font-family: inherit;
+}
+
+.mode-tab:hover {
+  background: #f0f6ec;
+  color: #2d7a2d;
+}
+
+.mode-tab.active {
+  background: #e8f5e8;
+  color: #2d7a2d;
+  font-weight: 600;
+}
+
+
+app-disease-detection {
+  display: block;
+  height: calc(100vh - 60px - 49px);
+  overflow: hidden;
+}

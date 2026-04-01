@@ -2,10 +2,13 @@ from fastapi import FastAPI
 from pydantic import BaseModel
 from typing import List
 
-
 from pipeline import run_pipeline
+from disease_routes import router as disease_router
 
 app = FastAPI()
+
+# Include disease routes
+app.include_router(disease_router, prefix="/disease", tags=["Disease Detection"])
 
 
 # --------------------
@@ -13,6 +16,8 @@ app = FastAPI()
 # --------------------
 class CropRequest(BaseModel):
     features: List[float]  # [N,P,K,temp,humidity,ph,rainfall]
+
+
 class QueryRequest(BaseModel):
     query: str
 
@@ -34,15 +39,16 @@ class CropResult(BaseModel):
 
 
 # --------------------
-# Endpoint
+# Root endpoint
 # --------------------
-
-
-
 @app.get("/")
 def root():
     return {"status": "AgroLink RAG API is running"}
 
+
+# --------------------
+# RAG / LLM endpoint
+# --------------------
 @app.post("/ask")
 def ask(request: QueryRequest):
     answer = run_pipeline(request.query)

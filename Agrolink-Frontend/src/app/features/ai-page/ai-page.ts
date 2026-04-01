@@ -2,6 +2,7 @@ import { Component, ViewChild, ElementRef, AfterViewChecked, OnInit } from '@ang
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { AiService } from '../../core/Services/AiService/ai-service';
+import { DiseaseDetection } from './disease-detection/disease-detection';
 
 interface Message {
   role: 'user' | 'ai';
@@ -20,13 +21,15 @@ interface ChatHistory {
 @Component({
   selector: 'app-ai-page',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule,DiseaseDetection],
   templateUrl: './ai-page.html',
   styleUrl: './ai-page.css',
 })
 export class AiPage implements AfterViewChecked, OnInit {
   @ViewChild('messagesContainer') private messagesContainer!: ElementRef;
   @ViewChild('inputField') private inputField!: ElementRef;
+
+  mode: 'chat' | 'disease' = 'chat';
 
   userInput = '';
   messages: Message[] = [];
@@ -186,7 +189,7 @@ export class AiPage implements AfterViewChecked, OnInit {
           this.conversationLocked = true;
           this.messages.push({
             role: 'ai',
-            content: '⚠️ This conversation has reached the 10 question limit. Please start a new chat.'
+            content: ' This conversation has reached the 10 question limit. Please start a new chat.'
           });
         }
 
@@ -221,7 +224,7 @@ export class AiPage implements AfterViewChecked, OnInit {
           this.conversationLocked = true;
           this.messages.push({
             role: 'ai',
-            content: '⚠️ This conversation has reached the 10 question limit. Please start a new chat.'
+            content: 'This conversation has reached the 10 question limit. Please start a new chat.'
           });
         }
 

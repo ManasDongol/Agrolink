@@ -270,4 +270,26 @@ public class AiController : ControllerBase
 
         return NoContent();
     }
+    
+    [HttpPost("disease/detect")]
+    public async Task<IActionResult> DetectDisease([FromForm] IFormFile image)
+    {
+        var allowedTypes = new[] { "image/jpeg", "image/png", "image/webp" };
+        if (!allowedTypes.Contains(image.ContentType))
+            return BadRequest(new { error = "Only JPG, PNG and WEBP allowed." });
+
+        if (image.Length > 5 * 1024 * 1024)
+            return BadRequest(new { error = "Image must be under 5MB." });
+
+        using var form = new MultipartFormDataContent();
+        using var stream = image.OpenReadStream();
+        form.Add(new StreamContent(stream), "file", image.FileName);
+
+        var pyResponse = await _httpClient.PostAsync("http://localhost:8000/disease/predict", form);
+        if (!pyResponse.IsSuccessStatusCode)
+            return StatusCode(502, new { error = "Disease detection service unavailable." });
+
+        var result = await pyResponse.Content.ReadFromJsonAsync<object>();
+        return Ok(result);
+    }
 }

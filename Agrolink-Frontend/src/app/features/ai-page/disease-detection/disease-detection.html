@@ -1,0 +1,108 @@
+<!-- disease-detection.component.html -->
+<div class="disease-container">
+
+ 
+
+  <!-- Always-present hidden input (outside ng-container so #fileInput is always in DOM) -->
+  <input #fileInput type="file" accept="image/jpeg,image/png,image/webp"
+    (change)="onImageSelected($event)" hidden />
+
+  <!-- Upload Area -->
+  <div class="upload-section">
+    <div
+      class="upload-zone"
+      [class.has-image]="imagePreview"
+      (click)="!imagePreview && fileInput.click()">
+
+      <ng-container *ngIf="!imagePreview">
+        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" stroke-width="1.5">
+          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+          <polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/>
+        </svg>
+        <p class="upload-label">Click to upload a plant image</p>
+        <p class="upload-hint">JPG, PNG or WEBP · Max 5MB</p>
+      </ng-container>
+
+      <ng-container *ngIf="imagePreview">
+        <img [src]="imagePreview" class="preview-image" alt="Selected plant" />
+        <div class="image-overlay">
+          <button class="overlay-clear-btn" (click)="$event.stopPropagation(); clearImage()">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+              <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+            </svg>
+            Remove
+          </button>
+        </div>
+      </ng-container>
+    </div>
+
+    <button class="analyze-btn" (click)="analyze()"
+      [disabled]="!selectedImage || isLoading">
+      <ng-container *ngIf="!isLoading">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+          <circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/>
+        </svg>
+        Analyze Plant
+      </ng-container>
+      <ng-container *ngIf="isLoading">
+        <span class="spinner"></span>
+        Analyzing...
+      </ng-container>
+    </button>
+  </div>
+
+  <!-- Result Card -->
+  <div class="result-card" *ngIf="result">
+    <div class="result-header">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#16a34a" stroke-width="2">
+        <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+        <polyline points="22 4 12 14.01 9 11.01"/>
+      </svg>
+      Analysis Complete
+    </div>
+    <div class="result-body">
+      <div class="result-label">Detected Condition</div>
+      <div class="result-disease">{{ result.predicted_class }}</div>
+
+      <div class="result-label" style="margin-top: 16px">Confidence</div>
+      <div class="confidence-bar-wrap">
+        <div class="confidence-bar">
+          <div class="confidence-fill"
+            [style.width.%]="result.confidence"
+            [style.background]="confidenceColor">
+          </div>
+        </div>
+        <span class="confidence-value" [style.color]="confidenceColor">
+          {{ result.confidence }}%
+        </span>
+      </div>
+
+      <p class="result-note" *ngIf="result.confidence < 60">
+         Low confidence — try uploading a clearer, closer image of the affected area.
+      </p>
+    </div>
+  </div>
+
+   <!-- Disclaimer Banner -->
+  <div class="disclaimer-banner">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/>
+      <line x1="12" y1="16" x2="12.01" y2="16"/>
+    </svg>
+    <span>
+      This tool provides AI-assisted analysis only — not a professional diagnosis.
+      For best results, upload a <strong>clear, well-lit, close-up photo</strong> of the affected leaf or plant part.
+      Always consult an agronomist before taking action.
+    </span>
+  </div>
+
+  <!-- Error -->
+  <div class="error-card" *ngIf="error">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#dc2626" stroke-width="2">
+      <circle cx="12" cy="12" r="10"/>
+      <line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/>
+    </svg>
+    {{ error }}
+  </div>
+
+</div>

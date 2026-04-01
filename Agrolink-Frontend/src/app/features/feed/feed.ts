@@ -85,6 +85,7 @@ export class Feed implements OnInit {
 
         if (this.currentPage === 1) {
           this.posts = mappedPosts;
+          console.log(this.posts[0])
         } else {
           this.posts = [...this.posts, ...mappedPosts];
         }
@@ -105,7 +106,7 @@ export class Feed implements OnInit {
   this.postForm.patchValue({
     title: post.title,
     content: post.content,
-    postcategory: post.postcategory
+    postcategory: post.postCategory
   });
 
   this.imagePreview = post.imagePath ? this.apiurl + post.imagePath : null;

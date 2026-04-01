@@ -44,7 +44,7 @@ export class Post {
   created!: string;
   imagePath?: string;
   author!: Author;
-  postcategory!: string;
+  postCategory!: string;
 
   isLiked: boolean = false;
   likesCount: number = 0;

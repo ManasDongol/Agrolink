@@ -118,7 +118,7 @@
       @for(post of userposts; track post) {
         <div class="post-card">
           <h3 class="post-title">{{ post.title }}</h3>
-          <span class="post-tag">{{ post.postcategory }}</span>
+          <span class="post-tag">{{ post.postCategory }}</span>
           @if(post.imagePath) {
             <div class="post-image-container">
               <img [src]="apiurl + post.imagePath" alt="Post Image" class="post-image">

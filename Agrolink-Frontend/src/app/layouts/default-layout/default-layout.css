@@ -1,7 +1,8 @@
-html,body{
-     font-family: 'Outfit-Medium'
-}
+
 .page-container{
 background-color: var(--main-color);
 }
- 
+ :host {
+  display: block;
+  height: 100%;
+}

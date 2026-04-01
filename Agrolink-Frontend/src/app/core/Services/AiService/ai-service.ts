@@ -58,4 +58,10 @@ export class AiService {
   DeleteSession(id: string): Observable<void> {
     return this.http.delete<void>(`${this.baseUrl}/sessions/${id}`);
   }
+
+ DetectDisease(image: File): Observable<any> {
+  const form = new FormData();
+  form.append('image', image); // 'image' to match .NET [FromForm] IFormFile image
+  return this.http.post(`${this.baseUrl}/disease/detect`, form);
+}
 }

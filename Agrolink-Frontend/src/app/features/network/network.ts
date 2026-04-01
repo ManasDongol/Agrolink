@@ -5,11 +5,12 @@ import { NetworkService } from '../../core/Services/Network/network';
 import { NetworkPageDto, NetworkUserDto, ConnectionRequestDto, ProfileStatsDto } from '../../core/Dtos/NetworkDtos';
 import { Auth } from '../../core/Services/Auth/auth';
 import { environment } from '../../../environments/environments';
+import { RouterLink } from '@angular/router';
 
 @Component({
   selector: 'app-network',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule,RouterLink],
   templateUrl: './network.html',
   styleUrl: './network.css'
 })
