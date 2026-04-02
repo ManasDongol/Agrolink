@@ -15,6 +15,7 @@ export interface ConnectionRequestDto {
     fromUserName: string;
     fromUserRole: string;
     fromUserProfilePicture: string;
+   
     sentDate: Date;
 }
 
@@ -30,12 +31,22 @@ export interface NetworkPageDto {
     myProfile: ProfileStatsDto;
     users: NetworkUserDto[];
     requests: ConnectionRequestDto[];
-    sentRequests:ConnectionRequestDto[];
+    sentRequests:SentRequestDto[];
     totalUsers: number;
     currentPage: number;
     totalPages: number;
 }
 
+export interface SentRequestDto {
+    requestId: string;
+  
+    toUserId: string;
+    toUserName: string;
+    toUserRole: string;
+    toUserProfilePicture: string;
+   
+    sentDate: Date;
+}
 
 export interface connectionsDto{
      
@@ -43,5 +54,6 @@ export interface connectionsDto{
     connectedUserID: string;
     connectedUserName : string;
     connectedProfileUrl : string;
+    
 
 }

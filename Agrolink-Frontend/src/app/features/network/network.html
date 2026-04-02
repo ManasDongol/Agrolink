@@ -50,23 +50,23 @@
           </svg>
           {{ user.connectionCount }} connections
         </p>
-        <button
-          class="connect-btn"
-          [disabled]="user.isConnected || user.isRequestSent"
-          [class.connected]="user.isConnected"
-          [class.pending]="user.isRequestSent"
-          (click)="connect(user)">
-          <svg *ngIf="user.isConnected" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-            <polyline points="20 6 9 17 4 12"/>
-          </svg>
-          <svg *ngIf="user.isRequestSent && !user.isConnected" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
-          </svg>
-          <svg *ngIf="!user.isConnected && !user.isRequestSent" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-            <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
-          </svg>
-          {{ user.isConnected ? 'Connected' : (user.isRequestSent ? 'Pending' : 'Connect') }}
-        </button>
+      <button
+  class="connect-btn"
+  [disabled]="user.isConnected"
+  [class.connected]="user.isConnected"
+  [class.pending]="user.isRequestSent"
+  (click)="user.isRequestSent ? openWithdrawModalFromGrid(user) : connect(user)">
+  <svg *ngIf="user.isConnected" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+    <polyline points="20 6 9 17 4 12"/>
+  </svg>
+  <svg *ngIf="user.isRequestSent && !user.isConnected" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+    <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
+  </svg>
+  <svg *ngIf="!user.isConnected && !user.isRequestSent" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+    <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
+  </svg>
+  {{ user.isConnected ? 'Connected' : (user.isRequestSent ? 'Pending' : 'Connect') }}
+</button>
       </a>
     </div>
 
@@ -176,24 +176,20 @@
   }
 
      
-        @for(sentreq of sentrequests;track sentreq){
-        
-            <div class="request-item sent-item">
-              <img [src]="apiurl+sentreq.fromUserProfilePicture" alt="Sent request">
-
-            <div class="request-details">
-              {{sentreq.fromUserName}}
-              <button class="reject-btn" (click)="WithdrawRequest()" title="Decline">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-                <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
-              </svg>
-            </button>
-          
-          </div>
-         
- 
-        </div>
-        }
+    @for(req of sentrequests; track req) {
+  <div class="request-item sent-item">
+    <img [src]="apiurl + req.toUserProfilePicture" alt="avatar">
+    <div class="request-details">
+      <h4>{{ req.toUserName }}</h4>
+      <p>{{ req.toUserRole }}</p>
+    </div>
+    <button class="reject-btn" (click)="openWithdrawModal(req)" title="Withdraw">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+        <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+      </svg>
+    </button>
+  </div>
+}
         
       </div>
     </div>
@@ -202,6 +198,24 @@
 
   </aside>
 </div>
+@if(showWithdrawModal) {
+  <div class="modal-overlay" (click)="closeWithdrawModal()">
+    <div class="modal-card" (click)="$event.stopPropagation()">
+      <div class="modal-icon">
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="2">
+          <circle cx="12" cy="12" r="10"/>
+          <polyline points="12 6 12 12 16 14"/>
+        </svg>
+      </div>
+      <h3>Withdraw Request?</h3>
+      <p>Are you sure you want to withdraw your connection request to <strong>{{ pendingWithdrawRequest?.toUserName }}</strong>?</p>
+      <div class="modal-actions">
+        <button class="modal-cancel" (click)="closeWithdrawModal()">Cancel</button>
+        <button class="modal-confirm" (click)="confirmWithdraw()">Withdraw</button>
+      </div>
+    </div>
+  </div>
+}
 
 <ng-template #spinner>
   <div class="spinner-container">

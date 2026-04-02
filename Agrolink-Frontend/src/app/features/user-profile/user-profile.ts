@@ -6,7 +6,7 @@ import { ProfileService } from '../../core/Services/ProfileService/profileServic
 import { ProfileResponseDto } from '../../core/Dtos/ProfileResponseDto';
 import { Auth } from '../../core/Services/Auth/auth';
 import { environment } from '../../../environments/environments';
-import { Observable,map } from 'rxjs';
+import { Observable,map, take } from 'rxjs';
 import { NetworkService } from '../../core/Services/Network/network';
 import { FeedService } from '../feed/feed.service';
 import { Post } from '../feed/feed.models';
@@ -37,6 +37,7 @@ export class UserProfile implements OnInit {
 
   userposts: Post[] =[];
 
+
   
   constructor(
     private profileService: ProfileService,
@@ -55,9 +56,10 @@ connectionToRemove: { id: string; name: string; role: string; profilePicture: st
  
 
 connectionsList:connectionsDto[] = [];
+showWithdrawModal: boolean = false;
 
   ngOnInit(): void {
-    
+    const routeId = this.route.snapshot.paramMap.get('id')!;
   
   this.getUserIdFromToken().subscribe({next:(res)=>{
     this.userid = res;
@@ -66,7 +68,13 @@ connectionsList:connectionsDto[] = [];
      this.getUserPosts(res);
 
   }});
+    this.networkService.sentRequestIds$.subscribe(ids => {
+    this.requestSent = ids.has(routeId);
+  });
 
+   this.networkService.connectedIds$.subscribe(ids => {
+    this.connectionExists = ids.has(routeId);
+  });
     this.loadProfile();
    
 
@@ -182,34 +190,72 @@ connectionsList:connectionsDto[] = [];
     const routeId = this.route.snapshot.paramMap.get('id')!;
     this.networkService.sendConnectionRequest(routeId).subscribe({
       next: () => {
-        this.requestSent=true;
+           this.networkService.addSentRequest(routeId);
       },
       error: (err) => console.error(err)
     });
 
   }
-
-  confirmRemove(userID:string): void {
-  //this.connectionToRemove = ;
-  //this.showRemoveModal = true;
+confirmRemoveFromHeader(): void {
+  const routeId = this.route.snapshot.paramMap.get('id')!;
+  this.connectionToRemove = {
+    id: routeId,
+    name: `${this.profile?.firstName} ${this.profile?.lastName}`,
+    role: this.profile?.role ?? '',
+    profilePicture: this.profile?.profilePicture ?? ''
+  };
+  this.showRemoveModal = true;
 }
- 
+  confirmRemove(userID: string): void {
+  const conn = this.connectionsList.find(c => c.connectedUserID === userID);
+  if (!conn) return;
+  this.connectionToRemove = {
+    id: conn.connectedUserID,
+    name: conn.connectedUserName,
+    role: '',
+    profilePicture: conn.connectedProfileUrl
+  };
+  this.showRemoveModal = true;
+}
+
+removeConnection(): void {
+  if (!this.connectionToRemove) return;
+  this.networkService.removeConnection(this.connectionToRemove.id).subscribe({
+    next: () => {
+      this.connectionsList = this.connectionsList.filter(
+        c => c.connectedUserID !== this.connectionToRemove!.id
+      );
+      this.connections = Math.max(0, this.connections - 1);
+      this.cancelRemove();
+    },
+    error: (err) => console.error(err)
+  });
+}
+
+confirmWithdraw(): void {
+  const routeId = this.route.snapshot.paramMap.get('id')!;
+  this.networkService.withdrawRequestByReceiverId(routeId).subscribe({
+    next: () => {
+      this.networkService.removeSentRequest(routeId);
+      this.showWithdrawModal = false;
+    },
+    error: (err) => console.error(err)
+  });
+}
+
+closeWithdrawModal(): void {
+  this.showWithdrawModal = false;
+}
+withdrawConnection(): void {
+
+  this.showWithdrawModal = true;
+}
 cancelRemove(): void {
   this.showRemoveModal = false;
   this.connectionToRemove = null;
 }
  
-removeConnection(): void {
-  if (!this.connectionToRemove) return;
- 
-  // TODO: wire up real API call, e.g.:
-  // this.networkService.removeConnection(this.connectionToRemove.id).subscribe(...)
- 
-  // For now remove from local list
-  //this.connectionsList = this.connectionsList.filter(c => c.id !== this.connectionToRemove!.id);
-  //this.connections = Math.max(0, this.connections - 1);
-  //this.cancelRemove();
-}
+
 }
 
 

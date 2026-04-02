@@ -169,7 +169,7 @@
   font-size: 13.5px;
   font-weight: 600;
   font-family: inherit;
-  cursor: default;
+  cursor: pointer;
 }
 
 .link-btn {
@@ -574,4 +574,26 @@
   flex-direction: column;
   gap: 16px;
   padding: 28px 36px 36px;
+}
+
+.connected-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  background: #ffffff;
+  color: #2d7a2d;
+  border: 2px solid #3ec73e;
+  border-radius: 999px;
+  padding: 9px 22px;
+  font-size: 13.5px;
+  font-weight: 600;
+  font-family: inherit;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s, border-color 0.15s;
+}
+
+.connected-btn:hover {
+  background: #fee2e2;
+  color: #ef4444;
+  border-color: #ef4444;
 }

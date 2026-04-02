@@ -52,28 +52,30 @@
             Edit Profile
           </button>
         }@else{
-          @if(requestSent){
-            <button class="pending-btn" disabled>
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
-              </svg>
-              Pending
-            </button>
-          }@else if(!connectionExists){
-            <button class="edit-btn" (click)="sendConnection()">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-                <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
-              </svg>
-              Connect
-            </button>
-          }@else {
-             <button class="pending-btn" (click)="removeConnection()">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
-              </svg>
-              Pending
-            </button>
-          }
+@if(requestSent) {
+  <button class="pending-btn" (click)="withdrawConnection()">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <circle cx="12" cy="12" r="10"/><line x1="8" y1="12" x2="16" y2="12"/>
+    </svg>
+    Pending · Cancel
+  </button>
+
+} @else if(!connectionExists) {
+  <button class="edit-btn" (click)="sendConnection()">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+      <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
+    </svg>
+    Connect
+  </button>
+
+} @else {
+  <button class="connected-btn" (click)="confirmRemoveFromHeader()">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+      <polyline points="20 6 9 17 4 12"/>
+    </svg>
+    Connected
+  </button>
+}
         }
       </div>
     </div>
@@ -111,7 +113,7 @@
 <div class="tab-content" *ngIf="activeTab === 'posts'">
   @if(userposts.length == 0) {
     <div class="empty-state">
-      ...
+       No posts posted yet !
     </div>
   } @else {
     <div class="posts-list">                      <!-- ← add this wrapper -->
@@ -180,6 +182,26 @@
     <div class="modal-actions">
       <button class="modal-cancel" (click)="cancelRemove()">Cancel</button>
       <button class="modal-confirm" (click)="removeConnection()">Remove</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== Withdraw Request Modal ===== -->
+<div class="modal-overlay" *ngIf="showWithdrawModal" (click)="closeWithdrawModal()">
+  <div class="modal-card" (click)="$event.stopPropagation()">
+    <div class="modal-icon withdraw-icon">
+      <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="2">
+        <circle cx="12" cy="12" r="10"/>
+        <polyline points="12 6 12 12 16 14"/>
+      </svg>
+    </div>
+    <h3>Withdraw Request?</h3>
+    <p>Are you sure you want to withdraw your connection request to
+      <strong>{{ profile?.firstName }} {{ profile?.lastName }}</strong>?
+    </p>
+    <div class="modal-actions">
+      <button class="modal-cancel" (click)="closeWithdrawModal()">Cancel</button>
+      <button class="modal-confirm" (click)="confirmWithdraw()">Withdraw</button>
     </div>
   </div>
 </div>

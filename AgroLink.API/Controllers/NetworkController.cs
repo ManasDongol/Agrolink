@@ -111,6 +111,26 @@ public class NetworkController(NetworkService networkService) : ControllerBase
         return connectionList;
 
     }
+     
+    [HttpDelete("withdraw/{receiverID}")]
+    public async Task<IActionResult> WithdrawConnectionRequest([FromRoute]Guid receiverID)
+    {
+        try
+        {
+            var userId = GetCurrentUserId();
+            var result = await networkService.WithdrawConnectionRequestAsync(userId, receiverID);
+            if (!result) return BadRequest(new { message = "Request not found or already accepted" });
+            return Ok(new { message = "Connection request withdrawn" });
+        }
+        catch (UnauthorizedAccessException ex)
+        {
+            return Unauthorized(new { message = ex.Message });
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, new { message = "Error withdrawing request", error = ex.Message });
+        }
+    }
     
     
 }

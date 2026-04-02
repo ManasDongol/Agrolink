@@ -62,17 +62,17 @@ public class NetworkService(AgroLinkDbContext context) : INetworkService
         .Where(u=>u.UserID == currentUserId && !u.Accepted)
         .Include(r => r.ConnectionUser)
         .ThenInclude(u => u.Profile)
-        .Select(r => new ConnectionRequestDto
+        .Select(r => new SentRequestDto
         {
             RequestId = r.ConnectionRequestID,
-            FromUserId = r.ConnectionUserId,
-            FromUserName = r.ConnectionUser.Profile != null
+            ToUserId =r.ConnectionUserId,
+            ToUserName = r.ConnectionUser.Profile != null
                 ? r.ConnectionUser.Profile.FirstName + " " + r.ConnectionUser.Profile.LastName
                 : r.ConnectionUser.Username,
-            FromUserRole = r.ConnectionUser.Profile != null
+            ToUserRole = r.ConnectionUser.Profile != null
                 ? r.ConnectionUser.Profile.Role
                 : "User",
-            FromUserProfilePicture = r.ConnectionUser.Profile != null
+            ToUserProfilePicture = r.ConnectionUser.Profile != null
                 ? r.ConnectionUser.Profile.ProfilePicture
                 : "",
             SentDate = r.SentDate
@@ -237,5 +237,19 @@ public class NetworkService(AgroLinkDbContext context) : INetworkService
             .ToListAsync();
 
         return connectionList;
+    }
+    
+    public async Task<bool> WithdrawConnectionRequestAsync(Guid currentUserId, Guid receiverID)
+    {
+        var request = await context.ConnectionRequests
+            .FirstOrDefaultAsync(r => r.ConnectionUserId == receiverID 
+                                      && r.UserID == currentUserId 
+                                      && !r.Accepted);
+
+        if (request == null) return false;
+
+        context.ConnectionRequests.Remove(request);
+        await context.SaveChangesAsync();
+        return true;
     }
 }
