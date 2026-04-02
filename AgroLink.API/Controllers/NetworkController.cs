@@ -107,8 +107,7 @@ public class NetworkController(NetworkService networkService) : ControllerBase
     {
         var userid = RouteData?.Values["userid"]?.ToString();
         var connectionList = await networkService.GetConnectionList(Guid.Parse(userid));
-        Console.WriteLine(connectionList[0].ConnectedProfileUrl);
-        Console.WriteLine(connectionList[0].ConnectedUserName);
+       
         return connectionList;
 
     }

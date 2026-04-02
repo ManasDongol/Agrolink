@@ -40,13 +40,13 @@ export class Auth {
     this.isAuthenticatedSubject.next(value);
   }
 
-  checkstate(){
-    
-  }
+  forgotPassword(email: string): Observable<any> {
+  return this.http.post(`${this.baseUrl}/forgot-password`, { email });
+}
 
-  getUserid(){
-    
-  }
+resetPassword(token: string, newPassword: string): Observable<any> {
+  return this.http.post(`${this.baseUrl}/reset-password`, { token, newPassword });
+}
 
   logout() {
     return this.http.post(`${this.baseUrl}/logout`, {}, {

@@ -15,6 +15,7 @@ import { combineLatest } from 'rxjs';
 import { Component } from '@angular/core';
 import { Prices } from './features/prices/prices';
 import { AiPage } from './features/ai-page/ai-page';
+import { ResetPassword } from './features/reset-password/reset-password';
 
 export const routes: Routes = [
     { path: "feed", component:DefaultLayout,children: [{path:'',component:Feed}] , canActivate: [routeGuardGuard] },
@@ -28,7 +29,8 @@ export const routes: Routes = [
       
    
     { path: "buildProfile/:id", component:Profile },
-     
+     { path: 'reset-password', component: ResetPassword },
+
   
     // Public routes
     { path: "login", component: EmptyLayout,children: [{path:'',component:Login}] },

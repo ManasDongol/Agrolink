@@ -1,12 +1,15 @@
 using System.Text;
 using AgroLink.API.Hubs;
 using AgroLink.Application.Interfaces;
+using AgroLink.Application.Interfaces.Emails;
 using AgroLink.Application.Services;
 using AgroLink.Infrastructure.Data;
 using AgroLink.Infrastructure.Repositories;
 using AgroLink.Infrastructure.Repositories.Posts;
 using AgroLink.Application.Interfaces.Posts;
+using AgroLink.Application.Services.EmailService;
 using Agrolink.Infrastructure.ExternalServices.PDFGenerator;
+using AgroLink.Infrastructure.Repositories.Auth;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -78,6 +81,7 @@ builder.Services.AddScoped<UserRepo>();
 builder.Services.AddScoped<ProfileRepo>();
 builder.Services.AddScoped<TokenService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
+builder.Services.AddScoped<AuthRepo>();
 builder.Services.AddScoped<ProfileService>();
 builder.Services.AddScoped<HttpClient>();
 builder.Services.AddScoped<ICropService, CropService>();
@@ -95,6 +99,7 @@ builder.Services.AddScoped<PDFservice>();
 builder.Services.AddScoped<CommentService>();
 builder.Services.AddScoped<CommentRepo>();
 
+builder.Services.AddScoped<IEmailService, EmailService > ();
 
 
 

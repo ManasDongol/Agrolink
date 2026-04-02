@@ -1,14 +1,18 @@
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
+using System.Security.Cryptography;
 using System.Text;
 using AgroLink.Application.DTOs;
+using AgroLink.Application.DTOs.Emails;
 using AgroLink.Application.Services;
 using AgroLink.Domain.Entities;
 using AgroLink.Infrastructure.Repositories;
+using AgroLink.Infrastructure.Repositories.Auth;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
+using Org.BouncyCastle.Crypto.Generators;
 
 namespace Controllers;
 
@@ -106,5 +110,26 @@ public class AuthController(IAuthService authService, UserRepo UserRepo, Hashing
         {
             return Unauthorized(new { message = "Invalid token" });
         }
+    }
+    
+    
+    
+    
+    [HttpPost("forgot-password")]
+    public async Task<IActionResult> ForgotPassword([FromBody] ForgotPasswordDto dto)
+    {
+        await authService.ForgotPasswordAsync(dto.Email);
+        return Ok(new { message = "If that email exists, a reset link has been sent." });
+    }
+
+    [HttpPost("reset-password")]
+    public async Task<IActionResult> ResetPassword([FromBody] ResetPasswordDto dto)
+    {
+        var success = await authService.ResetPassword(dto);
+
+        if (!success)
+            return BadRequest(new { message = "Invalid or expired reset link." });
+
+        return Ok(new { message = "Password reset successfully. You can now log in." });
     }
 }

@@ -26,6 +26,9 @@ export class Login implements OnInit {
   isLoading: boolean = false;
   showForgotModal: boolean = false;
   showPassword: boolean = false;
+  forgotEmail: string = '';
+forgotEmailTouched: boolean = false;
+isSendingReset: boolean = false;
 
   constructor(
     private fb: FormBuilder,
@@ -50,18 +53,41 @@ export class Login implements OnInit {
   }
 
   openForgotModal() {
+    console.log("opened");
     this.showForgotModal = true;
   }
 
-  closeForgotModal() {
-    this.showForgotModal = false;
-  }
+  
 
-  onForgotPassword() {
-    // TODO: wire up your password reset service here
-    this.ToastService.success('Reset link sent!', 'Check your registered email for the reset link.');
-    this.closeForgotModal();
-  }
+ closeForgotModal() {
+  this.showForgotModal = false;
+  // reset state when closed
+  this.forgotEmail = '';
+  this.forgotEmailTouched = false;
+  this.isSendingReset = false;
+}
+
+onForgotPassword() {
+  this.forgotEmailTouched = true;
+  if (!this.forgotEmail) return;
+
+  this.isSendingReset = true;
+ 
+  this.auth.forgotPassword(this.forgotEmail).subscribe({
+    next: () => {
+       this.ToastService.success('Reset link sent!', 'Check your email.');
+       this.closeForgotModal();
+     },
+     error: () => {
+       this.ToastService.error('Failed', 'Something went wrong.');
+       this.isSendingReset = false;
+     }
+   });
+
+  // remove this once service is wired:
+  this.ToastService.success('Reset link sent!', 'Check your registered email for the reset link.');
+  this.closeForgotModal();
+}
 
   onlogin() {
     this.isLoading = true;
@@ -105,4 +131,6 @@ export class Login implements OnInit {
       },
     });
   }
+
+  
 }

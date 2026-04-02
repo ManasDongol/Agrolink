@@ -78,9 +78,6 @@
 }
 
 /* Upload spans full width */
-.field-full {
-  grid-column: 1 / -1;
-}
 
 /* ─── LABELS ─────────────────────────────────── */
 .field-label {
@@ -159,101 +156,7 @@
   min-height: 16px;
 }
 
-/* ─── UPLOAD ─────────────────────────────────── */
-.upload-wrapper {
-  border: 1.5px dashed #c4ddb8;
-  border-radius: 10px;
-  padding: 20px 16px;
-  cursor: pointer;
-  background-color: #f8fdf5;
-  transition: border-color 0.2s ease, background-color 0.2s ease;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  min-height: 80px;
-}
 
-.upload-wrapper:hover {
-  border-color: #6fd23b;
-  background-color: #f1faeb;
-}
-
-.upload-wrapper.upload-has-file {
-  border-style: solid;
-  border-color: #6fd23b;
-  background-color: #f1faeb;
-}
-
-.file-input-hidden {
-  display: none;
-}
-
-.upload-content {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 5px;
-  text-align: center;
-}
-
-.upload-icon {
-  color: #6fd23b;
-}
-
-.upload-main-text {
-  font-family: 'Outfit', sans-serif;
-  font-weight: 500;
-  font-size: 13px;
-  color: #3a3a3a;
-}
-
-.upload-hint {
-  font-family: 'Outfit', sans-serif;
-  font-size: 11.5px;
-  color: #9a9a9a;
-  line-height: 1.5;
-  max-width: 440px;
-}
-
-.upload-file-selected {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  width: 100%;
-}
-
-.file-icon {
-  color: #2f7d1f;
-  flex-shrink: 0;
-}
-
-.file-name {
-  font-family: 'Outfit', sans-serif;
-  font-size: 13px;
-  font-weight: 500;
-  color: #2f7d1f;
-  flex: 1;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.file-remove-btn {
-  background: none;
-  border: none;
-  cursor: pointer;
-  color: #b0b0b0;
-  display: flex;
-  align-items: center;
-  padding: 2px;
-  border-radius: 4px;
-  flex-shrink: 0;
-  transition: color 0.15s ease;
-}
-
-.file-remove-btn:hover {
-  color: #e05353;
-}
 
 /* ─── SUBMIT BUTTON ──────────────────────────── */
 .signup-btn {

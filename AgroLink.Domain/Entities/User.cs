@@ -13,5 +13,6 @@ public class User
     public string UserType { get; set; } 
     public Profile Profile { get; set; }
     public ICollection<Comment> Comments { get; set; }
+    public ICollection<PasswordResetToken> PasswordResetTokens { get; set; }
 
 }

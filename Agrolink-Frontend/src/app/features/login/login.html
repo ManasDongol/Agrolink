@@ -2,6 +2,7 @@
   <app-spinner></app-spinner>
 }
 
+
 <!-- Forgot Password Modal -->
 @if(showForgotModal){
   <div class="modal-overlay" (click)="closeForgotModal()">
@@ -14,11 +15,31 @@
       </div>
       <h2 class="modal-title">Forgot Password?</h2>
       <p class="modal-desc">
-        We'll send a password reset link to your registered email address. Do you want to proceed?
+        Enter your registered email address and we'll send you a reset link.
       </p>
+
+      <!-- Email input -->
+      <div class="modal-input-wrapper" [class.input-error]="forgotEmailTouched && !forgotEmail">
+        <svg class="input-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+          <polyline points="22,6 12,13 2,6"></polyline>
+        </svg>
+        <input
+          type="email"
+          [(ngModel)]="forgotEmail"
+          placeholder="Enter your email address"
+          (blur)="forgotEmailTouched = true"
+        />
+      </div>
+  <p class="error-msg">
+        {{ forgotEmailTouched && !forgotEmail ? 'Email is required' : '' }}
+      </p>
+
       <div class="modal-actions">
         <button class="modal-btn-cancel" (click)="closeForgotModal()">Cancel</button>
-        <button class="modal-btn-confirm" (click)="onForgotPassword()">Send Reset Link</button>
+        <button class="modal-btn-confirm" (click)="onForgotPassword()" [disabled]="isSendingReset">
+          {{ isSendingReset ? 'Sending...' : 'Send Reset Link' }}
+        </button>
       </div>
     </div>
   </div>
@@ -120,8 +141,6 @@
         <a routerLink="/signup" class="signup-link">Sign up</a>
       </p>
     </div>
-
-    <!-- Right: Visual -->
     <div class="login-right">
       <div class="right-overlay">
         <div class="right-content">
