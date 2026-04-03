@@ -43,4 +43,15 @@ public class ProfileRepo(AgroLinkDbContext dbContext)
 
         return null;
     }
+
+    public async Task VerifyProfile(Guid userid)
+    {
+        var profile = await dbContext.Profiles.FirstOrDefaultAsync(p => p.UserId == userid);
+
+        if (profile != null)
+        {
+            profile.isVerified = true;
+            await dbContext.SaveChangesAsync();
+        }
+    }
 }

@@ -109,5 +109,10 @@ public class ProfileService(ProfileRepo profileRepo)
             profile.isVerified
         );
     }
+
+    public async Task VerifyProfile(Guid UserId)
+    {
+        await profileRepo.VerifyProfile(UserId);
+    }
     
 }

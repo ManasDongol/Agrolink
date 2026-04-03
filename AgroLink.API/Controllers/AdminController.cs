@@ -1,3 +1,4 @@
+using AgroLink.Application.Services;
 using AgroLink.Infrastructure.Data;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -9,7 +10,7 @@ namespace AgroLink.API.Controllers;
 [ApiController]
 [Route("api/[controller]")]
 [Authorize(Roles = "Admin,SuperAdmin")]
-public class AdminController(AgroLinkDbContext dbContext) : ControllerBase
+public class AdminController(AgroLinkDbContext dbContext,ProfileService service) : ControllerBase
 {
     [HttpGet("stats")]
     public async Task<IActionResult> GetStats()
@@ -125,5 +126,12 @@ public class AdminController(AgroLinkDbContext dbContext) : ControllerBase
         });
 
         return Ok(result);
+    }
+
+    [HttpPut("/verifyUser")]
+    public async Task<IActionResult> verifyUserProfile(Guid userId)
+    {
+        await service.VerifyProfile(userId);
+        return NoContent();
     }
 }
