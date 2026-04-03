@@ -10,4 +10,6 @@ export class ProfileResponseDto {
     profileBackground!: string;
     description!: string;
     achievement!: string;
+    proof!:string;
+    isverified!:boolean;
 }

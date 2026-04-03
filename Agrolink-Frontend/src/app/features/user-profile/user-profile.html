@@ -27,8 +27,28 @@
       </div>
 
       <div class="user-info">
-        <h2>{{ profile.firstName }} {{ profile.lastName }}</h2>
+        <div style="display: flex; gap: 20px;">
+          <h2>{{ profile.firstName }} {{ profile.lastName }}</h2>
+          <span class="verified-badge" *ngIf="profile.isverified">
+    <svg width="13" height="13" viewBox="0 0 24 24" fill="none"
+      stroke="currentColor" stroke-width="2.5">
+      <polyline points="20 6 9 17 4 12"/>
+    </svg>
+    Verified by AgroLink
+  </span>
+
+  <!-- not verified -->
+  <span class="unverified-badge" *ngIf="!profile.isverified">
+    
+    Not Verified
+  </span>
+
+        </div>
         <p class="username">@{{ profile.firstName.toLowerCase() }}{{ profile.lastName.toLowerCase() }}</p>
+       <div class="verification-status">
+  <!-- verified -->
+
+</div>
         <p class="role" *ngIf="profile.role">{{ profile.role }}</p>
         <p class="address" *ngIf="profile.address">
           <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -57,7 +77,7 @@
     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
       <circle cx="12" cy="12" r="10"/><line x1="8" y1="12" x2="16" y2="12"/>
     </svg>
-    Pending · Cancel
+    Pending 
   </button>
 
 } @else if(!connectionExists) {

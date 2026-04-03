@@ -21,7 +21,7 @@ public class ProfileController(ProfileService profileService,IWebHostEnvironment
                 return BadRequest(new { message = "Profile data is required" });
             }
 
-            var result = await profileService.BuildProfile(dto,null,null);
+            var result = await profileService.BuildProfile(dto,null,null,null);
             return Ok(result);
         }
         catch (Exception ex)
@@ -87,7 +87,8 @@ public class ProfileController(ProfileService profileService,IWebHostEnvironment
     public async Task<IActionResult> UpdateProfile(
         [FromForm] ProfileRequestDto dto,
         [FromForm] IFormFile? ProfileImage,
-        [FromForm] IFormFile? BackgroundImage)
+        [FromForm] IFormFile? BackgroundImage,
+        [FromForm] IFormFile? Proof)
     {
         var uploadsFolder = Path.Combine(_environment.WebRootPath, "images");
 
@@ -96,6 +97,7 @@ public class ProfileController(ProfileService profileService,IWebHostEnvironment
 
         string? profileImageUrl = null;
         string? backgroundImageUrl = null;
+        string? proofImageUrl = null;
 
         if (ProfileImage != null)
         {
@@ -136,10 +138,30 @@ public class ProfileController(ProfileService profileService,IWebHostEnvironment
             backgroundImageUrl = $"/uploads/images/backgroundPictures/{fileName}";
         }
 
+        if (Proof != null)
+        {
+            var ProofOfWork = Path.Combine(
+                _environment.WebRootPath,
+                "uploads",
+                "images",
+                "ProofOfWork"
+            );
+
+            Directory.CreateDirectory(ProofOfWork);
+
+            var fileName = Guid.NewGuid() + Path.GetExtension(Proof.FileName);
+            var filePath = Path.Combine(ProofOfWork, fileName);
+
+            using var stream = new FileStream(filePath, FileMode.Create);
+            await Proof.CopyToAsync(stream);
+
+            proofImageUrl = $"/uploads/images/ProofOfWork/{fileName}";
+        }
+
         // Call your Application layer here
         Console.WriteLine(profileImageUrl);
         Console.WriteLine(backgroundImageUrl);
-        await profileService.BuildProfile(dto, profileImageUrl, backgroundImageUrl);
+        await profileService.BuildProfile(dto, profileImageUrl, backgroundImageUrl, proofImageUrl);
 
         return Ok();
     }

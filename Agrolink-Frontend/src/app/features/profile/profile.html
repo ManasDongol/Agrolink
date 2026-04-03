@@ -1,8 +1,6 @@
 <div class="profile-page">
-
   <div class="profile-card">
 
-    <!-- HEADER -->
     <div class="card-header">
       <a class="back-link" routerLink="/..">
         <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
@@ -11,14 +9,10 @@
         </svg>
         Back
       </a>
-     
       <h1 class="heading">Build Your Profile</h1>
-     
     </div>
 
-    <!-- FORM -->
     <form [formGroup]="profileForm" class="profile-form" (ngSubmit)="updateProfile($event)">
-
       <div class="form-grid">
 
         <!-- First Name -->
@@ -71,7 +65,7 @@
           </div>
         </div>
 
-        <!-- Role — full width -->
+        <!-- Role -->
         <div class="field-group field-full">
           <label class="field-label">Role</label>
           <div class="input-wrapper select-wrapper" [class.error-border]="profileForm.get('role')?.invalid && profileForm.get('role')?.touched">
@@ -100,11 +94,18 @@
           <label class="field-label">Profile Picture</label>
           <div class="upload-wrapper" (click)="profileInput.click()">
             <input #profileInput type="file" accept="image/*" class="file-input-hidden" (change)="onProfileImageChange($event)" />
-            <div class="upload-preview" *ngIf="profileImagePreview">
-              <img [src]="profileImagePreview" alt="Profile preview" class="image-preview round-preview" />
+            <!-- local preview (newly picked) -->
+            <div class="upload-preview" *ngIf="profileImageLocalPreview">
+              <img [src]="profileImageLocalPreview" alt="Profile preview" class="image-preview round-preview" />
               <span class="preview-label">Click to change</span>
             </div>
-            <div class="upload-content" *ngIf="!profileImagePreview">
+            <!-- server preview (existing, no new file picked) -->
+            <div class="upload-preview" *ngIf="profileImageServerPath && !profileImageLocalPreview">
+              <img [src]="apiurl + profileImageServerPath" alt="Profile preview" class="image-preview round-preview" />
+              <span class="preview-label">Click to change</span>
+            </div>
+            <!-- empty state -->
+            <div class="upload-content" *ngIf="!profileImageLocalPreview && !profileImageServerPath">
               <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
                 stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" class="upload-icon">
                 <circle cx="12" cy="8" r="4"/><path d="M20 21a8 8 0 1 0-16 0"/>
@@ -120,11 +121,18 @@
           <label class="field-label">Background Image</label>
           <div class="upload-wrapper" (click)="bgInput.click()">
             <input #bgInput type="file" accept="image/*" class="file-input-hidden" (change)="onBackgroundImageChange($event)" />
-            <div class="upload-preview" *ngIf="backgroundImagePreview">
-              <img [src]="backgroundImagePreview" alt="Background preview" class="image-preview banner-preview" />
+            <!-- local preview (newly picked) -->
+            <div class="upload-preview" *ngIf="backgroundImageLocalPreview">
+              <img [src]="backgroundImageLocalPreview" alt="Background preview" class="image-preview banner-preview" />
               <span class="preview-label">Click to change</span>
             </div>
-            <div class="upload-content" *ngIf="!backgroundImagePreview">
+            <!-- server preview (existing, no new file picked) -->
+            <div class="upload-preview" *ngIf="backgroundImageServerPath && !backgroundImageLocalPreview">
+              <img [src]="apiurl + backgroundImageServerPath" alt="Background preview" class="image-preview banner-preview" />
+              <span class="preview-label">Click to change</span>
+            </div>
+            <!-- empty state -->
+            <div class="upload-content" *ngIf="!backgroundImageLocalPreview && !backgroundImageServerPath">
               <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
                 stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" class="upload-icon">
                 <rect width="18" height="18" x="3" y="3" rx="2"/><circle cx="9" cy="9" r="2"/>
@@ -136,7 +144,7 @@
           </div>
         </div>
 
-        <!-- Description — full width -->
+        <!-- Description -->
         <div class="field-group field-full">
           <label class="field-label">Description</label>
           <div class="textarea-wrapper">
@@ -144,12 +152,74 @@
           </div>
         </div>
 
-        <!-- Achievements — full width -->
+        <!-- Achievements -->
         <div class="field-group field-full">
           <label class="field-label">Achievements</label>
           <div class="textarea-wrapper">
             <textarea formControlName="achievements" placeholder="Awards, certifications, milestones, years of experience..." rows="3"></textarea>
           </div>
+        </div>
+
+        <!-- Upload Proof of Expertise -->
+        <div class="field-group field-full">
+          <label class="field-label">Upload Proof of Expertise</label>
+          <div class="upload-wrapper"
+            [class.upload-has-file]="proofFile || proofFilePreview"
+            (click)="proofInput.click()"
+            (dragover)="$event.preventDefault()"
+            (drop)="onFileDrop($event)">
+
+            <input #proofInput type="file" accept=".pdf,.jpg,.jpeg,.png"
+              class="file-input-hidden" (change)="onFileChange($event)" />
+
+            <!-- STATE 1: new file picked — image preview -->
+            <div class="upload-preview" *ngIf="proofFile && proofFileLocalPreview">
+              <img [src]="proofFileLocalPreview" alt="Proof preview" class="image-preview banner-preview" />
+              <span class="preview-label">Click to change</span>
+              <button type="button" class="file-remove-btn" (click)="removeFile($event)">
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none"
+                  stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                  <line x1="18" x2="6" y1="6" y2="18"/><line x1="6" x2="18" y1="6" y2="18"/>
+                </svg>
+              </button>
+            </div>
+
+            <!-- STATE 2: new file picked — PDF (no image preview) -->
+            <div class="upload-file-selected" *ngIf="proofFile && !proofFileLocalPreview">
+              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="file-icon">
+                <path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/>
+                <polyline points="14 2 14 8 20 8"/>
+              </svg>
+              <span class="file-name">{{ proofFile.name }}</span>
+              <button type="button" class="file-remove-btn" (click)="removeFile($event)">
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none"
+                  stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                  <line x1="18" x2="6" y1="6" y2="18"/><line x1="6" x2="18" y1="6" y2="18"/>
+                </svg>
+              </button>
+            </div>
+
+            <!-- STATE 3: existing server proof, no new file picked -->
+            <div class="upload-preview" *ngIf="proofFilePreview && !proofFile">
+              <img [src]="apiurl + proofFilePreview" alt="Proof preview" class="image-preview banner-preview" />
+              <span class="preview-label">Click to change</span>
+            </div>
+
+            <!-- STATE 4: empty -->
+            <div class="upload-content" *ngIf="!proofFile && !proofFilePreview">
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" class="upload-icon">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                <polyline points="17 8 12 3 7 8"/>
+                <line x1="12" x2="12" y1="3" y2="15"/>
+              </svg>
+              <span class="upload-main-text">Click to upload or drag & drop</span>
+              <span class="upload-hint">Upload a license, certificate, or other document proving your professional expertise. (PDF/JPG/PNG, max 5MB)</span>
+            </div>
+
+          </div>
+          <p class="error-msg" *ngIf="proofFileError">{{ proofFileError }}</p>
         </div>
 
       </div>
@@ -159,7 +229,5 @@
       </button>
 
     </form>
-
   </div>
-
 </div>

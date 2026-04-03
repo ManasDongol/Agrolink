@@ -9,7 +9,8 @@ public record ProfileRequestDto
     string Address,
     string Role,
     string Description,
-    string Achievement
+    string Achievement,
+    string? proof
 ); 
    
         

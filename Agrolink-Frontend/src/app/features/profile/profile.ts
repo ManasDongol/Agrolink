@@ -2,10 +2,9 @@ import { Component, OnInit } from '@angular/core';
 import { FormGroup, FormBuilder, FormsModule, Validators, ReactiveFormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { CommonModule } from '@angular/common';
-import { ProfileRequestDto } from '../../core/Dtos/ProfileRequestDto';
-import { ProfileResponseDto } from '../../core/Dtos/ProfileResponseDto';
 import { ProfileService } from '../../core/Services/ProfileService/profileService';
 import { ActivatedRoute } from '@angular/router';
+import { environment } from '../../../environments/environments';
 
 @Component({
   selector: 'app-profile',
@@ -17,10 +16,27 @@ import { ActivatedRoute } from '@angular/router';
 export class Profile implements OnInit {
 
   profileForm!: FormGroup;
-  profileImagePreview: string | null = null;
-  backgroundImagePreview: string | null = null;
+
+  // server paths (loaded from existing profile)
+  profileImageServerPath: string | null = null;
+  backgroundImageServerPath: string | null = null;
+  proofFilePreview: string | null = null;
+
+  // local base64 previews (set when user picks a new file)
+  profileImageLocalPreview: string | null = null;
+  backgroundImageLocalPreview: string | null = null;
+  proofFileLocalPreview: string | null = null;
+
+  // actual file objects to upload
   profileImageFile: File | null = null;
   backgroundImageFile: File | null = null;
+  proofFile: File | null = null;
+  proofFileError = '';
+
+  apiurl: string = environment.apiUrl;
+
+  readonly MAX_FILE_SIZE = 5 * 1024 * 1024;
+  readonly ALLOWED_TYPES = ['application/pdf', 'image/jpeg', 'image/jpg', 'image/png'];
 
   constructor(
     private profile: ProfileService,
@@ -38,6 +54,7 @@ export class Profile implements OnInit {
       phone: [''],
       description: [''],
       achievements: [''],
+      isverified: ['']
     });
 
     this.loadExistingProfile();
@@ -57,10 +74,13 @@ export class Profile implements OnInit {
           phone: profileData.phoneNumber || '',
           description: profileData.description || '',
           achievements: profileData.achievement || '',
+          isverified: profileData.isverified || false
         });
 
-        this.profileImagePreview = profileData.profilePicture;
-        this.backgroundImagePreview = profileData.profileBackground;
+        // store server paths separately
+        this.profileImageServerPath = profileData.profilePicture;
+        this.backgroundImageServerPath = profileData.profileBackground;
+        this.proofFilePreview = profileData.proof;
       },
       error: () => {
         console.log('No existing profile found, creating new one');
@@ -68,26 +88,78 @@ export class Profile implements OnInit {
     });
   }
 
+  // --- profile image ---
   onProfileImageChange(event: Event): void {
     const input = event.target as HTMLInputElement;
     if (input.files && input.files.length > 0) {
       const file = input.files[0];
       if (!file.type.startsWith('image/')) { alert('Please select an image file'); return; }
-      if (file.size > 5 * 1024 * 1024) { alert('Image size should be less than 5MB'); return; }
+      if (file.size > this.MAX_FILE_SIZE) { alert('Image size should be less than 5MB'); return; }
       this.profileImageFile = file;
-      this.convertToBase64(file, (base64) => { this.profileImagePreview = base64; });
+      this.convertToBase64(file, (base64) => {
+        this.profileImageLocalPreview = base64; // local preview, no apiurl prefix needed
+      });
     }
   }
 
+  // --- background image ---
   onBackgroundImageChange(event: Event): void {
     const input = event.target as HTMLInputElement;
     if (input.files && input.files.length > 0) {
       const file = input.files[0];
       if (!file.type.startsWith('image/')) { alert('Please select an image file'); return; }
-      if (file.size > 5 * 1024 * 1024) { alert('Image size should be less than 5MB'); return; }
+      if (file.size > this.MAX_FILE_SIZE) { alert('Image size should be less than 5MB'); return; }
       this.backgroundImageFile = file;
-      this.convertToBase64(file, (base64) => { this.backgroundImagePreview = base64; });
+      this.convertToBase64(file, (base64) => {
+        this.backgroundImageLocalPreview = base64;
+      });
     }
+  }
+
+  // --- proof file ---
+  onFileChange(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    if (input.files && input.files[0]) {
+      this.validateAndSetFile(input.files[0]);
+    }
+  }
+
+  onFileDrop(event: DragEvent): void {
+    event.preventDefault();
+    const file = event.dataTransfer?.files[0];
+    if (file) this.validateAndSetFile(file);
+  }
+
+  private validateAndSetFile(file: File): void {
+    this.proofFileError = '';
+    if (!this.ALLOWED_TYPES.includes(file.type)) {
+      this.proofFileError = 'Only PDF, JPG, or PNG files are allowed.';
+      return;
+    }
+    if (file.size > this.MAX_FILE_SIZE) {
+      this.proofFileError = 'File size must not exceed 5MB.';
+      return;
+    }
+    this.proofFile = file;
+    if (file.type.startsWith('image/')) {
+      this.convertToBase64(file, (base64) => {
+        this.proofFileLocalPreview = base64;
+      });
+    } else {
+      this.proofFileLocalPreview = null; // PDF — no image preview
+    }
+  }
+
+  removeFile(event: Event): void {
+    event.stopPropagation();
+    this.proofFile = null;
+    this.proofFileLocalPreview = null;
+    this.proofFileError = '';
+  }
+
+  clearExistingProof(event: Event): void {
+    event.stopPropagation();
+    this.proofFilePreview = null;
   }
 
   private convertToBase64(file: File, callback: (base64: string) => void): void {
@@ -125,12 +197,22 @@ export class Profile implements OnInit {
     formData.append('PhoneNumber', this.profileForm.value.phone || '');
     formData.append('Achievement', this.profileForm.value.achievements || '');
     formData.append('Description', this.profileForm.value.description || '');
+
+    if (this.proofFile) {
+      formData.append('Proof', this.proofFile);
+    } else if (this.proofFilePreview) {
+      formData.append('ExistingProofPath', this.proofFilePreview);
+    }
+
     if (this.profileImageFile) formData.append('ProfileImage', this.profileImageFile);
     if (this.backgroundImageFile) formData.append('BackgroundImage', this.backgroundImageFile);
 
     this.profile.UpdateProfile(formData).subscribe({
-      next: () => { this.router.navigate(['/userProfile']); },
-      error: (err) => { console.error(err); alert('Failed to update profile'); }
+      next: () => { this.router.navigate(['/userProfile/' + userId]); },
+      error: (err) => {
+        console.error('Validation errors:', JSON.stringify(err.error?.errors, null, 2));
+        alert('Failed to update profile');
+      }
     });
   }
 }

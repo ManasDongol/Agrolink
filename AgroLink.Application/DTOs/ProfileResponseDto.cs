@@ -12,5 +12,7 @@ public record ProfileResponseDto
     string ProfilePicture,
     string ProfileBackground,
     string Description,
-    string Achievement
+    string Achievement,
+string? Proof ,
+    bool isVerified 
     );

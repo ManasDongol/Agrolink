@@ -9,7 +9,8 @@ public class ProfileService(ProfileRepo profileRepo)
     public async Task<ProfileResponseDto> BuildProfile(
     ProfileRequestDto dto,
     string? profileImagePath,
-    string? backgroundImagePath)
+    string? backgroundImagePath,
+    string? proofImagePath)
 {
     var existingProfile = await profileRepo.GetProfileByUserId(Guid.Parse(dto.UserID));
 
@@ -25,6 +26,7 @@ public class ProfileService(ProfileRepo profileRepo)
         existingProfile.PhoneNumber = dto.PhoneNumber ?? string.Empty;
         existingProfile.Description = dto.Description ?? string.Empty;
         existingProfile.Achievement = dto.Achievement ?? string.Empty;
+      
 
         // Only update images if new ones uploaded
         if (!string.IsNullOrEmpty(profileImagePath))
@@ -32,6 +34,11 @@ public class ProfileService(ProfileRepo profileRepo)
 
         if (!string.IsNullOrEmpty(backgroundImagePath))
             existingProfile.ProfileBackground = backgroundImagePath;
+        if (!string.IsNullOrEmpty(proofImagePath))
+            Console.WriteLine(proofImagePath);
+            existingProfile.Proof = proofImagePath;
+          
+        
 
         profile = await profileRepo.UpdateProfile(existingProfile) ?? existingProfile;
     }
@@ -49,7 +56,8 @@ public class ProfileService(ProfileRepo profileRepo)
             Description = dto.Description ?? string.Empty,
             Achievement = dto.Achievement ?? string.Empty,
             ProfilePicture = profileImagePath ?? string.Empty,
-            ProfileBackground = backgroundImagePath ?? string.Empty
+            ProfileBackground = backgroundImagePath ?? string.Empty,
+            Proof = proofImagePath ?? string.Empty,
         };
 
         var result = await profileRepo.NewProfile(profile);
@@ -70,7 +78,9 @@ public class ProfileService(ProfileRepo profileRepo)
         profile.ProfilePicture,
         profile.ProfileBackground,
         profile.Description,
-        profile.Achievement
+        profile.Achievement,
+        profile.Proof,
+        profile.isVerified
     );
 }
 
@@ -94,7 +104,10 @@ public class ProfileService(ProfileRepo profileRepo)
             profile.ProfilePicture,
             profile.ProfileBackground,
             profile.Description,
-            profile.Achievement
+            profile.Achievement,
+            profile.Proof,
+            profile.isVerified
         );
     }
+    
 }

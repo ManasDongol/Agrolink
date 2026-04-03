@@ -426,3 +426,16 @@
 .field-full {
   grid-column: 1 / -1;
 }
+.verified-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 11px;
+  font-weight: 500;
+  color: #0f6e56;          /* teal-800 */
+  background: #e1f5ee;     /* teal-50 */
+  border: 1px solid #5dcaa5;
+  border-radius: 20px;
+  padding: 2px 8px;
+  margin-top: 4px;
+}

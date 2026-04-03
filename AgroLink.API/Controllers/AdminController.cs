@@ -44,6 +44,17 @@ public class AdminController(AgroLinkDbContext dbContext) : ControllerBase
 
         return Ok(result);
     }
+    
+
+    [HttpPatch("profiles/{userId}/verify")]
+    public async Task<IActionResult> VerifyProfile(Guid userId)
+    {
+        var profile = await dbContext.Profiles.FirstOrDefaultAsync(p => p.UserId == userId);
+        if (profile == null) return NotFound();
+        profile.isVerified = true;
+        await dbContext.SaveChangesAsync();
+        return Ok();
+    }
 
     [HttpDelete("users/{id:guid}")]
     public async Task<IActionResult> RemoveUser(Guid id)

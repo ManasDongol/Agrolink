@@ -38,6 +38,7 @@
     <Folder Include="wwwroot\uploads\images\backgroundPictures\" />
     <Folder Include="wwwroot\uploads\images\DefaultImages\" />
     <Folder Include="wwwroot\uploads\images\profilePictures\" />
+    <Folder Include="wwwroot\uploads\images\ProofOfWork\" />
     <Folder Include="wwwroot\uploads\images\UserMessages\" />
     <Folder Include="wwwroot\uploads\images\UserPosts\" />
   </ItemGroup>
