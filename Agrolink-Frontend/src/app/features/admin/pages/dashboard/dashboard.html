@@ -1,30 +1,179 @@
 <div class="dashboard">
-  <div class="dashboard-left">
-    <h2 class="dashboard-title">Insights</h2>
 
-    <div class="cards-row">
-      <div class="stat-card">
+  <!-- ===== Stats Row ===== -->
+  <div class="stats-row">
+
+    <div class="stat-card">
+      <div class="stat-icon stat-icon-blue">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+          <circle cx="9" cy="7" r="4"/>
+          <path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+        </svg>
+      </div>
+      <div class="stat-content">
         <div class="stat-label">Total Users</div>
-        <div class="stat-value">{{ stats?.totalUsers ?? '—' }}</div>
+        <div class="stat-value">
+          @if(loading) { <span class="stat-shimmer"></span> }
+          @else { {{ stats?.totalUsers ?? '—' }} }
+        </div>
       </div>
-      <div class="stat-card">
+    </div>
+
+    <div class="stat-card">
+      <div class="stat-icon stat-icon-green">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+          <polyline points="14 2 14 8 20 8"/>
+          <line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/>
+        </svg>
+      </div>
+      <div class="stat-content">
         <div class="stat-label">Total Posts</div>
-        <div class="stat-value">{{ stats?.totalPosts ?? '—' }}</div>
+        <div class="stat-value">
+          @if(loading) { <span class="stat-shimmer"></span> }
+          @else { {{ stats?.totalPosts ?? '—' }} }
+        </div>
       </div>
-      <div class="stat-card">
+    </div>
+
+    <div class="stat-card">
+      <div class="stat-icon stat-icon-purple">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+        </svg>
+      </div>
+      <div class="stat-content">
         <div class="stat-label">Admins</div>
-        <div class="stat-value">{{ stats?.totalAdmins ?? '—' }}</div>
+        <div class="stat-value">
+          @if(loading) { <span class="stat-shimmer"></span> }
+          @else { {{ stats?.totalAdmins ?? '—' }} }
+        </div>
       </div>
     </div>
 
-    <div class="cards-column">
-      <div class="panel-card large"></div>
-      <div class="panel-card"></div>
-      <div class="panel-card"></div>
+    <div class="stat-card">
+      <div class="stat-icon stat-icon-orange">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+          <polyline points="22 4 12 14.01 9 11.01"/>
+        </svg>
+      </div>
+      <div class="stat-content">
+        <div class="stat-label">Pending Verifications</div>
+        <div class="stat-value">
+          @if(loading) { <span class="stat-shimmer"></span> }
+          @else { {{ stats?.pendingVerifications ?? '—' }} }
+        </div>
+      </div>
     </div>
+
   </div>
 
-  <div class="dashboard-right">
-    <div class="panel-card tall"></div>
+  <!-- ===== Main Grid ===== -->
+  <div class="dashboard-grid">
+
+    <!-- Recent Posts Panel -->
+    <div class="panel">
+      <div class="panel-header">
+        <h3 class="panel-title">Recent Posts</h3>
+        <a routerLink="/admin/posts" class="panel-link">View all →</a>
+      </div>
+
+      @if(postsLoading) {
+        <div class="panel-loading">
+          <div class="mini-spinner"></div>
+        </div>
+      }
+
+      @if(!postsLoading && recentPosts.length === 0) {
+        <div class="panel-empty">No posts yet.</div>
+      }
+
+      <div class="posts-list">
+        @for(post of recentPosts; track post.postId) {
+          <div class="post-row">
+            <div class="post-row-main">
+              <span class="post-row-tag">{{ post.postCategory }}</span>
+              <span class="post-row-title">{{ post.title }}</span>
+            </div>
+            <div class="post-row-meta">
+              <span class="post-row-author">{{ post.author?.username }}</span>
+              <span class="post-row-date">{{ post.created | date:'MMM d' }}</span>
+            </div>
+          </div>
+        }
+      </div>
+    </div>
+
+    <!-- Quick Actions Panel -->
+    <div class="quick-panel">
+
+      <!-- Insights card -->
+      <div class="insight-card">
+        <div class="insight-title">Posts per User</div>
+        <div class="insight-value">{{ getPostRatio() }}</div>
+        <div class="insight-sub">avg posts per user</div>
+      </div>
+
+      <!-- Quick links -->
+      <div class="panel">
+        <div class="panel-header">
+          <h3 class="panel-title">Quick Actions</h3>
+        </div>
+        <div class="quick-links">
+          <a routerLink="/admin/users" class="quick-link">
+            <div class="quick-link-icon ql-blue">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+                <circle cx="9" cy="7" r="4"/>
+              </svg>
+            </div>
+            <span>Manage Users</span>
+            <svg class="ql-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polyline points="9 18 15 12 9 6"/>
+            </svg>
+          </a>
+          <a routerLink="/admin/posts" class="quick-link">
+            <div class="quick-link-icon ql-green">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                <polyline points="14 2 14 8 20 8"/>
+              </svg>
+            </div>
+            <span>Manage Posts</span>
+            <svg class="ql-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polyline points="9 18 15 12 9 6"/>
+            </svg>
+          </a>
+          <a routerLink="/admin/verify-users" class="quick-link">
+            <div class="quick-link-icon ql-orange">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+                <polyline points="22 4 12 14.01 9 11.01"/>
+              </svg>
+            </div>
+            <span>Verify Users</span>
+            <svg class="ql-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polyline points="9 18 15 12 9 6"/>
+            </svg>
+          </a>
+          <a routerLink="/admin/admins" class="quick-link">
+            <div class="quick-link-icon ql-purple">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+              </svg>
+            </div>
+            <span>Manage Admins</span>
+            <svg class="ql-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polyline points="9 18 15 12 9 6"/>
+            </svg>
+          </a>
+        </div>
+      </div>
+
+    </div>
+
   </div>
+
 </div>

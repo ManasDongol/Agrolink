@@ -74,7 +74,7 @@ export class Profile implements OnInit {
           phone: profileData.phoneNumber || '',
           description: profileData.description || '',
           achievements: profileData.achievement || '',
-          isverified: profileData.isverified || false
+          isverified: profileData.isVerified || false
         });
 
         // store server paths separately

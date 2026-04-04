@@ -54,4 +54,10 @@ public class ProfileRepo(AgroLinkDbContext dbContext)
             await dbContext.SaveChangesAsync();
         }
     }
+
+    public async Task<List<Profile>> GetAllProfiles()
+    {
+        var profiles = await dbContext.Profiles.Where(x=>!x.isVerified && x.Proof!=null).ToListAsync();
+        return profiles;
+    }
 }

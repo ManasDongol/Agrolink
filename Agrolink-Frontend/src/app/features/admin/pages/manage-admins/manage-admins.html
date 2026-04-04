@@ -1,27 +1,73 @@
-<div class="card">
-  <h2>Manage Admins</h2>
+<!-- Delete confirmation modal -->
+@if(showDeleteConfirm) {
+  <div class="modal-backdrop">
+    <div class="modal-box">
+      <div class="modal-header">
+        <div class="modal-icon-danger">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+            <line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/>
+          </svg>
+        </div>
+        <h3>Remove Admin</h3>
+      </div>
+      <p class="modal-body-text">
+        Are you sure you want to remove this admin? They will lose all admin privileges immediately.
+      </p>
+      <div class="modal-actions">
+        <button class="btn-ghost" (click)="cancelDelete()" [disabled]="isDeleting">Cancel</button>
+        <button class="btn-danger" (click)="confirmDelete()" [disabled]="isDeleting">
+          {{ isDeleting ? 'Removing...' : 'Remove Admin' }}
+        </button>
+      </div>
+    </div>
+  </div>
+}
 
-  <div *ngIf="loading">Loading admins...</div>
-  <div *ngIf="error && !loading" class="error">{{ error }}</div>
+<!-- Page Content -->
+<div class="page-wrapper">
+  <div class="page-header">
+    <div>
+      <h2 class="page-title">Manage Admins</h2>
+      <p class="page-subtitle">View and remove platform administrators</p>
+    </div>
+    <div class="header-badge">{{ admins.length }} admins</div>
+  </div>
 
-  <table *ngIf="!loading && !error" class="table">
-    <thead>
-      <tr>
-        <th>Username</th>
-        <th>Email</th>
-        <th>Type</th>
-        <th></th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr *ngFor="let admin of admins">
-        <td>{{ admin.username }}</td>
-        <td>{{ admin.email }}</td>
-        <td>{{ admin.userType }}</td>
-        <td class="actions">
-          <button class="danger" (click)="removeAdmin(admin.id)">Remove</button>
-        </td>
-      </tr>
-    </tbody>
-  </table>
+  <div *ngIf="loading" class="loading-state">
+    <div class="mini-spinner"></div>
+    Loading admins...
+  </div>
+  <div *ngIf="error && !loading" class="error-state">{{ error }}</div>
+
+  <div *ngIf="!loading && !error" class="table-card">
+    <table class="table">
+      <thead>
+        <tr>
+          <th>Username</th>
+          <th>Email</th>
+          <th>Type</th>
+          <th class="th-action"></th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let admin of admins">
+          <td class="td-name">{{ admin.username }}</td>
+          <td class="td-email">{{ admin.email }}</td>
+          <td><span class="type-badge type-badge-admin">{{ admin.userType }}</span></td>
+          <td class="td-action">
+            <button class="btn-remove" (click)="openDeleteConfirm(admin.id)">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="3 6 5 6 21 6"/>
+                <path d="M19 6l-1 14H6L5 6"/>
+                <path d="M10 11v6"/><path d="M14 11v6"/>
+                <path d="M9 6V4h6v2"/>
+              </svg>
+              Remove
+            </button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
 </div>

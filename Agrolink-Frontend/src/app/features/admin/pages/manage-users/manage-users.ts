@@ -1,9 +1,9 @@
 import { Component, OnInit } from '@angular/core';
-import { AdminService,AdminUser } from '../../../../core/Services/Admin/admin.service';
+import { AdminService, AdminUser } from '../../../../core/Services/Admin/admin.service';
 
 @Component({
   selector: 'app-manage-users',
-  standalone:false,
+  standalone: false,
   templateUrl: './manage-users.html',
   styleUrl: './manage-users.css',
 })
@@ -11,6 +11,10 @@ export class ManageUsers implements OnInit {
   users: AdminUser[] = [];
   loading = true;
   error?: string;
+
+  showDeleteConfirm = false;
+  pendingDeleteId: string | null = null;
+  isDeleting = false;
 
   constructor(private adminService: AdminService) {}
 
@@ -31,12 +35,28 @@ export class ManageUsers implements OnInit {
     });
   }
 
-  removeUser(id: string) {
-    if (!confirm('Remove this user?')) {
-      return;
-    }
-    this.adminService.deleteUser(id).subscribe({
-      next: () => this.loadUsers(),
+  openDeleteConfirm(id: string) {
+    this.pendingDeleteId = id;
+    this.showDeleteConfirm = true;
+  }
+
+  cancelDelete() {
+    this.pendingDeleteId = null;
+    this.showDeleteConfirm = false;
+  }
+
+  confirmDelete() {
+    if (!this.pendingDeleteId) return;
+    this.isDeleting = true;
+    this.adminService.deleteUser(this.pendingDeleteId).subscribe({
+      next: () => {
+        this.users = this.users.filter(u => u.id !== this.pendingDeleteId);
+        this.cancelDelete();
+        this.isDeleting = false;
+      },
+      error: () => {
+        this.isDeleting = false;
+      },
     });
   }
 }

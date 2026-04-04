@@ -11,5 +11,5 @@ export class ProfileResponseDto {
     description!: string;
     achievement!: string;
     proof!:string;
-    isverified!:boolean;
+    isVerified!:boolean;
 }

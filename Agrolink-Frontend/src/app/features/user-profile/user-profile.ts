@@ -145,6 +145,9 @@ showWithdrawModal: boolean = false;
       next: (data) => {
   
         this.profile = data;
+        console.log(data.isVerified);
+        console.log(data.role);
+        console.log("sdsadsa hello")
        
         this.loading = false;
       },

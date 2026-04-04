@@ -8,21 +8,21 @@ import { Sidebar } from './shared/sidebar/sidebar';
 import { ManageAdmins } from './pages/manage-admins/manage-admins';
 import { ManagePosts } from './pages/manage-posts/manage-posts';
 import { ManageUsers } from './pages/manage-users/manage-users';
-
+import { VerifyUsers } from './pages/verify-users/verify-users';
 
 @NgModule({
-  declarations: [ 
+  declarations: [
     AdminLayout,
     Sidebar,
     Dashboard,
     ManageAdmins,
     ManagePosts,
-    ManageUsers
+    ManageUsers,
+    VerifyUsers,
   ],
   imports: [
     CommonModule,
-    AdminRoutingModule
-   
+    AdminRoutingModule,
   ]
 })
 export class AdminModule { }

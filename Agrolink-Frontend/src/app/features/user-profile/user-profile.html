@@ -29,7 +29,7 @@
       <div class="user-info">
         <div style="display: flex; gap: 20px;">
           <h2>{{ profile.firstName }} {{ profile.lastName }}</h2>
-          <span class="verified-badge" *ngIf="profile.isverified">
+          <span class="verified-badge" *ngIf="profile.isVerified">
     <svg width="13" height="13" viewBox="0 0 24 24" fill="none"
       stroke="currentColor" stroke-width="2.5">
       <polyline points="20 6 9 17 4 12"/>
@@ -38,7 +38,7 @@
   </span>
 
   <!-- not verified -->
-  <span class="unverified-badge" *ngIf="!profile.isverified">
+  <span class="unverified-badge" *ngIf="!profile.isVerified">
     
     Not Verified
   </span>

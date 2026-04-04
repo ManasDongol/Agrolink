@@ -128,10 +128,18 @@ public class AdminController(AgroLinkDbContext dbContext,ProfileService service)
         return Ok(result);
     }
 
-    [HttpPut("/verifyUser")]
-    public async Task<IActionResult> verifyUserProfile(Guid userId)
+    [HttpPut("verify-users/{userId}/approve")]
+    public async Task<IActionResult> verifyUserProfile([FromRoute]Guid userId)
     {
         await service.VerifyProfile(userId);
         return NoContent();
+    }
+
+    [HttpGet("get-profiles")]
+    public async Task<IActionResult> getUserProfile()
+    {
+        var profiles =await service.GetProfiles();
+        return Ok(profiles);
+
     }
 }

@@ -6,6 +6,7 @@ export interface AdminStats {
   totalUsers: number;
   totalAdmins: number;
   totalPosts: number;
+  pendingVerifications?: number;
 }
 
 export interface AdminUser {
@@ -15,12 +16,46 @@ export interface AdminUser {
   userType: string;
 }
 
+/* Legacy flat shape kept for backward compat */
 export interface AdminPost {
   id: string;
   title: string;
   author: string;
   created: string;
   category: string;
+}
+
+/* Rich shape that mirrors the feed Post model */
+export interface AdminPostFull {
+  postId: string;
+  title: string;
+  content: string;
+  created: string;
+  imagePath?: string;
+  postCategory: string;
+  author: {
+    userId: string;
+    username: string;
+    profilePictureUrl?: string;
+  };
+  likesCount: number;
+  commentsCount: number;
+}
+
+export interface UnverifiedUser {
+   profileId: string;          // Guid in C# → string in TS
+  userId: string;             // Guid → string
+  firstName: string;
+  lastName: string;
+  role: string;
+  address: string;
+  phoneNumber: string;
+  profilePicture: string;
+  profileBackground: string;
+  description: string;
+  achievement: string;
+  proof?: string | null;      // nullable in C# → optional or null in TS
+  isVerified: boolean;
 }
 
 @Injectable({
@@ -48,8 +83,8 @@ export class AdminService {
     });
   }
 
-  getPosts(): Observable<AdminPost[]> {
-    return this.http.get<AdminPost[]>(`${this.baseUrl}/posts`, {
+  getPosts(): Observable<AdminPostFull[]> {
+    return this.http.get<AdminPostFull[]>(`${this.baseUrl}/posts`, {
       withCredentials: true,
     });
   }
@@ -65,5 +100,32 @@ export class AdminService {
       withCredentials: true,
     });
   }
-}
 
+  deletePost(id: string) {
+    return this.http.delete(`${this.baseUrl}/posts/${id}`, {
+      withCredentials: true,
+    });
+  }
+
+  getUnverifiedUsers(): Observable<UnverifiedUser[]> {
+    return this.http.get<UnverifiedUser[]>(`${this.baseUrl}/get-profiles`, {
+      withCredentials: true,
+    });
+  }
+
+  verifyUser(id: string) {
+    return this.http.put(
+      `${this.baseUrl}/verify-users/${id}/approve`,
+      {},
+      { withCredentials: true }
+    );
+  }
+
+  rejectUser(id: string) {
+    return this.http.post(
+      `${this.baseUrl}/verify-users/${id}/reject`,
+      {},
+      { withCredentials: true }
+    );
+  }
+}

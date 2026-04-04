@@ -114,5 +114,27 @@ public class ProfileService(ProfileRepo profileRepo)
     {
         await profileRepo.VerifyProfile(UserId);
     }
+
+    public async Task<List<ProfileResponseDto>> GetProfiles()
+    {
+        var profiles = await profileRepo.GetAllProfiles();
+        var mapped = profiles.Select(x => new ProfileResponseDto(
+            x.ProfileId,
+            x.UserId,
+            x.FirstName,
+            x.LastName,
+            x.Role,
+            x.Address, 
+                x.PhoneNumber,
+            x.ProfilePicture,
+            x.ProfileBackground,
+x.Description,
+            x.Achievement,
+            x.Proof,
+            x.isVerified
+        )).ToList();
+        return mapped;
+    }
+    
     
 }
