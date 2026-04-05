@@ -46,7 +46,7 @@ public class NetworkController(NetworkService networkService) : ControllerBase
         {
             var userId = GetCurrentUserId();
             var result = await networkService.SendConnectionRequestAsync(userId, targetUserId);
-            // If result is false, it might imply failure, but for now just BadRequest
+           
             if (!result) return BadRequest(new { message = "Request already pending or users already connected" });
             return Ok(new { message = "Connection request sent" });
         }
@@ -112,13 +112,13 @@ public class NetworkController(NetworkService networkService) : ControllerBase
 
     }
      
-    [HttpDelete("withdraw/{receiverID}")]
-    public async Task<IActionResult> WithdrawConnectionRequest([FromRoute]Guid receiverID)
+    [HttpDelete("withdraw/{requestID}")]
+    public async Task<IActionResult> WithdrawConnectionRequest([FromRoute]Guid requestID)
     {
         try
         {
             var userId = GetCurrentUserId();
-            var result = await networkService.WithdrawConnectionRequestAsync(userId, receiverID);
+            var result = await networkService.WithdrawConnectionRequestAsync(userId, requestID);
             if (!result) return BadRequest(new { message = "Request not found or already accepted" });
             return Ok(new { message = "Connection request withdrawn" });
         }
@@ -129,6 +129,50 @@ public class NetworkController(NetworkService networkService) : ControllerBase
         catch (Exception ex)
         {
             return StatusCode(500, new { message = "Error withdrawing request", error = ex.Message });
+        }
+    }
+    
+    [HttpDelete("withdraw/receiver/{receiverID}")]
+    public async Task<IActionResult> WithdrawConnectionRequestbyReceiverID([FromRoute]Guid receiverID)
+    {
+        try
+        {
+            var userId = GetCurrentUserId();
+            var result = await networkService.WithdrawConnectionRequestByReceiverAsync(userId, receiverID);
+            if (!result) return BadRequest(new { message = "Request not found or already accepted" });
+            return Ok(new { message = "Connection request withdrawn" });
+        }
+        catch (UnauthorizedAccessException ex)
+        {
+            return Unauthorized(new { message = ex.Message });
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, new { message = "Error withdrawing request", error = ex.Message });
+        }
+    }
+
+    [HttpDelete("connections/{connectedUserId}")]
+    public async Task<IActionResult> deleteConnection([FromRoute] Guid connectedUserId)
+    {
+        try
+        {
+            var userId = GetCurrentUserId();
+            var result = await networkService.DeleteConnection(userId, connectedUserId);
+
+            if (result)
+            {
+                return Ok();
+
+            }
+            else
+            {
+                return Conflict();
+            }
+        }
+        catch(Exception ex)
+        {
+            return StatusCode(500, new { message = "Error deleting connection" });
         }
     }
     

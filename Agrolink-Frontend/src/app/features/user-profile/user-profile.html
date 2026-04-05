@@ -1,3 +1,7 @@
+
+@if(loading){
+  <app-spinner></app-spinner>
+}
 <!-- Profile Card -->
 <div class="profile-container">
   <div *ngIf="loading" class="loading">
@@ -198,7 +202,7 @@
       </svg>
     </div>
     <h3>Remove Connection</h3>
-    <p>Are you sure you want to remove <strong>{{ connectionToRemove?.name }}</strong> from your connections?</p>
+    <p>Are you sure you want to remove <strong>{{ connectionToRemove?.name }}</strong> from your connections? All messages will be deleted !</p>
     <div class="modal-actions">
       <button class="modal-cancel" (click)="cancelRemove()">Cancel</button>
       <button class="modal-confirm" (click)="removeConnection()">Remove</button>

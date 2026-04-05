@@ -128,7 +128,7 @@ public class ProfileService(ProfileRepo profileRepo)
                 x.PhoneNumber,
             x.ProfilePicture,
             x.ProfileBackground,
-x.Description,
+            x.Description,
             x.Achievement,
             x.Proof,
             x.isVerified

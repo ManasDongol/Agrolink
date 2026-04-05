@@ -72,7 +72,7 @@ confirmWithdraw() {
   if (!this.pendingWithdrawRequest) return;
   const req = this.pendingWithdrawRequest;
 
-  this.networkService.withdrawRequestByReceiverId(req.requestId).subscribe({
+  this.networkService.withdrawRequest(req.requestId).subscribe({
     next: () => {
       this.sentrequests = this.sentrequests.filter(r => r.requestId !== req.requestId);
       this.networkService.removeSentRequest(req.toUserId);

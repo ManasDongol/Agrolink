@@ -61,7 +61,8 @@ withdrawRequest(requestId: string): Observable<any> {
 }
 
 withdrawRequestByReceiverId(receiverId: string): Observable<any> {
-    return this.http.delete(`${this.baseUrl}/withdraw/${receiverId}`);
+    console.log(receiverId);
+    return this.http.delete(`${this.baseUrl}/withdraw/receiver/${receiverId}`);
 }
 
 removeConnection(userId: string): Observable<any> {

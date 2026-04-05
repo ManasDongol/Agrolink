@@ -21,8 +21,7 @@ public class PostService(PostRepo postRepo) : IPostService
             
             var fileName = $"{Guid.NewGuid()}{Path.GetExtension(createPostDto.Image.FileName)}";
             var uploadPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "uploads","images","UserPosts"); 
-            // Note: Directory.GetCurrentDirectory() usually points to the API project root when running.
-            
+                
             if (!Directory.Exists(uploadPath))
             {
                 Directory.CreateDirectory(uploadPath);

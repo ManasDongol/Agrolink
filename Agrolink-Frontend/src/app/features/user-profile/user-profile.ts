@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterLink } from '@angular/router';
 import { ActivatedRoute } from '@angular/router';
@@ -6,160 +6,233 @@ import { ProfileService } from '../../core/Services/ProfileService/profileServic
 import { ProfileResponseDto } from '../../core/Dtos/ProfileResponseDto';
 import { Auth } from '../../core/Services/Auth/auth';
 import { environment } from '../../../environments/environments';
-import { Observable,map, take } from 'rxjs';
+import { Observable, Subject, combineLatest } from 'rxjs';
+import { map, take, takeUntil, switchMap } from 'rxjs/operators';
 import { NetworkService } from '../../core/Services/Network/network';
 import { FeedService } from '../feed/feed.service';
 import { Post } from '../feed/feed.models';
 import { connectionsDto } from '../../core/Dtos/NetworkDtos';
-
-
-
+import { Spinner } from '../../shared/spinner/spinner';
 
 @Component({
   selector: 'app-user-profile',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, Spinner],
   templateUrl: './user-profile.html',
   styleUrl: './user-profile.css',
 })
-export class UserProfile implements OnInit {
+export class UserProfile implements OnInit, OnDestroy {
   profile: ProfileResponseDto | null = null;
-    id: string | null = null;
+  id: string | null = null;
   loading: boolean = true;
   error: string | null = null;
   showEditForm: boolean = false;
-  connections: number = 0; // Static for now
-  userid:string = "";
-  apiurl:string= environment.apiUrl;
-  isOwnProfile:boolean = false;
-  requestSent:boolean=false;
-  connectionExists:boolean = false;
+  connections: number = 0;
+  userid: string = '';
+  apiurl: string = environment.apiUrl;
+  isOwnProfile: boolean = false;
+  requestSent: boolean = false;
+  connectionExists: boolean = false;
 
-  userposts: Post[] =[];
+  userposts: Post[] = [];
+  activeTab: 'about' | 'posts' | 'connections' = 'about';
 
+  showRemoveModal: boolean = false;
+  connectionToRemove: { id: string; name: string; role: string; profilePicture: string } | null = null;
+  connectionsList: connectionsDto[] = [];
+  showWithdrawModal: boolean = false;
 
-  
+  // ✅ Used to cleanly unsubscribe when component is destroyed
+  private destroy$ = new Subject<void>();
+
   constructor(
     private profileService: ProfileService,
-    private networkService : NetworkService,
-  
-    private postService : FeedService,
+    private networkService: NetworkService,
+    private postService: FeedService,
     private router: Router,
     private auth: Auth,
-    private route : ActivatedRoute
+    private route: ActivatedRoute
   ) {}
 
-  activeTab: 'about' | 'posts' | 'connections' = 'about';
- 
-showRemoveModal: boolean = false;
-connectionToRemove: { id: string; name: string; role: string; profilePicture: string } | null = null;
- 
-
-connectionsList:connectionsDto[] = [];
-showWithdrawModal: boolean = false;
-
   ngOnInit(): void {
-    const routeId = this.route.snapshot.paramMap.get('id')!;
-  
-  this.getUserIdFromToken().subscribe({next:(res)=>{
-    this.userid = res;
-    console.log("the user id is "+res );
-    this.getUserConnections(res);
-     this.getUserPosts(res);
+    this.getUserIdFromToken().pipe(take(1)).subscribe({
+      next: (res) => {
+        this.userid = res;
+      }
+    });
 
-  }});
-    this.networkService.sentRequestIds$.subscribe(ids => {
-    this.requestSent = ids.has(routeId);
-  });
+    this.route.paramMap.subscribe(params => {
+      const routeId = params.get('id');
+      if (!routeId) {
+        this.error = 'Invalid profile id';
+        this.loading = false;
+        return;
+      }
 
-   this.networkService.connectedIds$.subscribe(ids => {
-    this.connectionExists = ids.has(routeId);
-  });
-    this.loadProfile();
-   
+      this.id = routeId;
 
-  
+      this.loadProfile();
+      this.getUserConnections(routeId);
+      this.getUserPosts(routeId);
+
+      // ✅ Subscribe reactively without take(1) so state updates are reflected live
+      // Unsubscribe previous subscription when route changes via takeUntil + re-sub pattern
+      this.networkService.sentRequestIds$
+        .pipe(takeUntil(this.destroy$))
+        .subscribe(ids => {
+          this.requestSent = ids.has(routeId);
+        });
+
+      this.networkService.connectedIds$
+        .pipe(takeUntil(this.destroy$))
+        .subscribe(ids => {
+          this.connectionExists = ids.has(routeId);
+        });
+    });
   }
 
-  public getUserPosts(profileuserid:string){
-      this.id = this.route.snapshot.paramMap.get('id');
-      console.log(this.id)
-   this.postService.getPostsByID(this.id!
-   ).subscribe((res)=>{
-    this.userposts=res;
-    console.log(this.userposts)
-   
-    
-    
-   });
-    
-
+  ngOnDestroy(): void {
+    // ✅ Clean up all subscriptions when leaving the page
+    this.destroy$.next();
+    this.destroy$.complete();
   }
-  public getUserConnections(currentuserid : string){
-     this.id = this.route.snapshot.paramMap.get('id');
-      this.profileService.getUserConnections(this.id!).subscribe(
-        {
-          next:(res)=>{
-            this.connectionsList = res;
-            this.connections=this.connectionsList.length;
-          
-         
-          }
-        }
-      )
+
+  public getUserPosts(profileuserid: string) {
+    this.id = this.route.snapshot.paramMap.get('id');
+    this.postService.getPostsByID(this.id!).subscribe((res) => {
+      this.userposts = res;
+    });
+  }
+
+  public getUserConnections(currentuserid: string) {
+    this.id = this.route.snapshot.paramMap.get('id');
+    this.profileService.getUserConnections(this.id!).subscribe({
+      next: (res) => {
+        this.connectionsList = res;
+        this.connections = this.connectionsList.length;
+      }
+    });
   }
 
   private getUserIdFromToken(): Observable<string> {
-  return this.auth.checkAuth().pipe(
-    map(user => user.id)
-  );
-}
+    return this.auth.checkAuth().pipe(map(user => user.id));
+  }
 
   loadProfile(): void {
     this.loading = true;
     this.error = null;
 
-
-
-   const routeId = this.route.snapshot.paramMap.get('id');
-
-     if (!routeId) {
-    this.error = "Invalid profile id";
-    this.loading = false;
-    return;
-  }
-
-   this.getUserIdFromToken().subscribe(tokenId => {
-      
-       if (!tokenId) {
-      this.error = 'Please login to view your profile';
+    const routeId = this.route.snapshot.paramMap.get('id');
+    if (!routeId) {
+      this.error = 'Invalid profile id';
       this.loading = false;
-      this.router.navigate(['/login']);
       return;
     }
 
+    this.getUserIdFromToken().subscribe(tokenId => {
+      if (!tokenId) {
+        this.error = 'Please login to view your profile';
+        this.loading = false;
+        this.router.navigate(['/login']);
+        return;
+      }
 
-     this.isOwnProfile = routeId === tokenId;
+      this.isOwnProfile = routeId === tokenId;
 
-    this.profileService.GetProfileByUserId(routeId).subscribe({
-      next: (data) => {
-  
-        this.profile = data;
-        console.log(data.isVerified);
-        console.log(data.role);
-        console.log("sdsadsa hello")
-       
+      this.profileService.GetProfileByUserId(routeId).subscribe({
+        next: (data) => {
+          this.profile = data;
+          this.loading = false;
+        },
+        error: (err) => {
+          console.error('Error loading profile:', err);
+          this.error = 'Failed to load profile.';
+          this.loading = false;
+        }
+      });
+    });
+  }
+
+  sendConnection() {
+    const routeId = this.route.snapshot.paramMap.get('id')!;
+    this.networkService.sendConnectionRequest(routeId).subscribe({
+      next: () => {
+        // ✅ addSentRequest updates sentRequestIds$ BehaviorSubject
+        // which our reactive subscription above will pick up automatically
+        this.networkService.addSentRequest(routeId);
+      },
+      error: (err) => console.error(err)
+    });
+  }
+
+  confirmWithdraw(): void {
+    this.loading = true;
+    const routeId = this.route.snapshot.paramMap.get('id')!;
+    this.networkService.withdrawRequestByReceiverId(routeId).subscribe({
+      next: () => {
+        // ✅ removeSentRequest updates sentRequestIds$ BehaviorSubject
+        // which our reactive subscription above will pick up automatically
+        this.networkService.removeSentRequest(routeId);
+        this.showWithdrawModal = false;
         this.loading = false;
       },
       error: (err) => {
-        console.error('Error loading profile:', err);
-        this.error = 'Failed to load profile. You may need to create your profile first.';
         this.loading = false;
+        console.error(err);
       }
     });
-});
-   
-   
+  }
+
+  confirmRemoveFromHeader(): void {
+    const routeId = this.route.snapshot.paramMap.get('id')!;
+    this.connectionToRemove = {
+      id: routeId,
+      name: `${this.profile?.firstName} ${this.profile?.lastName}`,
+      role: this.profile?.role ?? '',
+      profilePicture: this.profile?.profilePicture ?? ''
+    };
+    this.showRemoveModal = true;
+  }
+
+  confirmRemove(userID: string): void {
+    const conn = this.connectionsList.find(c => c.connectedUserID === userID);
+    if (!conn) return;
+    this.connectionToRemove = {
+      id: conn.connectedUserID,
+      name: conn.connectedUserName,
+      role: '',
+      profilePicture: conn.connectedProfileUrl
+    };
+    this.showRemoveModal = true;
+  }
+
+  removeConnection(): void {
+    this.loading = true;
+    if (!this.connectionToRemove) return;
+    this.networkService.removeConnection(this.connectionToRemove.id).subscribe({
+      next: () => {
+        this.connectionsList = this.connectionsList.filter(
+          c => c.connectedUserID !== this.connectionToRemove!.id
+        );
+        this.connections = Math.max(0, this.connections - 1);
+        this.cancelRemove();
+        this.loading = false;
+      },
+      error: (err) => console.error(err)
+    });
+  }
+
+  withdrawConnection(): void {
+    this.showWithdrawModal = true;
+  }
+
+  closeWithdrawModal(): void {
+    this.showWithdrawModal = false;
+  }
+
+  cancelRemove(): void {
+    this.showRemoveModal = false;
+    this.connectionToRemove = null;
   }
 
   openEditForm(): void {
@@ -172,110 +245,27 @@ showWithdrawModal: boolean = false;
 
   onProfileUpdated(): void {
     this.closeEditForm();
-    this.loadProfile(); // Reload profile data
+    this.loadProfile();
   }
 
   navigateToEditProfile(): void {
     this.getUserIdFromToken().subscribe(id => {
-      console.log("User ID:", id);
-       if (!id) {
-      this.error = 'Please login to view your profile';
-      this.loading = false;
-      this.router.navigate(['/login']);
-      return;
-    }
-
-    this.router.navigate(['/buildProfile/',id]) });
-  }
-
-  sendConnection(){
-
-    const routeId = this.route.snapshot.paramMap.get('id')!;
-    this.networkService.sendConnectionRequest(routeId).subscribe({
-      next: () => {
-           this.networkService.addSentRequest(routeId);
-      },
-      error: (err) => console.error(err)
+      if (!id) {
+        this.router.navigate(['/login']);
+        return;
+      }
+      this.router.navigate(['/buildProfile/', id]);
     });
-
   }
-confirmRemoveFromHeader(): void {
-  const routeId = this.route.snapshot.paramMap.get('id')!;
-  this.connectionToRemove = {
-    id: routeId,
-    name: `${this.profile?.firstName} ${this.profile?.lastName}`,
-    role: this.profile?.role ?? '',
-    profilePicture: this.profile?.profilePicture ?? ''
-  };
-  this.showRemoveModal = true;
-}
-  confirmRemove(userID: string): void {
-  const conn = this.connectionsList.find(c => c.connectedUserID === userID);
-  if (!conn) return;
-  this.connectionToRemove = {
-    id: conn.connectedUserID,
-    name: conn.connectedUserName,
-    role: '',
-    profilePicture: conn.connectedProfileUrl
-  };
-  this.showRemoveModal = true;
 }
 
-removeConnection(): void {
-  if (!this.connectionToRemove) return;
-  this.networkService.removeConnection(this.connectionToRemove.id).subscribe({
-    next: () => {
-      this.connectionsList = this.connectionsList.filter(
-        c => c.connectedUserID !== this.connectionToRemove!.id
-      );
-      this.connections = Math.max(0, this.connections - 1);
-      this.cancelRemove();
-    },
-    error: (err) => console.error(err)
-  });
+export class posts {
+  content!: string;
+  created!: string;
+  imagePath?: string;
+  postcategory!: string;
+  isLiked: boolean = false;
+  likesCount: number = 0;
+  commentsCount: number = 0;
+  isBookmarked: boolean = false;
 }
-
-confirmWithdraw(): void {
-  const routeId = this.route.snapshot.paramMap.get('id')!;
-  this.networkService.withdrawRequestByReceiverId(routeId).subscribe({
-    next: () => {
-      this.networkService.removeSentRequest(routeId);
-      this.showWithdrawModal = false;
-    },
-    error: (err) => console.error(err)
-  });
-}
-
-closeWithdrawModal(): void {
-  this.showWithdrawModal = false;
-}
-withdrawConnection(): void {
-
-  this.showWithdrawModal = true;
-}
-cancelRemove(): void {
-  this.showRemoveModal = false;
-  this.connectionToRemove = null;
-}
- 
-
-}
-
-
-export class posts{
-   
-    content!: string;
-    created!: string;
-    imagePath?: string;
-
-    postcategory!: string;
-  
-    isLiked: boolean = false;
-    likesCount: number = 0;
-    commentsCount: number = 0;
-    isBookmarked: boolean = false;
-  
-}
-  
-    
-  

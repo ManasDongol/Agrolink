@@ -162,7 +162,7 @@ public class NetworkService(AgroLinkDbContext context) : INetworkService
         bool exists = await context.Connections.AnyAsync(c => (c.UserID == currentUserId && c.ConnectionUserId == targetUserId) || (c.UserID == targetUserId && c.ConnectionUserId == currentUserId));
         if (exists) return false;
 
-        bool pending = await context.ConnectionRequests.AnyAsync(r => (r.UserID == currentUserId && r.ConnectionUserId == targetUserId) && !r.Accepted);
+        bool pending = await context.ConnectionRequests.AnyAsync(r => (r.UserID == currentUserId && r.ConnectionUserId == targetUserId)|| (r.UserID == targetUserId && r.ConnectionUserId == currentUserId) && !r.Accepted);
         if (pending) return false;
 
         var request = new ConnectionRequests
@@ -239,7 +239,20 @@ public class NetworkService(AgroLinkDbContext context) : INetworkService
         return connectionList;
     }
     
-    public async Task<bool> WithdrawConnectionRequestAsync(Guid currentUserId, Guid receiverID)
+    public async Task<bool> WithdrawConnectionRequestAsync(Guid currentUserId, Guid requestID)
+    {
+        var request = await context.ConnectionRequests
+            .FirstOrDefaultAsync(r => r.ConnectionRequestID == requestID 
+                                      && r.UserID == currentUserId 
+                                      && !r.Accepted);
+
+        if (request == null) return false;
+
+        context.ConnectionRequests.Remove(request);
+        await context.SaveChangesAsync();
+        return true;
+    }
+    public async Task<bool> WithdrawConnectionRequestByReceiverAsync(Guid currentUserId, Guid receiverID)
     {
         var request = await context.ConnectionRequests
             .FirstOrDefaultAsync(r => r.ConnectionUserId == receiverID 
@@ -249,6 +262,26 @@ public class NetworkService(AgroLinkDbContext context) : INetworkService
         if (request == null) return false;
 
         context.ConnectionRequests.Remove(request);
+        await context.SaveChangesAsync();
+        return true;
+    }
+
+    public async Task<bool> DeleteConnection(Guid currentUserId, Guid connectedUserId)
+    {
+        var request = await context.Connections
+            .FirstOrDefaultAsync(r => r.ConnectionUserId == connectedUserId && r.UserID == currentUserId || r.ConnectionUserId == currentUserId && r.UserID == connectedUserId);
+        if (request == null) return false;
+        
+        var conversation = await context.Conversations
+            .FirstOrDefaultAsync(r => r.User1Id == connectedUserId && r.User2Id == currentUserId || r.User1Id == currentUserId && r.User2Id == connectedUserId);
+
+        
+        context.Connections.Remove(request);
+        if (conversation != null)
+        {
+            context.Conversations.Remove(conversation);
+        }
+        context.Connections.Remove(request);
         await context.SaveChangesAsync();
         return true;
     }
