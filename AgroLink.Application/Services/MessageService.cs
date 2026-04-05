@@ -74,38 +74,48 @@ public class MessageService(MessagesRepo repo,AgroLinkDbContext _dbContext)
         return await repo.AddMessage(message);  // SaveChangesAsync inside here saves both
     }
     
-    public async Task<ConversationDto> CreateConversation(Guid user1Id, Guid user2Id)
+    public async Task<UserConversationDto> CreateConversation(Guid currentUserId, Guid user1Id, Guid user2Id)
     {
+        // Figure out who the partner is
+        Guid otherUserId = currentUserId == user1Id ? user2Id : user1Id;
+
         // Check if conversation already exists
         var existing = await _dbContext.Conversations
             .FirstOrDefaultAsync(c =>
                 (c.User1Id == user1Id && c.User2Id == user2Id) ||
                 (c.User1Id == user2Id && c.User2Id == user1Id));
 
+        Guid conversationId;
+
         if (existing != null)
-            return new ConversationDto
+        {
+            conversationId = existing.Id;
+        }
+        else
+        {
+            var conv = new Conversation
             {
-              
-                User1Id = existing.User1Id,
-                User2Id = existing.User2Id
+                Id = Guid.NewGuid(),
+                User1Id = user1Id,
+                User2Id = user2Id
             };
+            _dbContext.Conversations.Add(conv);
+            await _dbContext.SaveChangesAsync();
+            conversationId = conv.Id;
+        }
 
-        // Create new conversation
-        var conv = new Conversation
+        // Fetch partner details
+        var partner = await _dbContext.Users
+            .Where(u => u.UserId == otherUserId)
+            .Select(u => new { u.Username, u.Profile.ProfilePicture })
+            .FirstOrDefaultAsync();
+
+        return new UserConversationDto
         {
-            Id = Guid.NewGuid(),
-            User1Id = user1Id,
-            User2Id = user2Id
-        };
-
-        _dbContext.Conversations.Add(conv);
-        await _dbContext.SaveChangesAsync();
-
-        return new ConversationDto
-        {
-           
-            User1Id = conv.User1Id,
-            User2Id = conv.User2Id
+            Id = conversationId,               // ← this is what Angular needs
+            PartnerId = otherUserId,
+            PartnerName = partner?.Username ?? string.Empty,
+            PartnerProfile = partner?.ProfilePicture ?? string.Empty
         };
     }
 

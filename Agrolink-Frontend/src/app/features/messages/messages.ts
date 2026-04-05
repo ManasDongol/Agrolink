@@ -96,7 +96,7 @@ export class MessagesComponent implements OnInit, AfterViewChecked {
     this.scrollToBottom();
   }
 
-  // ✅ Guard added — never opens if id is missing
+  //  Guard added — never opens if id is missing
   selectConversation(conv: Conversation, index: number) {
     if (!conv?.id) {
       console.error('selectConversation: conv.id is missing', conv);
@@ -110,7 +110,7 @@ export class MessagesComponent implements OnInit, AfterViewChecked {
     this.selectedConversationIndex = index;
   }
 
-  // ✅ Used from connections panel (non-search flow)
+  //  Used from connections panel (non-search flow)
   startConversation(conn: Connection) {
     if (!this.UserId || this.isStartingConversation) return;
     this.isStartingConversation = true;
@@ -148,7 +148,7 @@ export class MessagesComponent implements OnInit, AfterViewChecked {
     });
   }
 
-  // ✅ Used from search results
+  //  Used from search results
   startChatFromSearch(conn: any) {
     if (this.isStartingConversation) return;
     this.isStartingConversation = true;
@@ -281,64 +281,57 @@ export class MessagesComponent implements OnInit, AfterViewChecked {
     this.imagePreview = null;
   }
 
-  sendImage() {
-    if (!this.selectedFile || !this.currentConversationId) return;
+ sendImage() {
+  if (!this.selectedFile || !this.currentConversationId) return;
 
-    const file = this.selectedFile;
+  const file = this.selectedFile;
+  const convId = this.messagesService.currentConversationId;
 
-    const optimisticMsg: MessageDto = {
-      messageId: 'temp-img-' + Date.now(),
-      conversationId: this.messagesService.currentConversationId,
-      senderId: this.UserId,
-      content: this.imagePreview!,
-      sent: new Date().toISOString(),
-      isImage: true
-    };
-    this.openedMessages = [...this.openedMessages, optimisticMsg];
+  const optimisticMsg: MessageDto = {
+    messageId: 'temp-img-' + Date.now(),
+    conversationId: convId,
+    senderId: this.UserId,
+    content: this.imagePreview!,
+    sent: new Date().toISOString(),
+    isImage: true
+  };
 
-    this.cancelImagePreview();
+  // Add to service cache so sendMessage's next() doesn't wipe it
+  this.messagesService.addOptimisticMessage(convId, optimisticMsg);
 
-    this.isUploadingImage = true;
-    this.messagesService.sendImage(file, this.messagesService.currentConversationId, this.UserId).subscribe({
-      next: ({ imageUrl }) => {
-        this.isUploadingImage = false;
+  this.cancelImagePreview();
 
-        const idx = this.openedMessages.findIndex(m => m.messageId === optimisticMsg.messageId);
-        if (idx !== -1) {
-          this.openedMessages[idx] = {
-            ...this.openedMessages[idx],
-            content: this.apiurl + imageUrl,
-            messageId: 'img-confirmed-' + Date.now()
-          };
-          this.openedMessages = [...this.openedMessages];
-        }
+  this.isUploadingImage = true;
+  this.messagesService.sendImage(file, convId, this.UserId).subscribe({
+    next: ({ imageUrl }) => {
+      this.isUploadingImage = false;
 
-        this.messagesService.notifyImageSent(
-          this.receiverId,
-          this.messagesService.currentConversationId,
-          imageUrl
-        );
+      //  Replace optimistic with real URL in service cache
+      this.messagesService.replaceOptimisticMessage(
+        convId,
+        optimisticMsg.messageId,
+        { ...optimisticMsg, content: this.apiurl + imageUrl, messageId: 'img-confirmed-' + Date.now() }
+      );
 
-        const conv = this.recentConversations[this.selectedConversationIndex];
-        if (conv?.lastMessage) {
-          conv.lastMessage.content = '📷 Image';
-          conv.lastMessage.sent = new Date().toString();
-        }
-      },
-      error: (err) => {
-        this.isUploadingImage = false;
-        console.error('Image upload failed', err);
+      this.messagesService.notifyImageSent(this.receiverId, convId, imageUrl);  // fixed: use local var
 
-        const idx = this.openedMessages.findIndex(m => m.messageId === optimisticMsg.messageId);
-        if (idx !== -1) {
-          this.openedMessages[idx] = {
-            ...this.openedMessages[idx],
-            messageId: 'img-failed-' + Date.now()
-          };
-        }
+      const conv = this.recentConversations[this.selectedConversationIndex];
+      if (conv?.lastMessage) {
+        conv.lastMessage.content = '📷 Image';
+        conv.lastMessage.sent = new Date().toString();
       }
-    });
-  }
+    },
+    error: (err) => {
+      this.isUploadingImage = false;
+      console.error('Image upload failed', err);
+      this.messagesService.replaceOptimisticMessage(
+        convId,
+        optimisticMsg.messageId,
+        { ...optimisticMsg, messageId: 'img-failed-' + Date.now() }
+      );
+    }
+  });
+}
 
   get currentConversationId(): string {
     return this.messagesService.currentConversationId;

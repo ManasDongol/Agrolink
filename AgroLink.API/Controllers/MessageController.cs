@@ -49,8 +49,9 @@ public class MessageController(MessageService _service): ControllerBase
     [HttpPost("conversations")]
     public async Task<IActionResult> CreateConversation([FromBody] ConversationDto dto)
     {
+        var currentuserid = Guid.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
         // Call service to create conversation
-        var conversation = await _service.CreateConversation(dto.User1Id, dto.User2Id);
+        var conversation = await _service.CreateConversation(currentuserid,dto.User1Id, dto.User2Id);
     
         return Ok(conversation);
     }

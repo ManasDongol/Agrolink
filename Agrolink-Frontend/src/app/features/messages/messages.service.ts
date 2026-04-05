@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import * as signalR from '@microsoft/signalr';
 import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject } from 'rxjs';
+import { map,tap } from 'rxjs/operators';
 import { environment } from '../../../environments/environments';
 
 export interface MessageDto {
@@ -39,7 +40,7 @@ export class MessagesService {
 
   private apiUrl = 'http://localhost:5131/api/Message';
   private hubUrl = 'http://localhost:5131/chatHub';
-  private baseUrl = 'http://localhost:5131';   // ← one place to change if server URL changes
+  private baseUrl = 'http://localhost:5131';
 
   constructor(private http: HttpClient) {
     this.startConnection();
@@ -71,7 +72,7 @@ export class MessagesService {
 
         const fullMessage: MessageDto = {
           ...message,
-          content: `${this.baseUrl}${message.content}`,  // ✅ relative → absolute
+          content: `${this.baseUrl}${message.content}`,
           isImage: true
         };
 
@@ -86,8 +87,47 @@ export class MessagesService {
     }
   }
 
+  addOptimisticMessage(conversationId: string, message: MessageDto) {
+  if (!this.messagesMap.has(conversationId)) {
+    this.messagesMap.set(conversationId, []);
+  }
+  this.messagesMap.get(conversationId)!.push(message);
+  
+  if (conversationId === this.currentConversationId) {
+    this.messages$.next([...this.messagesMap.get(conversationId)!]);
+  }
+}
+
+replaceOptimisticMessage(conversationId: string, tempId: string, replacement: MessageDto) {
+  const cached = this.messagesMap.get(conversationId);
+  if (!cached) return;
+
+  const idx = cached.findIndex(m => m.messageId === tempId);
+  if (idx !== -1) {
+    cached[idx] = replacement;
+  }
+
+  if (conversationId === this.currentConversationId) {
+    this.messages$.next([...cached]);
+  }
+}
+
+  //  Maps any API shape → consistent Conversation interface
   createConversation(user1Id: string, user2Id: string) {
-    return this.http.post<Conversation>(`${this.apiUrl}/conversations`, { user1Id, user2Id });
+      console.log('userId:', user1Id, '| connId:', user2Id);
+    return this.http.post<any>(`${this.apiUrl}/conversations`, { user1Id, user2Id }).pipe(
+          tap(res => console.log('RAW API response:', JSON.stringify(res))),
+      map(res => {
+        console.log('RAW createConversation response:', JSON.stringify(res));
+        return {
+          id: res.id ?? res.conversationId ?? res.Id ?? res.ConversationId,
+          partnerId: res.partnerId ?? res.PartnerId,
+          partnerName: res.partnerName ?? res.PartnerName,
+          partnerProfile: res.partnerProfile ?? res.PartnerProfile ?? '',
+          lastMessage: res.lastMessage ?? res.LastMessage ?? null
+        } as Conversation;
+      })
+    );
   }
 
   getConversations(userId: string) {
@@ -99,72 +139,77 @@ export class MessagesService {
   }
 
   openConversation(conversationId: string) {
-  this.currentConversationId = conversationId;
+    // Guard — never call with undefined
+    if (!conversationId) {
+      console.error('openConversation called with invalid id:', conversationId);
+      return;
+    }
 
-  this.http.get<MessageDto[]>(`${this.apiUrl}/messages/${conversationId}`)
-    .subscribe(messages => {
-      const mapped = messages.map(m => {
-        const isImg = m.isImage || (m.content?.startsWith('/images/') ?? false);
-        return {
-          ...m,
-          isImage: isImg,
-          content: isImg ? `${this.baseUrl}${m.content}` : (m.content ?? '')
-        };
+    this.currentConversationId = conversationId;
+
+    this.http.get<MessageDto[]>(`${this.apiUrl}/messages/${conversationId}`)
+      .subscribe(messages => {
+        const mapped = messages.map(m => {
+          const isImg = m.isImage || (m.content?.startsWith('/images/') ?? false);
+          return {
+            ...m,
+            isImage: isImg,
+            content: isImg ? `${this.baseUrl}${m.content}` : (m.content ?? '')
+          };
+        });
+
+        const cached = this.messagesMap.get(conversationId) ?? [];
+        const unsaved = cached.filter(m => m.messageId.startsWith('temp-'));
+
+        const merged = [...mapped, ...unsaved];
+        this.messagesMap.set(conversationId, merged);
+        this.messages$.next(merged);
       });
-
-      //  Only append temp messages — real messages are already in DB response
-      const cached = this.messagesMap.get(conversationId) ?? [];
-      const unsaved = cached.filter(m => m.messageId.startsWith('temp-'));
-
-      const merged = [...mapped, ...unsaved];
-      this.messagesMap.set(conversationId, merged);
-      this.messages$.next(merged);
-    });
-}
- sendMessage(senderId: string, receiverId: string, content: string) {
-  if (!this.hubConnection || this.hubConnection.state !== signalR.HubConnectionState.Connected) {
-    console.warn('Hub not connected yet!');
-    return;
   }
 
-  const tempId = 'temp-' + Date.now();
+  sendMessage(senderId: string, receiverId: string, content: string) {
+    if (!this.hubConnection || this.hubConnection.state !== signalR.HubConnectionState.Connected) {
+      console.warn('Hub not connected yet!');
+      return;
+    }
 
-  const tempMessage: MessageDto = {
-    messageId: tempId,
-    conversationId: this.currentConversationId,
-    senderId,
-    content,
-    sent: new Date().toISOString()
-  };
+    const tempId = 'temp-' + Date.now();
 
-  if (!this.messagesMap.has(this.currentConversationId)) 
-    this.messagesMap.set(this.currentConversationId, []);
-  
-  this.messagesMap.get(this.currentConversationId)!.push(tempMessage);
-  this.messages$.next([...this.messagesMap.get(this.currentConversationId)!]);
+    const tempMessage: MessageDto = {
+      messageId: tempId,
+      conversationId: this.currentConversationId,
+      senderId,
+      content,
+      sent: new Date().toISOString()
+    };
 
-  this.http.post<MessageDto>(`${this.apiUrl}/send`, {
-    senderId,
-    conversationId: this.currentConversationId,
-    content
-  }).subscribe({
-    next: (savedMessage) => {
-      // Replace temp message with real DB message in cache
-      const cached = this.messagesMap.get(this.currentConversationId);
-      if (cached) {
-        const idx = cached.findIndex(m => m.messageId === tempId);
-        if (idx !== -1) {
-          cached[idx] = { ...savedMessage, isImage: false };
-          this.messages$.next([...cached]);
+    if (!this.messagesMap.has(this.currentConversationId))
+      this.messagesMap.set(this.currentConversationId, []);
+
+    this.messagesMap.get(this.currentConversationId)!.push(tempMessage);
+    this.messages$.next([...this.messagesMap.get(this.currentConversationId)!]);
+
+    this.http.post<MessageDto>(`${this.apiUrl}/send`, {
+      senderId,
+      conversationId: this.currentConversationId,
+      content
+    }).subscribe({
+      next: (savedMessage) => {
+        const cached = this.messagesMap.get(this.currentConversationId);
+        if (cached) {
+          const idx = cached.findIndex(m => m.messageId === tempId);
+          if (idx !== -1) {
+            cached[idx] = { ...savedMessage, isImage: false };
+            this.messages$.next([...cached]);
+          }
         }
-      }
-    },
-    error: err => console.error('Failed to save message:', err)
-  });
+      },
+      error: err => console.error('Failed to save message:', err)
+    });
 
-  this.hubConnection.invoke('SendMessage', receiverId, this.currentConversationId, content)
-    .catch(err => console.error('SignalR SendMessage error:', err));
-}
+    this.hubConnection.invoke('SendMessage', receiverId, this.currentConversationId, content)
+      .catch(err => console.error('SignalR SendMessage error:', err));
+  }
 
   sendImage(file: File, conversationId: string, senderId: string) {
     const formData = new FormData();
@@ -175,8 +220,6 @@ export class MessagesService {
 
   notifyImageSent(receiverId: string, conversationId: string, imageUrl: string) {
     if (!this.hubConnection || this.hubConnection.state !== signalR.HubConnectionState.Connected) return;
-
-    // imageUrl is relative (/images/...) — hub forwards it as-is, receiver prepends baseUrl
     this.hubConnection.invoke('SendImage', receiverId, conversationId, imageUrl)
       .catch(err => console.error('SignalR SendImage error:', err));
   }

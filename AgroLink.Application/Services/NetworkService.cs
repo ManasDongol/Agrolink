@@ -162,8 +162,26 @@ public class NetworkService(AgroLinkDbContext context) : INetworkService
         bool exists = await context.Connections.AnyAsync(c => (c.UserID == currentUserId && c.ConnectionUserId == targetUserId) || (c.UserID == targetUserId && c.ConnectionUserId == currentUserId));
         if (exists) return false;
 
-        bool pending = await context.ConnectionRequests.AnyAsync(r => (r.UserID == currentUserId && r.ConnectionUserId == targetUserId)|| (r.UserID == targetUserId && r.ConnectionUserId == currentUserId) && !r.Accepted);
-        if (pending) return false;
+        var reverseRequest = await context.ConnectionRequests.FirstOrDefaultAsync(r => 
+            r.UserID == targetUserId && 
+            r.ConnectionUserId == currentUserId && 
+            !r.Accepted);
+
+        if (reverseRequest != null)
+        {
+            // Auto-connect — accept the reverse request instead of creating a new one
+            reverseRequest.Accepted = true;
+
+            context.Connections.Add(new Connections
+            {
+                UserID = currentUserId,
+                ConnectionUserId = targetUserId,
+            });
+
+            context.ConnectionRequests.Remove(reverseRequest);
+            await context.SaveChangesAsync();
+            return true; // autoConnected = true
+        }
 
         var request = new ConnectionRequests
         {
