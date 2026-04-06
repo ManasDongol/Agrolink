@@ -3,6 +3,7 @@ import { RouterLink, Router, NavigationEnd, RouterLinkActive } from "@angular/ro
 import { CommonModule } from '@angular/common';
 import { Auth } from '../../core/Services/Auth/auth';
 import { Subscription, filter } from 'rxjs';
+import { ActivatedRoute } from '@angular/router';
 
 @Component({
   selector: 'app-navbar',

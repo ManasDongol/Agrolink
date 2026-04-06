@@ -11,8 +11,8 @@ export class Chat {
 
   public startConnection = () => {
     this.hubConnection = new HubConnectionBuilder()
-                            .withUrl('http://localhost:5131/chathub') // Replace with your server URL
-                            .build();
+      .withUrl('http://localhost:5131/chathub') 
+      .build();
 
     this.hubConnection
       .start()

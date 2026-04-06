@@ -53,7 +53,7 @@ isSendingReset: boolean = false;
   }
 
   openForgotModal() {
-    console.log("opened");
+   
     this.showForgotModal = true;
   }
 

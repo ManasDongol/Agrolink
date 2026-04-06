@@ -15,6 +15,7 @@ export class Comment {
   postId: string;
   content: string;
   created: string;
+   replyingToUser: string = '';
   author: { userId: string; username: string; profilePictureUrl: string };
   replies: Comment[] = [];        // ← sub-comments
   showReplies: boolean = false;   // ← toggle visibility

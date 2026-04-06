@@ -319,6 +319,7 @@
                     </button>
                   </div>
                   <p class="comment-text">{{ reply.content }}</p>
+                   <button   class="comment-reply-btn" (click)="replyTo(reply, comment)">Reply</button>
                 </div>
               </div>
             </div>
@@ -379,6 +380,19 @@
             <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>
           </svg>
           View Profile
+        </a>
+          <a routerLink="/prices" class="sidebar-link">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>
+          </svg>
+          View Crop prices
+        </a>
+
+          <a routerLink="/crop" class="sidebar-link">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>
+          </svg>
+          Try our AI 
         </a>
       </div>
     </div>

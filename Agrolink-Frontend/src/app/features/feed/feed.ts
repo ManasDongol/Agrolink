@@ -310,16 +310,22 @@ toggleLike(post: Post) {
     });
   }
 
-  replyTo(comment: Comment) {
-  // Toggle the reply input for this specific comment
-  comment.showReplyInput = !comment.showReplyInput;
-
-  // Load replies if opening and not yet loaded
-  if (comment.showReplyInput && comment.replies.length === 0) {
-    this.commentService.getReplies(comment.commentId).subscribe(replies => {
-      comment.replies = replies.map(r => new Comment(r as Partial<Comment>));
-      comment.showReplies = true;
-    });
+  // Called for both top-level comments AND replies
+replyTo(comment: Comment, parentComment?: Comment) {
+  if (parentComment) {
+    // Replying to a reply — toggle on the PARENT comment's input
+    parentComment.showReplyInput = !parentComment.showReplyInput;
+    // Pre-fill @username so the user knows who they're replying to
+    this.replyContents[parentComment.commentId] = `@${comment.author.username} `;
+  } else {
+    // Replying to a top-level comment
+    comment.showReplyInput = !comment.showReplyInput;
+    if (comment.showReplyInput && comment.replies.length === 0) {
+      this.commentService.getReplies(comment.commentId).subscribe(replies => {
+        comment.replies = replies.map(r => new Comment(r as Partial<Comment>));
+        comment.showReplies = true;
+      });
+    }
   }
 }
 
@@ -329,15 +335,18 @@ addReply(comment: Comment, content: string) {
   const dto: CommentCreateDto = {
     postId: comment.postId,
     content: content.trim(),
-    parentCommentId: comment.commentId  // ← key difference from addComment
+    parentCommentId: comment.commentId // always the top-level comment id
   };
 
   this.commentService.addReply(dto).subscribe(newReply => {
-    comment.replies.push(new Comment(newReply as Partial<Comment>));
+    const reply = new Comment(newReply as Partial<Comment>);
+    comment.replies.push(reply);
     comment.showReplies = true;
-    this.replyContents[comment.commentId] = ''; // clear input
+    comment.showReplyInput = false;
+    this.replyContents[comment.commentId] = '';
   });
 }
+
 
 deleteComment(comment: Comment) {
   this.commentService.deleteComment(comment.commentId).subscribe(() => {

@@ -76,21 +76,27 @@ def run_pipeline(query: str) -> str:
     for i, r in enumerate(unique_results, 1):
         options_block += f"[Option {i} — source: {r['domain']}]\n{r['text']}\n\n"
 
-    prompt = f"""You are an expert agriculture assistant.
-A user has asked: "{query}"
+    prompt = f"""You are a concise, expert agriculture assistant. Answer the user's question directly and factually.
+FIRST: Check if the user's question is gibberish, random characters, or heavily misspelled with no clear meaning.
+- If yes → reply only: "Could not understand, please try again."
+- If no → answer the question directly and factually.
 
-Retrieved information:
+User question: "{query}"
+
+If user's question is giberish or has many spelling mistakes reply -> "could not understand, please try again"
+
+Context (use only if relevant to the exact crop/topic asked, OR ELSE DONT MENTION IT):
 {options_block}
 
 Instructions:
-- Answer naturally using the information above, if they are not useful answer in your own way
-- if the crop names doesnt match with the query DON'T use the information above
-- Dont mention about provided information
-- Synthesise multiple options if relevant.
-- Fill gaps with your own agricultural knowledge.
-- Never reference "option 1" etc., just answer directly.
-- DONT WRITE "Predicted- crop : , just answer naturally"
-- Be concise and informative.
+-  Start your answer immediately — no preamble, no "based on...", no "it appears that..."
+- If the context matches the query, extract the exact facts and state them plainly
+- If the context does NOT match the crop or topic, ignore it entirely and answer from your own knowledge
+- Never say "I think", "it might be", "educated guess", or express uncertainty about well-known agricultural facts
+- Never mention the context, options, or sources
+- Never mention crop prediction outputs
+- Be specific: give numbers, ranges, and actionable advice
+- Keep the answer under 80 words unless detail is truly necessaru
 """
     response = ollama.chat(
         model="sike_aditya/AgriLlama",
