@@ -1,29 +1,25 @@
 <div class="navbar-card">
   <div class="navbar-inner">
     <div class="logo">
-      
       <svg width="32" height="32" viewBox="0 0 680 680" xmlns="http://www.w3.org/2000/svg">
-  <g transform="translate(340,340)">
-    <ellipse cx="0" cy="-155" rx="52" ry="95" fill="#3ec73e"/>
-    <ellipse cx="0" cy="-155" rx="52" ry="95" fill="#3ec73e" transform="rotate(45)"/>
-    <ellipse cx="0" cy="-155" rx="52" ry="95" fill="#3ec73e" transform="rotate(90)"/>
-    <ellipse cx="0" cy="-155" rx="52" ry="95" fill="#3ec73e" transform="rotate(135)"/>
-    <ellipse cx="0" cy="-155" rx="52" ry="95" fill="#3ec73e" transform="rotate(180)"/>
-    <ellipse cx="0" cy="-155" rx="52" ry="95" fill="#3ec73e" transform="rotate(225)"/>
-    <ellipse cx="0" cy="-155" rx="52" ry="95" fill="#3ec73e" transform="rotate(270)"/>
-    <ellipse cx="0" cy="-155" rx="52" ry="95" fill="#3ec73e" transform="rotate(315)"/>
-    <circle cx="0" cy="0" r="72" fill="#FFD700"/>
-    <circle cx="0" cy="0" r="56" fill="#FFC000"/>
-  </g>
-</svg>
-  Agrolink
-</div>
+        <g transform="translate(340,340)">
+          <ellipse cx="0" cy="-155" rx="52" ry="95" fill="#3ec73e"/>
+          <ellipse cx="0" cy="-155" rx="52" ry="95" fill="#3ec73e" transform="rotate(45)"/>
+          <ellipse cx="0" cy="-155" rx="52" ry="95" fill="#3ec73e" transform="rotate(90)"/>
+          <ellipse cx="0" cy="-155" rx="52" ry="95" fill="#3ec73e" transform="rotate(135)"/>
+          <ellipse cx="0" cy="-155" rx="52" ry="95" fill="#3ec73e" transform="rotate(180)"/>
+          <ellipse cx="0" cy="-155" rx="52" ry="95" fill="#3ec73e" transform="rotate(225)"/>
+          <ellipse cx="0" cy="-155" rx="52" ry="95" fill="#3ec73e" transform="rotate(270)"/>
+          <ellipse cx="0" cy="-155" rx="52" ry="95" fill="#3ec73e" transform="rotate(315)"/>
+          <circle cx="0" cy="0" r="72" fill="#FFD700"/>
+          <circle cx="0" cy="0" r="56" fill="#FFC000"/>
+        </g>
+      </svg>
+      Agrolink
+    </div>
 
-    <!-- Hamburger -->
     <button class="hamburger" (click)="toggleMenu()" [class.open]="menuOpen" aria-label="Toggle menu">
-      <span></span>
-      <span></span>
-      <span></span>
+      <span></span><span></span><span></span>
     </button>
 
     <div class="navbar-nav" [class.open]="menuOpen">
@@ -46,12 +42,58 @@
             <a routerLink="/signup" (click)="closeMenu()">Create account</a>
           </button>
         } @else {
+
+          <!-- Bell -->
+          <div class="notif-wrapper">
+            <button class="bell-btn" (click)="toggleNotifications()" [class.active]="notifOpen">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
+                <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
+              </svg>
+              <span class="notif-badge" *ngIf="unreadCount > 0">{{ unreadCount > 9 ? '9+' : unreadCount }}</span>
+            </button>
+
+            <div class="notif-dropdown" [class.open]="notifOpen">
+              <div class="notif-header">
+                <span class="notif-header-title">Notifications</span>
+                <button class="mark-all-btn" (click)="markAllRead()" *ngIf="unreadCount > 0">Mark all read</button>
+              </div>
+
+              <div class="notif-list">
+                <div class="notif-empty" *ngIf="notifications.length === 0">
+                  <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#c8d4c4" stroke-width="1.5">
+                    <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
+                    <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
+                  </svg>
+                  <p>No notifications yet</p>
+                </div>
+
+                <div *ngFor="let n of notifications" class="notif-item" [class.unread]="!n.isRead" (click)="markRead(n)">
+                  <div class="notif-icon-wrap" [ngClass]="'type-' + n.type">
+                    <svg *ngIf="n.type === 'like'" width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+                    <svg *ngIf="n.type === 'comment'" width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+                    <svg *ngIf="n.type === 'follow'" width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="19" y1="8" x2="19" y2="14"/><line x1="22" y1="11" x2="16" y2="11"/></svg>
+                    <svg *ngIf="n.type === 'alert'" width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+                    <svg *ngIf="n.type === 'price'" width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+                  </div>
+                  <div class="notif-body">
+                    <p class="notif-text">{{ n.message }}</p>
+                    <span class="notif-time">{{ getTimeAgo(n.createdAt) }}</span>
+                  </div>
+                  <div class="notif-dot" *ngIf="!n.isRead"></div>
+                </div>
+              </div>
+
+              <div class="notif-footer">
+                <a routerLink="/notifications" (click)="notifOpen = false">View all notifications</a>
+              </div>
+            </div>
+          </div>
+
           <button class="loginbutton" type="button">
-            <a style="color:#66D136;" [routerLink]="['/userProfile', this.UserId]" (click)="closeMenu()">Profile</a>
+            <a style="color:#66D136;" [routerLink]="['/userProfile', UserId]" (click)="closeMenu()">Profile</a>
           </button>
-          <button class="signupbutton" type="button" (click)="logout(); closeMenu()">
-            Logout
-          </button>
+          <button class="signupbutton" type="button" (click)="logout(); closeMenu()">Logout</button>
         }
       </div>
     </div>

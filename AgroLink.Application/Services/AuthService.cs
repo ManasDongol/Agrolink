@@ -120,6 +120,11 @@ public class AuthService(UserRepo userRepo, HashingService hashingService,TokenS
 
             return true; //  signals success
         }
-        
+
+        public async Task<bool> CheckProfileExists(Guid userid)
+        {
+
+            return await userRepo.CheckUserProfileExists(userid);
+        }
     
 }

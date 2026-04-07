@@ -5,6 +5,8 @@ import { SignupRequestDto } from '../../core/Dtos/SignupRequestDto';
 import { FormGroup, FormBuilder, FormsModule, Validators, ReactiveFormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
+import { Injectable, inject } from '@angular/core';
+import { ToastService } from '../../shared/toast/toast.service';
 
 @Component({
   selector: 'app-signup',
@@ -17,6 +19,7 @@ export class Signup implements OnInit {
   signupForm!: FormGroup;
   showPassword = false;
   showConfirmPassword = false;
+   private toast = inject(ToastService);
   constructor(
     private fb: FormBuilder,
     private auth: Auth,
@@ -92,10 +95,12 @@ export class Signup implements OnInit {
     this.auth.signup(dto).subscribe({
       next: res => {
         const currentUserID = res.userid;
+        this.toast.info("User details saved!","");
         this.router.navigate(['/buildProfile', currentUserID]);
       },
       error: err => {
         console.error(err);
+          this.toast.error("could not sign in, please try again!","");
         this.router.navigate(['/']);
       }
     });

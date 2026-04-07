@@ -5,6 +5,8 @@ import { CommonModule } from '@angular/common';
 import { ProfileService } from '../../core/Services/ProfileService/profileService';
 import { ActivatedRoute } from '@angular/router';
 import { environment } from '../../../environments/environments';
+import { Injectable, inject } from '@angular/core';
+import { ToastService } from '../../shared/toast/toast.service';
 
 @Component({
   selector: 'app-profile',
@@ -14,6 +16,7 @@ import { environment } from '../../../environments/environments';
   styleUrl: './profile.css',
 })
 export class Profile implements OnInit {
+  private toast = inject(ToastService);
 
   profileForm!: FormGroup;
 
@@ -208,9 +211,12 @@ export class Profile implements OnInit {
     if (this.backgroundImageFile) formData.append('BackgroundImage', this.backgroundImageFile);
 
     this.profile.UpdateProfile(formData).subscribe({
-      next: () => { this.router.navigate(['/userProfile/' + userId]); },
+      next: () => { 
+        this.toast.success("profile updated successfully!","");
+        this.router.navigate(['/userProfile/' + userId]); },
       error: (err) => {
         console.error('Validation errors:', JSON.stringify(err.error?.errors, null, 2));
+          this.toast.error("profile failed to update!","try again later!");
         alert('Failed to update profile');
       }
     });

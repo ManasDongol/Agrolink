@@ -1,5 +1,6 @@
 using System.Text;
 using AgroLink.API.Hubs;
+using AgroLink.API.Hubs.HubService;
 using AgroLink.Application.Interfaces;
 using AgroLink.Application.Interfaces.Emails;
 using AgroLink.Application.Services;
@@ -100,6 +101,14 @@ builder.Services.AddScoped<CommentService>();
 builder.Services.AddScoped<CommentRepo>();
 
 builder.Services.AddScoped<IEmailService, EmailService > ();
+builder.Services.AddScoped< DetectionHistoryRepo>();
+builder.Services.AddScoped<IDetectionHistoryService, DetectionHistoryService>();
+
+builder.Services.AddScoped<INotificationService, NotificationService>();
+builder.Services.AddScoped<INotificationPusher, SignalRNotificationPusher>();
+builder.Services.AddScoped<INotificationService, NotificationService>();
+
+builder.Services.AddScoped<NotificationsRepo>();
 
 
 
@@ -136,6 +145,7 @@ app.MapControllers();
 app.UseHttpsRedirection();
 app.UseStaticFiles();
 app.MapHub<ChatHub>("/chatHub");
+app.MapHub<NotificationHub>("/notificationHub");
 app.Run();
 
 

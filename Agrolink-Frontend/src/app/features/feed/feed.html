@@ -258,13 +258,13 @@
   <div class="comments-section">
     <div class="comments-list">
       <div class="comment-item" *ngFor="let comment of post.comments">
-        <img class="comment-avatar" [src]="getProfileImage(comment.author?.profilePictureUrl)" alt=""/>
+        <img class="comment-avatar" [src]="getProfileImage(comment.author.profilePictureUrl)" alt=""/>
         <div class="comment-body">
           <div class="comment-top">
-            <span class="comment-username">{{ comment.author?.username }}</span>
+            <span class="comment-username">{{ comment.author.username }}</span>
             <span class="comment-date">{{ comment.created | date:'short' }}</span>
             <button
-              *ngIf="comment.author?.userId === myuserId"
+              *ngIf="comment.author.userId === myuserId"
               class="comment-menu-btn"
               (click)="deleteComment(comment)"
               title="Delete">⋮
@@ -306,13 +306,13 @@
             <div class="replies-list">
               <div class="comment-item reply-item" *ngFor="let reply of comment.replies">
                 <img class="comment-avatar comment-avatar-sm"
-                     [src]="getProfileImage(reply.author?.profilePictureUrl)" alt=""/>
+                     [src]="getProfileImage(reply.author.profilePictureUrl)" alt=""/>
                 <div class="comment-body">
                   <div class="comment-top">
-                    <span class="comment-username">{{ reply.author?.username }}</span>
+                    <span class="comment-username">{{ reply.author.username }}</span>
                     <span class="comment-date">{{ reply.created | date:'short' }}</span>
                     <button
-                      *ngIf="reply.author?.userId === myuserId"
+                      *ngIf="reply.author.userId === myuserId"
                       class="comment-menu-btn"
                       (click)="deleteComment(reply)"
                       title="Delete">⋮
@@ -332,7 +332,7 @@
     <!-- Add top-level comment -->
     <div class="comment-input-row">
       <input class="comment-input" type="text" placeholder="Write a comment..." #commentInput/>
-      <button class="btn-green-sm" (click)="Addcomments(post, commentInput.value)">Post</button>
+      <button class="btn-green-sm" (click)="Addcomments(post, commentInput.value);commentInput.value = ''">Post</button>
     </div>
   </div>
 }

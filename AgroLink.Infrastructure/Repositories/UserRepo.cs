@@ -72,4 +72,16 @@ public class UserRepo(AgroLinkDbContext dbContext)
             .AsNoTracking()
             .FirstOrDefaultAsync(x => x.UserId == userId);
     }
+
+    public async Task<bool> CheckUserProfileExists(Guid userId)
+    {
+        var status = await dbContext.Profiles.FindAsync(userId);
+        if (status != null)
+        {
+            return true;
+        }
+
+        return false;
+
+    }
 }

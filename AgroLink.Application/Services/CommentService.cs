@@ -1,21 +1,25 @@
 ﻿using AgroLink.Application.DTOs.Posts;
+using AgroLink.Application.Interfaces;
 using AgroLink.Domain.Entities;
 using AgroLink.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 
+namespace AgroLink.Application.Services;
 public class CommentService
 {
     private readonly AgroLinkDbContext _context;
+    private readonly INotificationService _notifications;
 
-    public CommentService(AgroLinkDbContext context)
+    public CommentService(AgroLinkDbContext context, INotificationService _notificationService)
     {
         _context = context;
+        _notifications=_notificationService;
     }
 
     public async Task<CommentReturnDto> AddComment(Guid postId, Guid userId, string content, Guid? parentCommentId = null)
     {
         var user = await _context.Users
-            .Include(u => u.Profile) // ✅ IMPORTANT
+            .Include(u => u.Profile) // IMPORTANT
             .FirstOrDefaultAsync(u => u.UserId == userId);
 
         if (user == null)
@@ -48,6 +52,20 @@ public class CommentService
             Created = comment.CreatedAt,
 
         };
+        
+        
+        var post = await _context.Posts.FirstOrDefaultAsync(x=>x.PostId == postId);
+        if (post != null)
+        {
+            if (post.UserId!=user.UserId)
+            {
+                await _notifications.SendNotificationAsync(
+                    recipientUserId: post.UserId,
+                    message: $"{user.Username} commented on your recent post !",
+                    senderUserId: user.UserId
+                );
+            }
+        }
         return newComment;
     }
 

@@ -124,7 +124,7 @@
           <div class="header-avatar">
             <img [src]="getUserprofile(OpenedConversationProfile)" alt="{{ OpenedConversationUsername }}" *ngIf="OpenedConversationProfile; else initials"/>
             <ng-template #initials>
-              <span>{{ OpenedConversationUsername?.charAt(0) | uppercase }}</span>
+              <span>{{ OpenedConversationUsername.charAt(0) | uppercase }}</span>
             </ng-template>
           </div>
           <div class="header-info">

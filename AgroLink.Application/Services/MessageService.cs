@@ -2,6 +2,7 @@
 
 using System.Security.Claims;
 using AgroLink.Application.DTOs;
+using AgroLink.Application.Interfaces;
 using AgroLink.Domain.Entities;
 using AgroLink.Infrastructure.Data;
 using AgroLink.Infrastructure.Repositories;
@@ -11,7 +12,7 @@ using UserConversationDto = AgroLink.Infrastructure.repoDTO.UserConversationDto;
 
 namespace AgroLink.Application.Services;
 
-public class MessageService(MessagesRepo repo,AgroLinkDbContext _dbContext)
+public class MessageService(MessagesRepo repo,AgroLinkDbContext _dbContext,INotificationService _notifications)
 {
     public async Task<List<UserConversationDto>> GetUserConversations(Guid userId)
     {
@@ -64,12 +65,37 @@ public class MessageService(MessagesRepo repo,AgroLinkDbContext _dbContext)
         };
 
         // ← sync the conversation entity fields
-        var conversation = await _dbContext.Conversations.FindAsync(Guid.Parse(conversationId));
+        var conversation = await _dbContext.Conversations
+            .Include(c => c.User1)
+            .Include(c => c.User2)
+            .FirstOrDefaultAsync(c => c.Id == Guid.Parse(conversationId));
         if (conversation != null)
         {
             conversation.LastMessage = content;
             conversation.LastMessageTime = DateTime.UtcNow;
+            
+            
+            
+            if (conversation.User1Id != Guid.Parse(senderId))
+            {
+                await _notifications.SendNotificationAsync(
+                    recipientUserId: conversation.User1Id,
+                    message: $"{conversation.User2.Username} sent you a  message!",
+                    senderUserId: conversation.User2Id
+                );
+            
+            }
+            else
+            {
+                await _notifications.SendNotificationAsync(
+                    recipientUserId: conversation.User2Id,
+                    message: $"{conversation.User1.Username} sent you a message!",
+                    senderUserId: conversation.User1Id
+                );
+            }
         }
+
+        
 
         return await repo.AddMessage(message);  // SaveChangesAsync inside here saves both
     }

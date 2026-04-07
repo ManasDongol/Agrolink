@@ -7,6 +7,9 @@ import { Auth } from '../../core/Services/Auth/auth';
 import { environment } from '../../../environments/environments';
 import { RouterLink } from '@angular/router';
 
+
+import { ToastService } from '../../shared/toast/toast.service';
+
 @Component({
   selector: 'app-network',
   standalone: true,
@@ -18,6 +21,7 @@ import { RouterLink } from '@angular/router';
 
 export class Network implements OnInit {
   networkService = inject(NetworkService);
+  private toast = inject(ToastService);
 
   networkData: NetworkPageDto | null = null;
   users: NetworkUserDto[] = [];
@@ -78,6 +82,8 @@ confirmWithdraw() {
       this.networkService.removeSentRequest(req.toUserId);
       const user = this.users.find(u => u.userId === req.toUserId);
       if (user) user.isRequestSent = false;
+
+      this.toast.info("request withdrawn!","");
       this.closeWithdrawModal();
     },
     error: (err) => console.error(err)

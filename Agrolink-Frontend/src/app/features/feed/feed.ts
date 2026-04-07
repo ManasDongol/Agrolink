@@ -274,6 +274,7 @@ Addcomments(post: Post, content: string) {
     post.comments.push(newComment);
     post.commentsCount++;
 
+    content ="";
     this.newCommentContent = ''; // optional clear
   });
 }
@@ -313,9 +314,9 @@ toggleLike(post: Post) {
   // Called for both top-level comments AND replies
 replyTo(comment: Comment, parentComment?: Comment) {
   if (parentComment) {
-    // Replying to a reply — toggle on the PARENT comment's input
+    
     parentComment.showReplyInput = !parentComment.showReplyInput;
-    // Pre-fill @username so the user knows who they're replying to
+   
     this.replyContents[parentComment.commentId] = `@${comment.author.username} `;
   } else {
     // Replying to a top-level comment

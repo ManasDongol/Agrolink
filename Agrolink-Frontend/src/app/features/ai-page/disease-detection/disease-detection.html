@@ -1,17 +1,12 @@
 <!-- disease-detection.component.html -->
 <div class="disease-container">
 
- 
-
-  <!-- Always-present hidden input (outside ng-container so #fileInput is always in DOM) -->
   <input #fileInput type="file" accept="image/jpeg,image/png,image/webp"
     (change)="onImageSelected($event)" hidden />
 
   <!-- Upload Area -->
   <div class="upload-section">
-    <div
-      class="upload-zone"
-      [class.has-image]="imagePreview"
+    <div class="upload-zone" [class.has-image]="imagePreview"
       (click)="!imagePreview && fileInput.click()">
 
       <ng-container *ngIf="!imagePreview">
@@ -36,8 +31,7 @@
       </ng-container>
     </div>
 
-    <button class="analyze-btn" (click)="analyze()"
-      [disabled]="!selectedImage || isLoading">
+    <button class="analyze-btn" (click)="analyze()" [disabled]="!selectedImage || isLoading">
       <ng-container *ngIf="!isLoading">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
           <circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/>
@@ -63,27 +57,20 @@
     <div class="result-body">
       <div class="result-label">Detected Condition</div>
       <div class="result-disease">{{ result.predicted_class }}</div>
-
       <div class="result-label" style="margin-top: 16px">Confidence</div>
       <div class="confidence-bar-wrap">
         <div class="confidence-bar">
-          <div class="confidence-fill"
-            [style.width.%]="result.confidence"
-            [style.background]="confidenceColor">
-          </div>
+          <div class="confidence-fill" [style.width.%]="result.confidence" [style.background]="confidenceColor"></div>
         </div>
-        <span class="confidence-value" [style.color]="confidenceColor">
-          {{ result.confidence }}%
-        </span>
+        <span class="confidence-value" [style.color]="confidenceColor">{{ result.confidence }}%</span>
       </div>
-
       <p class="result-note" *ngIf="result.confidence < 60">
-         Low confidence — try uploading a clearer, closer image of the affected area.
+        Low confidence — try uploading a clearer, closer image of the affected area.
       </p>
     </div>
   </div>
 
-   <!-- Disclaimer Banner -->
+  <!-- Disclaimer -->
   <div class="disclaimer-banner">
     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
       <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/>
@@ -105,4 +92,101 @@
     {{ error }}
   </div>
 
+  <!-- Detection History -->
+  <div class="history-section" *ngIf="detectionHistory.length > 0 || historyLoading">
+    <div class="history-section-header">
+      <div class="history-title-group">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#16a34a" stroke-width="2">
+          <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
+        </svg>
+        <h3 class="history-title">Detection History</h3>
+        <span class="history-count">{{ detectionHistory.length }}</span>
+      </div>
+    </div>
+
+    <div class="history-loading" *ngIf="historyLoading">
+      <span class="spinner-sm"></span> Loading history...
+    </div>
+
+    <div class="history-table-wrap" *ngIf="!historyLoading">
+      <table class="history-table">
+        <thead>
+          <tr>
+            <th>Image</th>
+            <th>Detected Condition</th>
+            <th>Confidence</th>
+            <th>Date</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let item of detectionHistory" class="history-row" (click)="openImageModal(item)">
+            <td class="img-cell">
+              <div class="thumb-wrap">
+                <img [src]="getImageUrl(item.imagePath)" [alt]="item.predictedClass"
+                  class="history-thumb" (error)="onImgError($event)" />
+                <div class="thumb-zoom">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5">
+                    <circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/>
+                    <line x1="11" y1="8" x2="11" y2="14"/><line x1="8" y1="11" x2="14" y2="11"/>
+                  </svg>
+                </div>
+              </div>
+            </td>
+            <td class="condition-cell">
+              <span class="condition-badge">{{ item.predictedClass }}</span>
+            </td>
+            <td class="confidence-cell">
+              <div class="mini-bar-wrap">
+                <div class="mini-bar">
+                  <div class="mini-fill" [style.width.%]="item.confidence" [style.background]="getConfidenceColor(item.confidence)"></div>
+                </div>
+                <span class="mini-pct" [style.color]="getConfidenceColor(item.confidence)">{{ item.confidence }}%</span>
+              </div>
+            </td>
+            <td class="date-cell">{{ item.detectedAt | date: 'MMM d, y · h:mm a' }}</td>
+            <td class="action-cell">
+              <button class="delete-btn" (click)="$event.stopPropagation(); deleteHistory(item.id)" title="Delete">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <polyline points="3 6 5 6 21 6"/>
+                  <path d="M19 6l-1 14H6L5 6"/>
+                  <path d="M10 11v6M14 11v6"/>
+                </svg>
+              </button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Empty history -->
+  <div class="history-empty-state" *ngIf="!historyLoading && detectionHistory.length === 0 && historyLoaded">
+    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#c8d4c4" stroke-width="1.5">
+      <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
+    </svg>
+    <p>No detections yet. Analyze a plant to see your history here.</p>
+  </div>
+
+</div>
+
+<!-- Image Modal -->
+<div class="modal-overlay" *ngIf="modalItem" (click)="closeModal()">
+  <div class="modal-card" (click)="$event.stopPropagation()">
+    <button class="modal-close" (click)="closeModal()">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+        <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+      </svg>
+    </button>
+    <img [src]="getImageUrl(modalItem.imagePath)" [alt]="modalItem.predictedClass" class="modal-image" />
+    <div class="modal-info">
+      <div class="modal-disease">{{ modalItem.predictedClass }}</div>
+      <div class="modal-meta">
+        <span class="modal-confidence" [style.color]="getConfidenceColor(modalItem.confidence)">
+          {{ modalItem.confidence }}% confidence
+        </span>
+        <span class="modal-date">{{ modalItem.detectedAt | date: 'medium' }}</span>
+      </div>
+    </div>
+  </div>
 </div>

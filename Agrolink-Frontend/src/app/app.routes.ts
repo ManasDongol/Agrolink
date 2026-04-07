@@ -40,7 +40,7 @@ export const routes: Routes = [
 
     //admin side
     { path : "admin",
-        loadChildren:()=>import('./features/admin/admin-module').then(m=>m.AdminModule)
+        loadChildren:()=>import('./features/admin/admin-module').then(m=>m.AdminModule), canActivate: [routeGuardGuard] , data: { role: 'Admin' }
     }
     
  

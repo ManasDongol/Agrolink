@@ -1,14 +1,16 @@
 using System.ComponentModel;
 using AgroLink.Application.DTOs.Posts;
+using AgroLink.Application.Interfaces;
 using AgroLink.Application.Interfaces.Posts;
 using AgroLink.Domain.Entities;
 using AgroLink.Infrastructure.Repositories.Posts;
+using Npgsql.PostgresTypes;
 using PostDto = AgroLink.Application.DTOs.Posts.PostDto;
 using PostUserDto = AgroLink.Application.DTOs.Posts.PostUserDto;
 
 namespace AgroLink.Application.Services;
 
-public class PostService(PostRepo postRepo) : IPostService
+public class PostService(PostRepo postRepo, INotificationService _service) : IPostService
 {
     public async Task<PostDto> CreatePostAsync(CreatePostDto createPostDto, Guid userId)
     {
@@ -157,6 +159,9 @@ public class PostService(PostRepo postRepo) : IPostService
 
     public async Task ToggleLikeAsync(Guid postId, Guid userId)
     {
+        
+      
+       
         await postRepo.ToggleLikeAsync(postId, userId);
     }
 

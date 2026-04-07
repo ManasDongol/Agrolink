@@ -14,6 +14,9 @@ import { Post } from '../feed/feed.models';
 import { connectionsDto } from '../../core/Dtos/NetworkDtos';
 import { Spinner } from '../../shared/spinner/spinner';
 
+
+import { ToastService } from '../../shared/toast/toast.service';
+
 @Component({
   selector: 'app-user-profile',
   standalone: true,
@@ -42,8 +45,10 @@ export class UserProfile implements OnInit, OnDestroy {
   connectionsList: connectionsDto[] = [];
   showWithdrawModal: boolean = false;
 
-  // ✅ Used to cleanly unsubscribe when component is destroyed
+
   private destroy$ = new Subject<void>();
+    
+  private toast = inject(ToastService);
 
   constructor(
     private profileService: ProfileService,
@@ -58,10 +63,8 @@ export class UserProfile implements OnInit, OnDestroy {
     this.getUserIdFromToken().pipe(take(1)).subscribe({
       next: (res) => {
         this.userid = res;
-      }
-    });
 
-    this.route.paramMap.subscribe(params => {
+        this.route.paramMap.subscribe(params => {
       const routeId = params.get('id');
       if (!routeId) {
         this.error = 'Invalid profile id';
@@ -69,30 +72,36 @@ export class UserProfile implements OnInit, OnDestroy {
         return;
       }
 
+       this.profile = null;
+  this.connectionExists = false;
+  this.requestSent = false;
+  this.connectionsList = [];
+  this.userposts = [];
+  this.loading = true; 
+
       this.id = routeId;
 
       this.loadProfile();
       this.getUserConnections(routeId);
       this.getUserPosts(routeId);
 
-      // ✅ Subscribe reactively without take(1) so state updates are reflected live
-      // Unsubscribe previous subscription when route changes via takeUntil + re-sub pattern
+      
       this.networkService.sentRequestIds$
         .pipe(takeUntil(this.destroy$))
         .subscribe(ids => {
           this.requestSent = ids.has(routeId);
         });
 
-      this.networkService.connectedIds$
-        .pipe(takeUntil(this.destroy$))
-        .subscribe(ids => {
-          this.connectionExists = ids.has(routeId);
-        });
+     
     });
+      }
+    });
+
+    
   }
 
   ngOnDestroy(): void {
-    // ✅ Clean up all subscriptions when leaving the page
+    // Clean up all subscriptions when leaving the page
     this.destroy$.next();
     this.destroy$.complete();
   }
@@ -110,6 +119,13 @@ export class UserProfile implements OnInit, OnDestroy {
       next: (res) => {
         this.connectionsList = res;
         this.connections = this.connectionsList.length;
+        this.connectionExists = this.connectionsList.some(
+        c => c.connectedUserID === this.userid
+      
+      );
+      console.log(this.connectionsList);
+        console.log(this.userid);
+        console.log(this.connectionExists);
       }
     });
   }
@@ -129,7 +145,7 @@ export class UserProfile implements OnInit, OnDestroy {
       return;
     }
 
-    this.getUserIdFromToken().subscribe(tokenId => {
+    this.getUserIdFromToken().pipe(take(1)).subscribe(tokenId => {
       if (!tokenId) {
         this.error = 'Please login to view your profile';
         this.loading = false;
@@ -157,11 +173,14 @@ export class UserProfile implements OnInit, OnDestroy {
     const routeId = this.route.snapshot.paramMap.get('id')!;
     this.networkService.sendConnectionRequest(routeId).subscribe({
       next: () => {
-        // ✅ addSentRequest updates sentRequestIds$ BehaviorSubject
-        // which our reactive subscription above will pick up automatically
+      
         this.networkService.addSentRequest(routeId);
+          this.toast.success('request sent successfully!', '');
       },
-      error: (err) => console.error(err)
+      error: (err) =>{
+ console.error(err);
+    this.toast.error('unsuccessful request!', 'please try sending the request later!');
+      }
     });
   }
 
@@ -170,11 +189,12 @@ export class UserProfile implements OnInit, OnDestroy {
     const routeId = this.route.snapshot.paramMap.get('id')!;
     this.networkService.withdrawRequestByReceiverId(routeId).subscribe({
       next: () => {
-        // ✅ removeSentRequest updates sentRequestIds$ BehaviorSubject
+        //  removeSentRequest updates sentRequestIds$ BehaviorSubject
         // which our reactive subscription above will pick up automatically
         this.networkService.removeSentRequest(routeId);
         this.showWithdrawModal = false;
         this.loading = false;
+         this.toast.info('request withdrawn!', '');
       },
       error: (err) => {
         this.loading = false;
@@ -215,10 +235,15 @@ export class UserProfile implements OnInit, OnDestroy {
           c => c.connectedUserID !== this.connectionToRemove!.id
         );
         this.connections = Math.max(0, this.connections - 1);
+        this.connectionExists = false;
+        this.toast.success("Connection removed successfully!","");
         this.cancelRemove();
         this.loading = false;
       },
-      error: (err) => console.error(err)
+      error: (err) =>{
+          this.loading = false;
+          console.error(err);
+      } 
     });
   }
 
@@ -251,6 +276,7 @@ export class UserProfile implements OnInit, OnDestroy {
   navigateToEditProfile(): void {
     this.getUserIdFromToken().subscribe(id => {
       if (!id) {
+         this.toast.info("please login first!","");
         this.router.navigate(['/login']);
         return;
       }

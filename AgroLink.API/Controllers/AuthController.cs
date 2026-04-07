@@ -111,8 +111,13 @@ public class AuthController(IAuthService authService, UserRepo UserRepo, Hashing
             return Unauthorized(new { message = "Invalid token" });
         }
     }
-    
-    
+
+
+    [HttpGet("profileExists")]
+    public async Task<bool> checkprofile(Guid userid)
+    {
+        return await authService.CheckProfileExists(userid);
+    }    
     
     
     [HttpPost("forgot-password")]

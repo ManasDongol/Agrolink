@@ -7,7 +7,7 @@ public class ChatHub: Hub
 {
     public Task Prac()
     {
-        Console.WriteLine("Prac CONNECTION ");
+      
         return Task.CompletedTask;
     }
     public async Task SendImage(string receiverId, string conversationId, string imageUrl)

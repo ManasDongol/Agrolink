@@ -10,4 +10,6 @@ public interface IAuthService
 
     public Task ForgotPasswordAsync(string email);
     public Task<bool> ResetPassword(ResetPasswordDto dto);
+
+    public Task<bool> CheckProfileExists(Guid userid);
 }

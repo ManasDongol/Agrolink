@@ -20,6 +20,11 @@ public class AgroLinkDbContext(DbContextOptions<AgroLinkDbContext> options) : Db
    public DbSet<AiMessage> AiMessages { get; set; }
    
    public DbSet<PasswordResetToken> PasswordResetTokens { get; set; }
+   
+   public DbSet<DetectionHistory> DetectionHistories { get; set; }
+   
+   public DbSet<Notification> Notifications { get; set; }
+
 
     
     protected override void OnModelCreating(ModelBuilder modelBuilder)

@@ -9,7 +9,7 @@ namespace AgroLink.API.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-[Authorize(Roles = "Admin,SuperAdmin")]
+[Authorize(Roles = "Admin")]
 public class AdminController(AgroLinkDbContext dbContext,ProfileService service) : ControllerBase
 {
     [HttpGet("stats")]

@@ -73,12 +73,12 @@
         <!-- Post header -->
         <div class="post-header">
           <div class="post-user-info">
-            <img [src]="getProfileImage(post.author?.profilePictureUrl)"
+            <img [src]="getProfileImage(post.author.profilePictureUrl)"
                  alt="Author"
                  class="user-avatar"
                  (error)="$any($event.target).src='assets/default-avatar.png'">
             <div class="post-meta">
-              <span class="user-name">{{ post.author?.username || 'Unknown User' }}</span>
+              <span class="user-name">{{ post.author.username || 'Unknown User' }}</span>
               <span class="post-date">{{ post.created | date:'mediumDate' }}</span>
             </div>
           </div>

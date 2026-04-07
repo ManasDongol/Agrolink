@@ -1,22 +1,41 @@
-import { CanActivateFn, Router } from '@angular/router';
+import { CanActivateFn, Router, ActivatedRouteSnapshot } from '@angular/router';
 import { inject } from '@angular/core';
 import { Auth } from '../Auth/auth';
-import { Observable, of } from 'rxjs';
-import { map, catchError } from 'rxjs/operators';
+import { of } from 'rxjs';
+import { map, catchError, switchMap } from 'rxjs/operators';
+import { HttpClient } from '@angular/common/http';
 
-export const routeGuardGuard: CanActivateFn = (route, state) => {
+export const routeGuardGuard: CanActivateFn = (route: ActivatedRouteSnapshot) => {
   const auth = inject(Auth);
   const router = inject(Router);
+  const http = inject(HttpClient);
 
-  // Call backend /me endpoint
   return auth.checkAuth().pipe(
-    map(user => {
-      // User is logged in
-      auth.setAuthenticated(true); // update BehaviorSubject
-      return true;
+    switchMap(user => {
+      auth.setAuthenticated(true);
+
+      const requiredRole = route.data['role'];
+      if (requiredRole && user.userType !== requiredRole) {
+        return of(router.createUrlTree(['/unauthorized']));
+      }
+
+      const requireProfile = route.data['requireProfile'];
+      if (requireProfile) {
+        // Hit backend endpoint to check profile
+        return http.get<{ hasProfile: boolean }>('/api/Auth/profileExists').pipe(
+          map(res => {
+            if (!res.hasProfile) {
+              return router.createUrlTree([`/buildProfile/${user.id}`]);
+            }
+            return true;
+          }),
+          catchError(() => of(router.createUrlTree(['/login'])))
+        );
+      }
+
+      return of(true);
     }),
-    catchError(err => {
-      // Not logged in → redirect to login
+    catchError(() => {
       auth.setAuthenticated(false);
       return of(router.createUrlTree(['/login']));
     })

@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace AgroLink.Application.Services;
 
-public class NetworkService(AgroLinkDbContext context) : INetworkService
+public class NetworkService(AgroLinkDbContext context,INotificationService _notifications) : INetworkService
 {
   public async Task<NetworkPageDto> GetNetworkPageAsync(
     Guid currentUserId,
@@ -145,7 +145,7 @@ public class NetworkService(AgroLinkDbContext context) : INetworkService
         .ToListAsync();
 
 
-    // 🔹 9. Return DTO
+    //  Return DTO
     return new NetworkPageDto
     {
         MyProfile = myProfile,
@@ -194,6 +194,17 @@ public class NetworkService(AgroLinkDbContext context) : INetworkService
         
         context.ConnectionRequests.Add(request);
         await context.SaveChangesAsync();
+        
+        var user = await context.Users.FirstOrDefaultAsync(u => u.UserId == currentUserId);
+        if (user != null)
+        {
+            _notifications.SendNotificationAsync(
+                recipientUserId: targetUserId,
+                message: $"{user.Username} sent you a connection request!",
+                senderUserId: currentUserId
+            );
+        }
+       
         return true;
     }
 
@@ -213,6 +224,17 @@ public class NetworkService(AgroLinkDbContext context) : INetworkService
         
         context.Connections.Add(connection);
         await context.SaveChangesAsync();
+        
+        
+        var user = await context.Users.FirstOrDefaultAsync(u => u.UserId == currentUserId);
+          if (user != null)
+        {
+            _notifications.SendNotificationAsync(
+                recipientUserId: request.UserID,
+                message: $"{user.Username} accepted your connection request!",
+                senderUserId: currentUserId
+            );
+        }
         return true;
     }
     
