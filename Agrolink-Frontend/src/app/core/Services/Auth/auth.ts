@@ -34,6 +34,12 @@ export class Auth {
     return this.http.get<userDto>(`${this.baseUrl}/me`);
   }
 
+  checkProfile():Observable<boolean>{
+    return this.http.get<boolean>(`${this.baseUrl}/profileExists`);
+  }
+
+  // auth.ts
+
 
 
   setAuthenticated(value: boolean) {

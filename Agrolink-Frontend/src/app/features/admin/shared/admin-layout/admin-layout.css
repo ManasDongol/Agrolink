@@ -38,3 +38,16 @@
 .admin-content {
   padding: 24px;
 }
+
+.signupbutton {
+  background: var(--deletebutton-color);
+  color: #ffffff;
+  border: 2px solid #c50b0b;
+  border-radius: 20px;
+  padding: 8px 18px;
+  font-family: "outfit-medium", sans-serif;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background 0.2s;
+  white-space: nowrap;
+}

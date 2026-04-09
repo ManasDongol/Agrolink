@@ -1,73 +1,45 @@
+using AgroLink.Application.Interfaces;
 using AgroLink.Application.Services;
-using AgroLink.Infrastructure.Data;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 
 namespace AgroLink.API.Controllers;
-
 
 [ApiController]
 [Route("api/[controller]")]
 [Authorize(Roles = "Admin")]
-public class AdminController(AgroLinkDbContext dbContext,ProfileService service) : ControllerBase
+public class AdminController(
+    ProfileService service,
+    AdminService adminService) : ControllerBase
 {
     [HttpGet("stats")]
     public async Task<IActionResult> GetStats()
     {
-        var totalUsers = await dbContext.Users.CountAsync();
-        var totalAdmins = await dbContext.Users.CountAsync(u => u.UserType == "Admin" || u.UserType == "SuperAdmin");
-        var totalPosts = await dbContext.Posts.CountAsync();
-
-        return Ok(new
-        {
-            totalUsers,
-            totalAdmins,
-            totalPosts
-        });
+        var stats = await adminService.GetStatsAsync();
+        return Ok(stats);
     }
 
     [HttpGet("users")]
     public async Task<IActionResult> GetAllUsers()
     {
-        var users = await dbContext.Users
-            .AsNoTracking()
-            .OrderBy(u => u.Username)
-            .ToListAsync();
-
-        var result = users.Select(u => new
-        {
-            id = u.UserId,
-            username = u.Username,
-            email = u.Email,
-            userType = u.UserType
-        });
-
-        return Ok(result);
+        var users = await adminService.GetAllUsersAsync();
+        return Ok(users);
     }
-    
 
     [HttpPatch("profiles/{userId}/verify")]
     public async Task<IActionResult> VerifyProfile(Guid userId)
     {
-        var profile = await dbContext.Profiles.FirstOrDefaultAsync(p => p.UserId == userId);
-        if (profile == null) return NotFound();
-        profile.isVerified = true;
-        await dbContext.SaveChangesAsync();
-        return Ok();
+        var success = await adminService.VerifyProfileAsync(userId);
+        if (!success) return NotFound();
+
+        return Ok(new { message = "Profile verified successfully." });
     }
 
     [HttpDelete("users/{id:guid}")]
     public async Task<IActionResult> RemoveUser(Guid id)
     {
-        var user = await dbContext.Users.FindAsync(id);
-        if (user == null)
-        {
-            return NotFound();
-        }
-
-        dbContext.Users.Remove(user);
-        await dbContext.SaveChangesAsync();
+        var success = await adminService.RemoveUserAsync(id);
+        if (!success) return NotFound();
 
         return NoContent();
     }
@@ -75,34 +47,15 @@ public class AdminController(AgroLinkDbContext dbContext,ProfileService service)
     [HttpGet("admins")]
     public async Task<IActionResult> GetAllAdmins()
     {
-        var admins = await dbContext.Users
-            .AsNoTracking()
-            .Where(u => u.UserType == "Admin" || u.UserType == "SuperAdmin")
-            .OrderBy(u => u.Username)
-            .ToListAsync();
-
-        var result = admins.Select(u => new
-        {
-            id = u.UserId,
-            username = u.Username,
-            email = u.Email,
-            userType = u.UserType
-        });
-
-        return Ok(result);
+        var admins = await adminService.GetAllAdminsAsync();
+        return Ok(admins);
     }
 
     [HttpDelete("admins/{id:guid}")]
     public async Task<IActionResult> RemoveAdmin(Guid id)
     {
-        var admin = await dbContext.Users.FindAsync(id);
-        if (admin == null)
-        {
-            return NotFound();
-        }
-
-        dbContext.Users.Remove(admin);
-        await dbContext.SaveChangesAsync();
+        var success = await adminService.RemoveAdminAsync(id);
+        if (!success) return NotFound();
 
         return NoContent();
     }
@@ -110,26 +63,12 @@ public class AdminController(AgroLinkDbContext dbContext,ProfileService service)
     [HttpGet("posts")]
     public async Task<IActionResult> GetAllPosts()
     {
-        var posts = await dbContext.Posts
-            .Include(p => p.User)
-            .AsNoTracking()
-            .OrderByDescending(p => p.Created)
-            .ToListAsync();
-
-        var result = posts.Select(p => new
-        {
-            id = p.PostId,
-            title = p.Title,
-            author = p.User != null ? p.User.Username : "Unknown",
-            created = p.Created,
-            category = p.PostCategory
-        });
-
-        return Ok(result);
+        var posts = await adminService.GetAllPostsAsync();
+        return Ok(posts);
     }
 
     [HttpPut("verify-users/{userId}/approve")]
-    public async Task<IActionResult> verifyUserProfile([FromRoute]Guid userId)
+    public async Task<IActionResult> verifyUserProfile([FromRoute] Guid userId)
     {
         await service.VerifyProfile(userId);
         return NoContent();
@@ -138,8 +77,7 @@ public class AdminController(AgroLinkDbContext dbContext,ProfileService service)
     [HttpGet("get-profiles")]
     public async Task<IActionResult> getUserProfile()
     {
-        var profiles =await service.GetProfiles();
+        var profiles = await service.GetProfiles();
         return Ok(profiles);
-
     }
 }

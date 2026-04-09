@@ -6,8 +6,6 @@ import { NetworkPageDto, NetworkUserDto, ConnectionRequestDto, ProfileStatsDto, 
 import { Auth } from '../../core/Services/Auth/auth';
 import { environment } from '../../../environments/environments';
 import { RouterLink } from '@angular/router';
-
-
 import { ToastService } from '../../shared/toast/toast.service';
 
 @Component({
@@ -17,20 +15,15 @@ import { ToastService } from '../../shared/toast/toast.service';
   templateUrl: './network.html',
   styleUrl: './network.css'
 })
-
-
 export class Network implements OnInit {
   networkService = inject(NetworkService);
   private toast = inject(ToastService);
-
   networkData: NetworkPageDto | null = null;
   users: NetworkUserDto[] = [];
   requests: ConnectionRequestDto[] = [];
-
   sentrequests : SentRequestDto[]=[];
   myProfile: ProfileStatsDto | null = null;
   apiurl:string= environment.apiUrl;
-
   searchUsername = '';
   searchRole = '';
   currentPage = 1;
@@ -159,8 +152,12 @@ withdrawRequest(req: SentRequestDto) {
       next: () => {
         this.requests = this.requests.filter(r => r.requestId !== req.requestId);
         if (this.myProfile) this.myProfile.connectionCount++;
+        this.toast.success("Request accepted!","");
       },
-      error: (err) => console.error(err)
+      error: (err) => {
+        console.error(err);
+         this.toast.error("unable to accept request!","the user may have withdrawn the request !");
+      }
     });
   }
 

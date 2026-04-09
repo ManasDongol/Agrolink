@@ -18,7 +18,6 @@ namespace AgroLink.API.Controllers
             _service = service;
         }
 
-        // Add a top-level comment OR a reply — same endpoint, ParentCommentId distinguishes them
         [HttpPost]
         public async Task<ActionResult<CommentReturnDto>> AddComment([FromBody] CommentCreateDto dto)
         {
@@ -30,7 +29,6 @@ namespace AgroLink.API.Controllers
             return Ok(comment);
         }
 
-        // Get top-level comments for a post
         [HttpGet("{postId}")]
         public async Task<IActionResult> GetComments(Guid postId)
         {
@@ -38,7 +36,6 @@ namespace AgroLink.API.Controllers
             return Ok(comments);
         }
 
-        // ✅ Get replies for a specific comment
         [HttpGet("{commentId}/replies")]
         public async Task<IActionResult> GetReplies(Guid commentId)
         {

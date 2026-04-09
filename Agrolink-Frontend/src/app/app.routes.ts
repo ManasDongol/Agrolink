@@ -18,14 +18,14 @@ import { AiPage } from './features/ai-page/ai-page';
 import { ResetPassword } from './features/reset-password/reset-password';
 
 export const routes: Routes = [
-    { path: "feed", component:DefaultLayout,children: [{path:'',component:Feed}] , canActivate: [routeGuardGuard] },
-    { path: "network", component:DefaultLayout,children: [{path:'',component:Network}], canActivate: [routeGuardGuard] },
-    { path: "messages",  component:DefaultLayout,children: [{path:'',component:MessagesComponent}], canActivate: [routeGuardGuard] },
+    { path: "feed", component:DefaultLayout,children: [{path:'',component:Feed}] , canActivate: [routeGuardGuard],data: { role: 'user', requireProfile: true } },
+    { path: "network", component:DefaultLayout,children: [{path:'',component:Network}], canActivate: [routeGuardGuard],data: { role: 'user', requireProfile: true } },
+    { path: "messages",  component:DefaultLayout,children: [{path:'',component:MessagesComponent}], canActivate: [routeGuardGuard],data: { role: 'user', requireProfile: true } },
     //{ path: "buildProfile/:id", component:DefaultLayout,children: [{path:'',component:Profile}], canActivate: [routeGuardGuard] },
-    { path: "userProfile", component:DefaultLayout,children: [{path:'',component:UserProfile}], canActivate: [routeGuardGuard] },
-     { path: "userProfile/:id", component:DefaultLayout,children: [{path:'',component:UserProfile}], canActivate: [routeGuardGuard] },
-    { path: "crop",  component:DefaultLayout,children: [{path:'',component:AiPage}], canActivate: [routeGuardGuard] },
-     { path: "prices",  component:DefaultLayout,children: [{path:'',component:Prices}], canActivate: [routeGuardGuard] },
+    { path: "userProfile", component:DefaultLayout,children: [{path:'',component:UserProfile}], canActivate: [routeGuardGuard] ,data: { role: 'user', requireProfile: true }},
+     { path: "userProfile/:id", component:DefaultLayout,children: [{path:'',component:UserProfile}], canActivate: [routeGuardGuard],data: { role: 'user', requireProfile: true } },
+    { path: "crop",  component:DefaultLayout,children: [{path:'',component:AiPage}], canActivate: [routeGuardGuard],data: { role: 'user', requireProfile: true } },
+     { path: "prices",  component:DefaultLayout,children: [{path:'',component:Prices}], canActivate: [routeGuardGuard] ,data: { role: 'user', requireProfile: true }},
       
    
     { path: "buildProfile/:id", component:Profile },

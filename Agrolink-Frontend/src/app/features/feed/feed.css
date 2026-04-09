@@ -408,21 +408,21 @@
   flex: 1;
 }
 
-.comment-menu-btn {
+.comment-delete-btn {
   background: none;
   border: none;
-  font-size: 16px;
   cursor: pointer;
   color: #9ca3af;
-  line-height: 1;
-  padding: 0 4px;
+  padding: 4px;
   border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   transition: color 0.12s, background 0.12s;
 }
-
-.comment-menu-btn:hover {
+.comment-delete-btn:hover {
   color: #ef4444;
-  background: #fef2f2;
+  background: #fee2e2;
 }
 
 .comment-text {

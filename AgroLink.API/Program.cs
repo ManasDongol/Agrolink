@@ -109,6 +109,8 @@ builder.Services.AddScoped<INotificationPusher, SignalRNotificationPusher>();
 builder.Services.AddScoped<INotificationService, NotificationService>();
 
 builder.Services.AddScoped<NotificationsRepo>();
+builder.Services.AddScoped<AdminService>();
+builder.Services.AddScoped<AdminRepository>();
 
 
 

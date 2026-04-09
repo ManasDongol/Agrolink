@@ -4,6 +4,8 @@ import { WebscraperDataDto } from '../../core/Dtos/WebscraperDataDto';
 import { CropService } from '../../core/Services/CropService/crop-service';
 import { Spinner } from '../../shared/spinner/spinner';
 
+import { Injectable, inject } from '@angular/core';
+import { ToastService } from '../../shared/toast/toast.service';
 
 @Component({
   selector: 'app-prices',
@@ -21,6 +23,8 @@ export class Prices {
   loading:Boolean = false;
   results: any[] = [];
 
+  private toast = inject(ToastService);
+
   isLoading : boolean = false;
 
    constructor(
@@ -29,7 +33,7 @@ export class Prices {
   ) {}
 
 
-  // display this in the template
+  
 
 ngOnInit() {
   this.isLoading = true;

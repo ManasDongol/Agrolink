@@ -79,7 +79,7 @@ public class NetworkService(AgroLinkDbContext context,INotificationService _noti
         })
         .ToListAsync();
 
-    // Precompute connections
+
     var connectedUserIds = await context.Connections
         .Where(c => c.UserID == currentUserId || c.ConnectionUserId == currentUserId)
         .Select(c => c.UserID == currentUserId
@@ -125,8 +125,6 @@ public class NetworkService(AgroLinkDbContext context,INotificationService _noti
 
     var totalUsers = await query.CountAsync();
 
-
-    // 🔹 8. Paginated Users
     var users = await query
         .Skip((page - 1) * pageSize)
         .Take(pageSize)
@@ -145,7 +143,7 @@ public class NetworkService(AgroLinkDbContext context,INotificationService _noti
         .ToListAsync();
 
 
-    //  Return DTO
+
     return new NetworkPageDto
     {
         MyProfile = myProfile,

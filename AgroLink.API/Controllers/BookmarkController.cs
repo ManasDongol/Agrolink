@@ -15,7 +15,7 @@ public class BookmarkController(IPostService postService): ControllerBase
     [HttpPost("{postId}/bookmark")]
     public async Task<IActionResult> AddBookmark(Guid postId)
     {
-        var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value; //  extract from JWT
+        var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value; 
 
         await postService.ToggleBookmarkAsync(postId, Guid.Parse(userId));
 

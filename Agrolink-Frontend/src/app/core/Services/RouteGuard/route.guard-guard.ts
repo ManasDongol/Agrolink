@@ -4,11 +4,16 @@ import { Auth } from '../Auth/auth';
 import { of } from 'rxjs';
 import { map, catchError, switchMap } from 'rxjs/operators';
 import { HttpClient } from '@angular/common/http';
+import { environment } from '../../../../environments/environments';
+import { ToastService } from '../../../shared/toast/toast.service';
+
 
 export const routeGuardGuard: CanActivateFn = (route: ActivatedRouteSnapshot) => {
   const auth = inject(Auth);
   const router = inject(Router);
   const http = inject(HttpClient);
+  const toast =inject(ToastService);
+  
 
   return auth.checkAuth().pipe(
     switchMap(user => {
@@ -16,22 +21,23 @@ export const routeGuardGuard: CanActivateFn = (route: ActivatedRouteSnapshot) =>
 
       const requiredRole = route.data['role'];
       if (requiredRole && user.userType !== requiredRole) {
-        return of(router.createUrlTree(['/unauthorized']));
+        toast.info("user not authorized to access this page","");
+
+        return of(router.createUrlTree(['/login']));
       }
 
       const requireProfile = route.data['requireProfile'];
-      if (requireProfile) {
-        // Hit backend endpoint to check profile
-        return http.get<{ hasProfile: boolean }>('/api/Auth/profileExists').pipe(
-          map(res => {
-            if (!res.hasProfile) {
-              return router.createUrlTree([`/buildProfile/${user.id}`]);
-            }
-            return true;
-          }),
-          catchError(() => of(router.createUrlTree(['/login'])))
-        );
+if (requireProfile) {
+  return auth.checkProfile().pipe(
+    map(res => {
+      if (res) {
+        return router.createUrlTree([`/buildProfile/${user.id}`]);
       }
+      return true;
+    }),
+    catchError(() => of(router.createUrlTree(['/login'])))
+  );
+}
 
       return of(true);
     }),

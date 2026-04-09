@@ -53,6 +53,7 @@ def route_query(query, top_k=5, distance_threshold=1.2):
 
 def run_pipeline(query: str) -> str:
     domains_to_search = route_query(query)
+    print(query)
 
     all_results = []
     for domain in domains_to_search:
@@ -76,19 +77,18 @@ def run_pipeline(query: str) -> str:
     for i, r in enumerate(unique_results, 1):
         options_block += f"[Option {i} — source: {r['domain']}]\n{r['text']}\n\n"
 
-    prompt = f"""You are a concise, expert agriculture assistant. Answer the user's question directly and factually.
-FIRST: Check if the user's question is gibberish, random characters, or heavily misspelled with no clear meaning.
-- If yes → reply only: "Could not understand, please try again."
-- If no → answer the question directly and factually.
+    print(options_block)
 
-User question: "{query}"
+    prompt = f"""You are an expert agriculture assistant.
+A user has asked: "{query}"
+
 
 If user's question is giberish or has many spelling mistakes reply -> "could not understand, please try again"
 
 Context (use only if relevant to the exact crop/topic asked, OR ELSE DONT MENTION IT):
 {options_block}
 
-Instructions:
+Instructions
 -  Start your answer immediately — no preamble, no "based on...", no "it appears that..."
 - If the context matches the query, extract the exact facts and state them plainly
 - If the context does NOT match the crop or topic, ignore it entirely and answer from your own knowledge

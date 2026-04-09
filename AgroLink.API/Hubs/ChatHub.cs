@@ -19,7 +19,7 @@ public class ChatHub: Hub
             SenderId = Context.UserIdentifier,
             Content = imageUrl,
             Sent = DateTime.UtcNow,
-            IsImage = true        // ← add this field to NewMessageDto if not there yet
+            IsImage = true        
         };
 
         try

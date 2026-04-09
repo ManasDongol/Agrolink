@@ -1,4 +1,4 @@
-﻿using System.Security.Claims;
+﻿﻿using System.Security.Claims;
 
 using AgroLink.Application.DTOs.Ai;
 using AgroLink.Domain.Entities;
@@ -70,6 +70,7 @@ public class AiController : ControllerBase
         });
 
         // 4 — Call Python FastAPI
+        Console.Write(request.Query);
         var pyResponse = await _httpClient.PostAsJsonAsync(
             "http://localhost:8000/ask", new { query = request.Query });
 

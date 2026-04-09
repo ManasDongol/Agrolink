@@ -19,10 +19,7 @@ public class WebscraperService
     private readonly IDistributedCache _cache;
     private readonly IWebHostEnvironment _env;
 
-    // Redis key (InstanceName "AgroLink:" is prepended automatically → "AgroLink:crop_prices")
     private const string CacheKey = "crop_prices";
-
-    // Path inside wwwroot/uploads/scraped/
     private const string FallbackFileName = "crop_prices.txt";
 
     public WebscraperService(IDistributedCache cache, IWebHostEnvironment env)
@@ -34,7 +31,6 @@ public class WebscraperService
     public async Task<List<WebscraperDataDto>> webscraper()
     {
         Console.OutputEncoding = Encoding.UTF8;
-        // ── 1. Try Redis cache ────────────────────────────────────────────
         try
         {
             var cached = await _cache.GetStringAsync(CacheKey);

@@ -1,8 +1,10 @@
-import { Component, ViewChild, ElementRef, AfterViewChecked, OnInit } from '@angular/core';
+import { Component, ViewChild, ElementRef, AfterViewChecked, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { AiService } from '../../core/Services/AiService/ai-service';
 import { DiseaseDetection } from './disease-detection/disease-detection';
+import { Inject } from '@angular/core';
+import { ToastService } from '../../shared/toast/toast.service';
 
 interface Message {
   role: 'user' | 'ai';
@@ -46,6 +48,8 @@ export class AiPage implements AfterViewChecked, OnInit {
   chatHistory: ChatHistory[] = [];
 
   private shouldScrollToBottom = false;
+
+  private toast = inject(ToastService);
 
   constructor(private service: AiService) {}
 
@@ -136,7 +140,7 @@ export class AiPage implements AfterViewChecked, OnInit {
     this.imagePreview = null;
   }
 
-  // ── Messaging ─────────────────────────────────────────
+
   sendSuggestion(text: string) {
     this.userInput = text;
     this.sendMessage();

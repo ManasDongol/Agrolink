@@ -16,20 +16,6 @@ public class MessageService(MessagesRepo repo,AgroLinkDbContext _dbContext,INoti
 {
     public async Task<List<UserConversationDto>> GetUserConversations(Guid userId)
     {
-       /* var conversations = await _dbContext.Conversations
-            .Where(c => c.User1Id == userId || c.User2Id == userId)
-            .Select(c => new UserConversationDto {
-                Id = c.Id,
-                User1Id = c.User1Id,
-                User2Id = c.User2Id,
-                CreatedAt = c.CreatedAt,
-                Messages = c.Messages.Select(m => new MessageDto {
-                    MessageId = m.MessageId,
-                    Content = m.Content,
-                    SenderId = m.SenderId,
-                    Sent = m.Sent
-                }).ToList()
-            }).ToListAsync();*/
        var conversations = await repo.GetUserConversations(userId);
 
         return conversations;
@@ -63,8 +49,7 @@ public class MessageService(MessagesRepo repo,AgroLinkDbContext _dbContext,INoti
             Content = content,
             Sent = DateTime.UtcNow
         };
-
-        // ← sync the conversation entity fields
+        
         var conversation = await _dbContext.Conversations
             .Include(c => c.User1)
             .Include(c => c.User2)
