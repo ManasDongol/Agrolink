@@ -130,6 +130,13 @@ app.Lifetime.ApplicationStarted.Register(async () =>
     await db.Database.CanConnectAsync();
 });
 
+app.Lifetime.ApplicationStarted.Register(() =>
+{
+    using var scope = app.Services.CreateScope();
+    var scraper = scope.ServiceProvider.GetRequiredService<WebscraperService>();
+
+    _ = Task.Run(() => scraper.GetCropPrices());
+});
 
 app.UseCors("AllowAngularApp");
 // Configure the HTTP request pipeline.

@@ -171,9 +171,7 @@ withdrawRequest(req: SentRequestDto) {
     });
   }
 
-  WithdrawRequest(){
-
-  }
+  
 
 
 }

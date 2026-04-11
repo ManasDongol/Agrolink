@@ -29,7 +29,7 @@ public class CropsController : ControllerBase
     [HttpGet("prices")]
     public async Task<List<WebscraperDataDto>> GetPrices()
     {
-        var prices = await _webscraperService.webscraper();
+        var prices = await _webscraperService.GetCropPrices();
         return prices;
     }
 

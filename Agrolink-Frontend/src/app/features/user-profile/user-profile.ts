@@ -13,6 +13,8 @@ import { FeedService } from '../feed/feed.service';
 import { Post } from '../feed/feed.models';
 import { connectionsDto } from '../../core/Dtos/NetworkDtos';
 import { Spinner } from '../../shared/spinner/spinner';
+import { forkJoin, of } from 'rxjs';
+import { finalize, catchError } from 'rxjs/operators';
 
 
 import { ToastService } from '../../shared/toast/toast.service';
@@ -60,45 +62,65 @@ export class UserProfile implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit(): void {
-    this.getUserIdFromToken().pipe(take(1)).subscribe({
-      next: (res) => {
-        this.userid = res;
-
-        this.route.paramMap.subscribe(params => {
+  combineLatest([
+    this.getUserIdFromToken(),
+    this.route.paramMap
+  ])
+  .pipe(
+    map(([userId, params]) => {
       const routeId = params.get('id');
-      if (!routeId) {
-        this.error = 'Invalid profile id';
-        this.loading = false;
-        return;
-      }
+      return { userId, routeId };
+    }),
+    switchMap(({ userId, routeId }) => {
+      if (!routeId) throw new Error('Invalid profile id');
 
-       this.profile = null;
-  this.connectionExists = false;
-  this.requestSent = false;
-  this.connectionsList = [];
-  this.userposts = [];
-  this.loading = true; 
-
+      this.userid = userId;
       this.id = routeId;
 
-      this.loadProfile();
-      this.getUserConnections(routeId);
-      this.getUserPosts(routeId);
+      this.loading = true;
+      this.error = null;
 
-      
-      this.networkService.sentRequestIds$
-        .pipe(takeUntil(this.destroy$))
-        .subscribe(ids => {
-          this.requestSent = ids.has(routeId);
-        });
+      this.isOwnProfile = routeId === userId;
 
-     
+      return this.profileService.GetProfileByUserId(routeId);
+    }),
+    takeUntil(this.destroy$)
+  )
+  .subscribe({
+    next: (data) => {
+      this.profile = data;
+      this.loading = false;
+
+      this.loadExtras(this.id!);
+    },
+    error: (err) => {
+      console.error(err);
+      this.error = "Failed to load profile";
+      this.loading = false;
+    }
+  });
+}
+
+private loadExtras(id: string) {
+  this.postService.getPostsByID(id).subscribe(res => {
+    this.userposts = res;
+  });
+
+  this.profileService.getUserConnections(id).subscribe(res => {
+    this.connectionsList = res;
+    this.connections = res.length;
+
+    this.connectionExists = res.some(
+      c => c.connectedUserID === this.userid
+    );
+  });
+
+  this.networkService.sentRequestIds$
+    .pipe(takeUntil(this.destroy$))
+    .subscribe(ids => {
+      this.requestSent = ids.has(id);
     });
-      }
-    });
-
-    
-  }
+}
 
   ngOnDestroy(): void {
     // Clean up all subscriptions when leaving the page
@@ -135,39 +157,49 @@ export class UserProfile implements OnInit, OnDestroy {
   }
 
   loadProfile(): void {
-    this.loading = true;
-    this.error = null;
+  const routeId = this.route.snapshot.paramMap.get('id');
+  if (!routeId) return;
 
-    const routeId = this.route.snapshot.paramMap.get('id');
-    if (!routeId) {
-      this.error = 'Invalid profile id';
-      this.loading = false;
+  this.loading = true;
+  this.error = null;
+
+  this.getUserIdFromToken().pipe(take(1)).subscribe(tokenId => {
+    if (!tokenId) {
+      this.router.navigate(['/login']);
       return;
     }
 
-    this.getUserIdFromToken().pipe(take(1)).subscribe(tokenId => {
-      if (!tokenId) {
-        this.error = 'Please login to view your profile';
-        this.loading = false;
-        this.router.navigate(['/login']);
-        return;
-      }
+    this.isOwnProfile = routeId === tokenId;
 
-      this.isOwnProfile = routeId === tokenId;
+    forkJoin({
+      profile: this.profileService.GetProfileByUserId(routeId),
+      connections: this.profileService.getUserConnections(routeId),
+      posts: this.postService.getPostsByID(routeId)
+    })
+    .pipe(
+      finalize(() => {
+        this.loading = false; // 🔥 ALWAYS runs
+      }),
+      catchError(err => {
+        console.error(err);
+        this.error = "Failed to load profile";
+        return of(null);
+      })
+    )
+    .subscribe(res => {
+      if (!res) return;
 
-      this.profileService.GetProfileByUserId(routeId).subscribe({
-        next: (data) => {
-          this.profile = data;
-          this.loading = false;
-        },
-        error: (err) => {
-          console.error('Error loading profile:', err);
-          this.error = 'Failed to load profile.';
-          this.loading = false;
-        }
-      });
+      this.profile = res.profile;
+      this.connectionsList = res.connections;
+      this.connections = res.connections.length;
+      this.userposts = res.posts;
+
+      this.connectionExists = res.connections.some(
+        c => c.connectedUserID === this.userid
+      );
     });
-  }
+  });
+}
 
   sendConnection() {
     const routeId = this.route.snapshot.paramMap.get('id')!;

@@ -170,12 +170,13 @@ this.currentpostId=postId;
   const formData = new FormData();
   formData.append('title', this.postForm.get('title')?.value);
   formData.append('content', this.postForm.get('content')?.value);
-  formData.append('postcategory', this.postForm.get('postcategory')?.value);
+  formData.append('category', this.postForm.get('postcategory')?.value);
 
   if (this.selectedFile) {
     formData.append('image', this.selectedFile);
   }
 
+  
   this.isLoading = true;
 
   if (this.editingPost) {
@@ -186,6 +187,9 @@ this.currentpostId=postId;
         this.successMessage = "Post updated successfully!";
         this.toggleNewPost = false;
         this.editingPost = null;
+
+
+       
         this.loadPosts();
         setTimeout(() => this.successMessage = '', 3000);
       },
@@ -201,11 +205,13 @@ this.currentpostId=postId;
         this.isLoading = false;
         this.successMessage = "Post created successfully!";
         this.toggleNewPost = false;
+         this.resetForm();
         this.loadPosts();
         setTimeout(() => this.successMessage = '', 3000);
       },
       error: (err) => {
         console.error('Error creating post', err);
+        console.log(JSON.stringify(err.error, null, 2));
         this.isLoading = false;
       }
     });
@@ -213,10 +219,16 @@ this.currentpostId=postId;
 }
 
   resetForm() {
-    this.postForm.reset();
-    this.selectedFile = null;
-    this.imagePreview = null;
-  }
+  this.postForm.reset({
+    title: '',
+    content: '',
+    postcategory: ''
+  });
+
+  this.selectedFile = null;
+  this.imagePreview = null;
+  this.editingPost = null;
+}
 
   nextPage() {
     if (this.currentPage < this.totalPages) {

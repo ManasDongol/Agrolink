@@ -11,16 +11,21 @@ public class WebscraperService
 {
     private static readonly HttpClient _client = new HttpClient(new HttpClientHandler
     {
-        
+        AutomaticDecompression = System.Net.DecompressionMethods.GZip |
+                                  System.Net.DecompressionMethods.Deflate,
+
         ServerCertificateCustomValidationCallback =
             HttpClientHandler.DangerousAcceptAnyServerCertificateValidator
-    });
+    })
+    {
+        Timeout = TimeSpan.FromSeconds(10)
+    };
 
     private readonly IDistributedCache _cache;
     private readonly IWebHostEnvironment _env;
 
     private const string CacheKey = "crop_prices";
-    private const string FallbackFileName = "crop_prices.txt";
+    private const string FallbackFileName = "crop_prices.json";
 
     public WebscraperService(IDistributedCache cache, IWebHostEnvironment env)
     {
@@ -28,68 +33,34 @@ public class WebscraperService
         _env = env;
     }
 
-    public async Task<List<WebscraperDataDto>> webscraper()
+    // ===================== PUBLIC API =====================
+
+    public async Task<List<WebscraperDataDto>> GetCropPrices()
     {
-        Console.OutputEncoding = Encoding.UTF8;
-        try
+        // 1. Try Redis (FAST PATH)
+        var redisData = await TryGetFromRedis();
+        if (redisData?.Count > 0)
         {
-            var cached = await _cache.GetStringAsync(CacheKey);
-            if (!string.IsNullOrEmpty(cached))
-            {
-                Console.WriteLine("[WebscraperService] Returning data from Redis cache.");
-                return JsonSerializer.Deserialize<List<WebscraperDataDto>>(cached) ?? new();
-            }
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"[WebscraperService] Redis read failed: {ex.Message}");
-        }
-   
-        try
-        {
-            var scraped = await ScrapeFromWeb();
-
-            if (scraped.Count > 0)
-            {
-                // Save to Redis (expires after 12 hours)
-                await SaveToRedis(scraped);
-
-                // Save to text file as last-known-good backup
-                await SaveToFile(scraped);
-
-                return scraped;
-            }
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"[WebscraperService] Live scrape failed: {ex.Message}");
+            TriggerBackgroundRefresh(); // update in background
+            return redisData;
         }
 
-      
-
-     
-        try
+        // 2. Try file fallback (FAST LOCAL)
+        var fileData = await TryGetFromFile();
+        if (fileData?.Count > 0)
         {
-            var fromFile = await LoadFromFile();
-            if (fromFile.Count > 0)
-            {
-                Console.WriteLine("[WebscraperService] Returning data from fallback text file.");
-                return fromFile;
-            }
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"[WebscraperService] File fallback failed: {ex.Message}");
+            TriggerBackgroundRefresh();
+            return fileData;
         }
 
-        Console.WriteLine("[WebscraperService] All sources failed. Returning empty list.");
-        return new();
+        // 3. LAST RESORT: background scrape + return empty instantly
+        TriggerBackgroundRefresh();
+        return new List<WebscraperDataDto>();
     }
 
     public async Task<List<WebscraperDataDto>> FindCrop(string value)
     {
-        // FindCrop automatically gets all fallbacks since it calls webscraper()
-        var data = await webscraper();
+        var data = await GetCropPrices();
 
         if (string.IsNullOrWhiteSpace(value))
             return data;
@@ -100,25 +71,45 @@ public class WebscraperService
             .ToList();
     }
 
-    // ── Private Helpers ───────────────────────────────────────────────────
+    // ===================== BACKGROUND REFRESH =====================
+
+    private void TriggerBackgroundRefresh()
+    {
+        _ = Task.Run(async () =>
+        {
+            try
+            {
+                var scraped = await ScrapeFromWeb();
+
+                if (scraped.Count > 0)
+                {
+                    await TrySaveToRedis(scraped);
+                    await SaveToFile(scraped);
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"[Scraper BG] Failed: {ex.Message}");
+            }
+        });
+    }
+
+    // ===================== SCRAPING =====================
 
     private async Task<List<WebscraperDataDto>> ScrapeFromWeb()
     {
         const string url = "https://ramropatro.com/vegetable";
 
         var html = await _client.GetStringAsync(url);
+
         var doc = new HtmlDocument();
         doc.LoadHtml(html);
 
         var table = doc.DocumentNode.SelectSingleNode(
-            "//table[.//th[contains(., 'Commodity')] and .//th[contains(., 'Minimum')]]"
+            "//table[.//th[contains(., 'Commodity')]]"
         );
 
-        if (table == null)
-        {
-            Console.WriteLine("[WebscraperService] Could not find price table in HTML.");
-            return new();
-        }
+        if (table == null) return new();
 
         var rows = table.SelectNodes(".//tr");
         if (rows == null) return new();
@@ -128,56 +119,113 @@ public class WebscraperService
         foreach (var row in rows.Skip(1))
         {
             var cols = row.SelectNodes("td");
-            if (cols != null && cols.Count >= 5)
+            if (cols == null || cols.Count < 5) continue;
+
+            result.Add(new WebscraperDataDto
             {
-                result.Add(new WebscraperDataDto
-                {
-                    Commodity = cols[0].InnerText.Trim(),
-                    Unit      = cols[1].InnerText.Trim(),
-                    Minimum   = cols[2].InnerText.Trim(),
-                    Maximum   = cols[3].InnerText.Trim(),
-                    Average   = cols[4].InnerText.Trim(),
-                });
-            }
+                Commodity = cols[0].InnerText.Trim(),
+                Unit      = cols[1].InnerText.Trim(),
+                Minimum   = cols[2].InnerText.Trim(),
+                Maximum   = cols[3].InnerText.Trim(),
+                Average   = cols[4].InnerText.Trim(),
+            });
         }
 
         return result;
     }
 
-    private async Task SaveToRedis(List<WebscraperDataDto> data)
+    // ===================== CACHE (SAFE) =====================
+
+    private async Task<List<WebscraperDataDto>?> TryGetFromRedis()
     {
-        var json = JsonSerializer.Serialize(data);
-        var options = new DistributedCacheEntryOptions
+        try
         {
-            AbsoluteExpirationRelativeToNow = TimeSpan.FromHours(12)
-        };
-        await _cache.SetStringAsync(CacheKey, json, options);
-        Console.WriteLine("[WebscraperService] Saved to Redis cache.");
+            var cached = await _cache.GetStringAsync(CacheKey);
+
+            if (string.IsNullOrWhiteSpace(cached))
+                return null;
+
+            return JsonSerializer.Deserialize<List<WebscraperDataDto>>(cached);
+        }
+        catch
+        {
+            // Redis DOWN → do NOT block request
+            return null;
+        }
+    }
+
+    private async Task<bool> TrySaveToRedis(List<WebscraperDataDto> data)
+    {
+        try
+        {
+            var json = JsonSerializer.Serialize(data);
+
+            await _cache.SetStringAsync(
+                CacheKey,
+                json,
+                new DistributedCacheEntryOptions
+                {
+                    AbsoluteExpirationRelativeToNow = TimeSpan.FromHours(12)
+                });
+
+            return true;
+        }
+        catch
+        {
+            // Redis down → ignore
+            return false;
+        }
+    }
+
+    // ===================== FILE FALLBACK =====================
+
+    private async Task<List<WebscraperDataDto>?> TryGetFromFile()
+    {
+        try
+        {
+            var path = GetFilePath();
+
+            if (!File.Exists(path))
+                return null;
+
+            var json = await File.ReadAllTextAsync(path, Encoding.UTF8);
+
+            return JsonSerializer.Deserialize<List<WebscraperDataDto>>(json);
+        }
+        catch
+        {
+            return null;
+        }
     }
 
     private async Task SaveToFile(List<WebscraperDataDto> data)
     {
-        var folderPath = Path.Combine(_env.WebRootPath, "uploads", "scraped");
-        Directory.CreateDirectory(folderPath); // creates folder if it doesn't exist
+        try
+        {
+            var path = GetFilePath();
 
-        var filePath = Path.Combine(folderPath, FallbackFileName);
-        var json = JsonSerializer.Serialize(data, new JsonSerializerOptions { WriteIndented = true });
+            Directory.CreateDirectory(Path.GetDirectoryName(path)!);
 
-        await File.WriteAllTextAsync(filePath, json, Encoding.UTF8);
-        Console.WriteLine($"[WebscraperService] Saved to fallback file: {filePath}");
+            var json = JsonSerializer.Serialize(data, new JsonSerializerOptions
+            {
+                WriteIndented = true
+            });
+
+            await File.WriteAllTextAsync(path, json, Encoding.UTF8);
+        }
+        catch
+        {
+            // file failure should never break system
+        }
     }
 
-    private async Task<List<WebscraperDataDto>> LoadFromFile()
+    private string GetFilePath()
     {
-        var filePath = Path.Combine(_env.WebRootPath, "uploads", "scraped", FallbackFileName);
-
-        if (!File.Exists(filePath))
-        {
-            Console.WriteLine("[WebscraperService] Fallback file does not exist.");
-            return new();
-        }
-
-        var json = await File.ReadAllTextAsync(filePath, Encoding.UTF8);
-        return JsonSerializer.Deserialize<List<WebscraperDataDto>>(json) ?? new();
+        return Path.Combine(
+            _env.WebRootPath,
+            "uploads",
+            "scraped",
+            FallbackFileName
+        );
     }
 }
