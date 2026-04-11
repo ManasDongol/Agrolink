@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { AdminService, AdminPostFull } from '../../../../core/Services/Admin/admin.service';
 import { environment } from '../../../../../environments/environments';
+import { PostResponse } from '../../../feed/feed.models';
 
 @Component({
   selector: 'app-manage-posts',
@@ -10,9 +11,12 @@ import { environment } from '../../../../../environments/environments';
 })
 export class ManagePosts implements OnInit {
   posts: AdminPostFull[] = [];
+ 
   loading = true;
   error?: string;
   apiUrl = environment.apiUrl;
+
+
 
   showDeleteConfirm = false;
   pendingDeleteId: string | null = null;
@@ -64,8 +68,9 @@ export class ManagePosts implements OnInit {
     });
   }
 
-  getProfileImage(url?: string): string {
-    if (!url) return 'assets/default-avatar.png';
-    return this.apiUrl + url;
-  }
+ getImage(url?: string): string {
+  if (!url) return 'assets/default-avatar.png';
+
+  return `${this.apiUrl}${url}`;
+}
 }

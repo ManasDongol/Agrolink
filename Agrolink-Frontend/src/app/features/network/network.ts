@@ -65,6 +65,18 @@ closeWithdrawModal() {
   this.pendingWithdrawRequest = null;
 }
 
+
+onButtonClick(event: Event, user: any) {
+  event.stopPropagation(); 
+  event.preventDefault();  
+
+  if (user.isRequestSent) {
+    this.openWithdrawModalFromGrid(user);
+  } else {
+    this.connect(user);
+  }
+}
+
 confirmWithdraw() {
   if (!this.pendingWithdrawRequest) return;
   const req = this.pendingWithdrawRequest;

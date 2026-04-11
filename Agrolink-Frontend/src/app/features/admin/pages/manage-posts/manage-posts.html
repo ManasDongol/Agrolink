@@ -73,7 +73,7 @@
         <!-- Post header -->
         <div class="post-header">
           <div class="post-user-info">
-            <img [src]="getProfileImage(post.author.profilePictureUrl)"
+            <img [src]="getImage(post.author.profilePictureUrl)"
                  alt="Author"
                  class="user-avatar"
                  (error)="$any($event.target).src='assets/default-avatar.png'">

@@ -13,8 +13,6 @@ namespace AgroLink.Application.Services;
 public class AuthService(UserRepo userRepo, HashingService hashingService,TokenService tokenService,AuthRepo authRepo, IEmailService _emailService):IAuthService
 {
     
-    //when a user logs in i must generate a new access token !
-    
    public async Task<LoginResponseDto?> LoginUser(LoginRequestDto loginDto)
    {
        var username = loginDto.username;

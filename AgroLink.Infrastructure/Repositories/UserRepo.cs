@@ -1,4 +1,6 @@
-﻿using AgroLink.Domain.Entities;
+﻿using System.Security.Claims;
+
+using AgroLink.Domain.Entities;
 using AgroLink.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 using Npgsql;
@@ -10,6 +12,7 @@ public class UserRepo(AgroLinkDbContext dbContext)
     // -----------------------------
     // Register User
     // -----------------------------
+    
     public async Task<User?> RegisterUser(User user)
     {
         dbContext.Users.Add(user);
@@ -75,7 +78,11 @@ public class UserRepo(AgroLinkDbContext dbContext)
 
     public async Task<bool> CheckUserProfileExists(Guid userId)
     {
-        var status = await dbContext.Profiles.FindAsync(userId);
+        
+        
+        
+        var status = await dbContext.Profiles.FirstOrDefaultAsync(p => p.UserId == userId);
+        Console.WriteLine("THE USER ID IS",userId);
         if (status != null)
         {
             return true;

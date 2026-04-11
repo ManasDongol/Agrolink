@@ -12,6 +12,10 @@ namespace AgroLink.Application.Services;
 
 public class PostService(PostRepo postRepo, INotificationService _service) : IPostService
 {
+    public async Task<List<Infrastructure.Repositories.Posts.PostDto>> getallposts()
+    {
+        return await postRepo.GetAllPostsAsync();
+    }
     public async Task<PostDto> CreatePostAsync(CreatePostDto createPostDto, Guid userId)
     {
        
@@ -118,7 +122,7 @@ public class PostService(PostRepo postRepo, INotificationService _service) : IPo
         // Update basic fields
         post.Title = updatePostDto.Title;
         post.Content = updatePostDto.Content;
-        post.PostCategory = updatePostDto.PostCategory;
+        post.PostCategory = updatePostDto.Category;
 
         // Handle image replacement (optional)
         if (updatePostDto.Image != null)

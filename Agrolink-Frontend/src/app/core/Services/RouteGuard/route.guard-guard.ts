@@ -30,7 +30,8 @@ export const routeGuardGuard: CanActivateFn = (route: ActivatedRouteSnapshot) =>
 if (requireProfile) {
   return auth.checkProfile().pipe(
     map(res => {
-      if (res) {
+      if (!res) {
+        console.log(res);
         return router.createUrlTree([`/buildProfile/${user.id}`]);
       }
       return true;

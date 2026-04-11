@@ -46,7 +46,8 @@ export class Profile implements OnInit {
       lastname: ['', Validators.required],
       role: ['', Validators.required],
       address: [''],
-      phone: [''],
+      phone: ['', [Validators.required,
+    Validators.pattern(/^[0-9]{10}$/) ]],
       description: [''],
       achievements: [''],
       isverified: ['']
@@ -97,7 +98,20 @@ export class Profile implements OnInit {
     }
   }
 
-  // --- background image ---
+  onPhoneInput(event: any) {
+  let value = event.target.value;
+
+  // Remove non-numeric characters
+  value = value.replace(/\D/g, '');
+
+  // Limit to 10 digits
+  value = value.slice(0, 10);
+
+  event.target.value = value;
+  this.profileForm.get('phone')?.setValue(value, { emitEvent: false });
+}
+
+
   onBackgroundImageChange(event: Event): void {
     const input = event.target as HTMLInputElement;
     if (input.files && input.files.length > 0) {
@@ -111,7 +125,7 @@ export class Profile implements OnInit {
     }
   }
 
-  // --- proof file ---
+ 
   onFileChange(event: Event): void {
     const input = event.target as HTMLInputElement;
     if (input.files && input.files[0]) {
@@ -205,6 +219,7 @@ export class Profile implements OnInit {
     this.profile.UpdateProfile(formData).subscribe({
       next: () => { 
         this.toast.success("profile updated successfully!","");
+        console.log(userId);
         this.router.navigate(['/userProfile/' + userId]); },
       error: (err) => {
         console.error('Validation errors:', JSON.stringify(err.error?.errors, null, 2));

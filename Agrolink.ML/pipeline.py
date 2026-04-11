@@ -11,9 +11,6 @@ model = SentenceTransformer('all-MiniLM-L6-v2')
 
 print("Loading RAG model ...")
 
-# ─────────────────────────────────────────────
-# LOAD ROUTER + INDEXES
-# ─────────────────────────────────────────────
 
 router_index = faiss.read_index(f"{MODEL_DIR}/router.index")
 
@@ -31,9 +28,7 @@ print(f"  ✓ {len(domain_indexes)} domain indexes loaded")
 print(f"  ✓ Router ready")
 
 
-# ─────────────────────────────────────────────
-# SESSION MEMORY (CROP LOCK)
-# ─────────────────────────────────────────────
+
 
 session_state = {}
 
@@ -56,10 +51,6 @@ def detect_crop(query: str):
     return None
 
 
-# ─────────────────────────────────────────────
-# GIBBERISH DETECTION (FAST + NO LLM)
-# ─────────────────────────────────────────────
-
 def is_gibberish(text: str) -> bool:
     text = text.strip()
 
@@ -75,18 +66,14 @@ def is_gibberish(text: str) -> bool:
     return False
 
 
-# ─────────────────────────────────────────────
-# EMBEDDINGS (CACHED)
-# ─────────────────────────────────────────────
+
 
 @lru_cache(maxsize=1000)
 def embed_query(query: str):
     return model.encode([query]).astype("float32")
 
 
-# ─────────────────────────────────────────────
-# FAISS SEARCH
-# ─────────────────────────────────────────────
+
 
 def search_index(index, texts, metadatas, query, k=2):
     query_vec = embed_query(query)
@@ -103,9 +90,7 @@ def search_index(index, texts, metadatas, query, k=2):
     ]
 
 
-# ─────────────────────────────────────────────
-# ROUTER (STRICT)
-# ─────────────────────────────────────────────
+
 
 def route_query(query, top_k=3, distance_threshold=0.9):
     query_vec = embed_query(query)
@@ -127,9 +112,6 @@ def route_query(query, top_k=3, distance_threshold=0.9):
     return activated[:1]
 
 
-# ─────────────────────────────────────────────
-# MAIN PIPELINE
-# ─────────────────────────────────────────────
 
 def run_pipeline(query: str, session_id: str = "default") -> str:
     print("Query:", query)

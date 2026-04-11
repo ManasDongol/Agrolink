@@ -43,8 +43,13 @@ public class PostRepo(AgroLinkDbContext dbContext)
 
     public async Task DeletePostAsync(Guid postId)
     {
-         dbContext.Posts.Remove(await dbContext.Posts.FindAsync(postId));
-         await dbContext.SaveChangesAsync();
+        var post = await dbContext.Posts.FindAsync(postId);
+
+        if (post == null)
+            return; // or throw NotFound exception
+
+        dbContext.Posts.Remove(post);
+        await dbContext.SaveChangesAsync();
     }
     
     public async Task<Domain.Entities.Posts> UpdatePostAsync(Domain.Entities.Posts updatedPost)
@@ -123,7 +128,43 @@ public class PostRepo(AgroLinkDbContext dbContext)
 
     }
 
-    
+
+    public async Task<List<PostDto>> GetAllPostsAsync()
+    {
+        return await dbContext.Posts
+            .Include(x => x.User)
+            .ThenInclude(u => u.Profile)
+            .Include(x => x.Likes)
+            .Include(x => x.Comments)
+            .Include(x => x.Bookmarks)
+            .Select(x => new PostDto
+            {
+                PostId = x.PostId,
+                Title = x.Title,
+                Content = x.Content,
+                PostCategory = x.PostCategory,
+                ImagePath = x.ImagePath,
+                Created = x.Created,
+
+                Author = new PostUserDto
+                {
+                    UserId = x.User.UserId,
+                    Username = x.User.Username ?? "Unknown",
+                    ProfilePictureUrl = x.User.Profile != null
+                        ? x.User.Profile.ProfilePicture
+                        : null,
+                    Role = x.User.Profile != null
+                        ? x.User.Profile.Role
+                        : null
+                },
+
+                LikesCount = x.Likes.Count,
+                CommentsCount = x.Comments.Count,
+                BookmarksCount = x.Bookmarks.Count
+            })
+            .ToListAsync();
+    }
+
     public async Task<List<Domain.Entities.Posts>> GetUserPostsByIdAsync(Guid userid)
     {
         return await dbContext.Posts

@@ -2,7 +2,7 @@ import { Component, OnInit, OnDestroy, HostListener } from '@angular/core';
 import { RouterLink, Router, RouterLinkActive } from "@angular/router";
 import { CommonModule } from '@angular/common';
 import { Auth } from '../../core/Services/Auth/auth';
-import { Notification, NotificationService } from '../../core/Services/Notifications/notification';
+import { Notification, NotificationService } from '../../core/Services/Notifications/notification.service';
 import { Subscription } from 'rxjs';
 
 @Component({

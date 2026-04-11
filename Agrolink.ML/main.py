@@ -11,9 +11,6 @@ app = FastAPI()
 app.include_router(disease_router, prefix="/disease", tags=["Disease Detection"])
 
 
-# --------------------
-# Request schema
-# --------------------
 class CropRequest(BaseModel):
     features: List[float]  # [N,P,K,temp,humidity,ph,rainfall]
 
@@ -21,15 +18,10 @@ class CropRequest(BaseModel):
 class QueryRequest(BaseModel):
     query: str
 
-
-# --------------------
-# Response schema
-# --------------------
 class Fertilizer(BaseModel):
     fertilizer: str
     fert_prob: float
     score: float
-
 
 class CropResult(BaseModel):
     crop: str
@@ -38,9 +30,7 @@ class CropResult(BaseModel):
     fertilizers: List[Fertilizer]
 
 
-# --------------------
-# Root endpoint
-# --------------------
+
 @app.get("/")
 def root():
     return {"status": "AgroLink RAG API is running"}

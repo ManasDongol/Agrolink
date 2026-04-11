@@ -87,7 +87,7 @@ public class AuthController(IAuthService authService, UserRepo UserRepo, Hashing
                 ClockSkew = TimeSpan.Zero
             }, out SecurityToken validatedToken);
 
-            // Extract user ID from claims
+            
             var jwtToken = (JwtSecurityToken)validatedToken;
             var userIdClaim = jwtToken.Claims.First(x => x.Type == ClaimTypes.NameIdentifier);
             var userId = Guid.Parse(userIdClaim.Value);
@@ -114,9 +114,11 @@ public class AuthController(IAuthService authService, UserRepo UserRepo, Hashing
 
 
     [HttpGet("profileExists")]
-    public async Task<bool> checkprofile(Guid userid)
+    public async Task<bool> checkprofile()
     {
-        return await authService.CheckProfileExists(userid);
+        var userVal = Guid.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
+
+        return await authService.CheckProfileExists(userVal);
     }    
     
     

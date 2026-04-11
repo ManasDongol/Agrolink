@@ -221,17 +221,17 @@ private loadExtras(id: string) {
     const routeId = this.route.snapshot.paramMap.get('id')!;
     this.networkService.withdrawRequestByReceiverId(routeId).subscribe({
       next: () => {
-        //  removeSentRequest updates sentRequestIds$ BehaviorSubject
-        // which our reactive subscription above will pick up automatically
+       console.log("Withdrawing request for:", routeId);
         this.networkService.removeSentRequest(routeId);
         this.showWithdrawModal = false;
         this.loading = false;
          this.toast.info('request withdrawn!', '');
       },
-      error: (err) => {
-        this.loading = false;
-        console.error(err);
-      }
+    error: (err) => {
+  this.loading = false;
+  console.error(err);
+  this.toast.error("Failed to withdraw request", "Try again");
+}
     });
   }
 

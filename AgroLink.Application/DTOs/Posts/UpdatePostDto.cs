@@ -7,6 +7,6 @@ public class UpdatePostDto
     public string Title { get; set; }
     public string Content { get; set; }
     public Guid TagId { get; set; }
-    public string PostCategory { get; set; }
+    public string Category { get; set; }
     public IFormFile? Image { get; set; }
 }

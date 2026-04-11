@@ -10,7 +10,8 @@ namespace AgroLink.API.Controllers;
 [Authorize(Roles = "Admin")]
 public class AdminController(
     ProfileService service,
-    AdminService adminService) : ControllerBase
+    AdminService adminService,
+    PostService postService) : ControllerBase
 {
     [HttpGet("stats")]
     public async Task<IActionResult> GetStats()
@@ -63,8 +64,16 @@ public class AdminController(
     [HttpGet("posts")]
     public async Task<IActionResult> GetAllPosts()
     {
-        var posts = await adminService.GetAllPostsAsync();
+        var posts = await postService.getallposts();
         return Ok(posts);
+    }
+    
+    [HttpDelete("posts/{postid}")]
+    public async Task<IActionResult> removePost(Guid postid)
+    {
+         await postService.DeletePost(postid);
+         return Ok();
+
     }
 
     [HttpPut("verify-users/{userId}/approve")]

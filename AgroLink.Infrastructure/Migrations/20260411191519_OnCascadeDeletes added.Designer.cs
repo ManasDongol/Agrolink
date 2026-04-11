@@ -3,6 +3,7 @@ using System;
 using AgroLink.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace AgroLink.Infrastructure.Migrations
 {
     [DbContext(typeof(AgroLinkDbContext))]
-    partial class AgroLinkDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260411191519_OnCascadeDeletes added")]
+    partial class OnCascadeDeletesadded
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -557,7 +560,7 @@ namespace AgroLink.Infrastructure.Migrations
                     b.HasOne("AgroLink.Domain.Entities.Comment", "ParentComment")
                         .WithMany("Replies")
                         .HasForeignKey("ParentCommentId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .OnDelete(DeleteBehavior.SetNull);
 
                     b.HasOne("AgroLink.Domain.Entities.Posts", "Post")
                         .WithMany("Comments")
@@ -657,7 +660,7 @@ namespace AgroLink.Infrastructure.Migrations
                     b.HasOne("AgroLink.Domain.Entities.User", "Sender")
                         .WithMany()
                         .HasForeignKey("SenderId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.Navigation("Conversation");
@@ -676,7 +679,7 @@ namespace AgroLink.Infrastructure.Migrations
                     b.HasOne("AgroLink.Domain.Entities.User", "Sender")
                         .WithMany()
                         .HasForeignKey("SenderUserId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .OnDelete(DeleteBehavior.NoAction);
 
                     b.Navigation("Recipient");
 
