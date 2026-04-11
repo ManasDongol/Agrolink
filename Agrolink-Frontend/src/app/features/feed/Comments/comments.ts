@@ -26,7 +26,6 @@ export class CommentsComponent implements OnInit {
     });
   }
 
-  // Build nested structure
   private buildNestedComments(comments: Comment[]): Comment[] {
     const map = new Map<string, Comment>();
     const roots: Comment[] = [];

@@ -43,13 +43,12 @@ ngOnInit() {
   this.cropService.Prices().subscribe({
     next: (res) => {
       this.priceList = res;
-      this.filteredList = res;  // initially show all
+      this.filteredList = res; 
       this.isLoading = false;
     },
     error: () => { this.isLoading = false; }
   });
 
-  // filter in memory on every keystroke
   this.SearchControl.valueChanges.subscribe(query => {
     if (!query || query.length < 2) {
       this.filteredList = this.priceList;  // reset

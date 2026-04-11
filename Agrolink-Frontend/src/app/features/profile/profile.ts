@@ -17,25 +17,17 @@ import { ToastService } from '../../shared/toast/toast.service';
 })
 export class Profile implements OnInit {
   private toast = inject(ToastService);
-
   profileForm!: FormGroup;
-
-  // server paths (loaded from existing profile)
   profileImageServerPath: string | null = null;
   backgroundImageServerPath: string | null = null;
   proofFilePreview: string | null = null;
-
-  // local base64 previews (set when user picks a new file)
   profileImageLocalPreview: string | null = null;
   backgroundImageLocalPreview: string | null = null;
   proofFileLocalPreview: string | null = null;
-
-  // actual file objects to upload
   profileImageFile: File | null = null;
   backgroundImageFile: File | null = null;
   proofFile: File | null = null;
   proofFileError = '';
-
   apiurl: string = environment.apiUrl;
 
   readonly MAX_FILE_SIZE = 5 * 1024 * 1024;

@@ -24,13 +24,12 @@ public class AiController : ControllerBase
         _db = db;
     }
 
-    // ─── POST /api/Ai/ask ─────────────────────────────────────
     [HttpPost("ask")]
     public async Task<IActionResult> Ask([FromBody] AskRequestDto request)
     {
         var userId = Guid.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
 
-        // 1 — Get or create session
+        // Get or create session
         AiSession session;
         if (request.SessionId.HasValue)
         {
@@ -41,8 +40,9 @@ public class AiController : ControllerBase
                 return NotFound(new { error = "Session not found." });
 
             // 2 — Check conversation limit
-            var userMessageCount = session.AiMessages
-                .Count(m => m.Role == AiMessageRole.User);
+            var userMessageCount = await _db.AiMessages
+                .Where(m => m.AiSessionId == session.Id && m.Role == AiMessageRole.User)
+                .CountAsync();
 
             if (userMessageCount >= CONVERSATION_LIMIT)
                 return BadRequest(new
@@ -92,9 +92,10 @@ public class AiController : ControllerBase
         session.UpdatedAt = DateTime.UtcNow;
         await _db.SaveChangesAsync();
 
-        // 6 — Tell frontend how many queries are left
-        var totalUserMessages = session.AiMessages
-            .Count(m => m.Role == AiMessageRole.User) + 1; // +1 for the one just added
+    
+        var totalUserMessages = await _db.AiMessages
+            .Where(m => m.AiSessionId == session.Id && m.Role == AiMessageRole.User)
+            .CountAsync();
 
         return Ok(new AiResponseDto
         {
@@ -126,8 +127,9 @@ public class AiController : ControllerBase
             if (session == null)
                 return NotFound(new { error = "Session not found." });
 
-            var userMessageCount = session.AiMessages
-                .Count(m => m.Role == AiMessageRole.User);
+            var userMessageCount = await _db.AiMessages
+                .Where(m => m.AiSessionId == session.Id && m.Role == AiMessageRole.User)
+                .CountAsync();
 
             if (userMessageCount >= CONVERSATION_LIMIT)
                 return BadRequest(new
@@ -198,10 +200,9 @@ public class AiController : ControllerBase
 
         session.UpdatedAt = DateTime.UtcNow;
         await _db.SaveChangesAsync();
-
-        var totalUserMessages = session.AiMessages
-            .Count(m => m.Role == AiMessageRole.User) + 1;
-
+        var totalUserMessages = await _db.AiMessages
+            .Where(m => m.AiSessionId == session.Id && m.Role == AiMessageRole.User)
+            .CountAsync();
         return Ok(new AiResponseDto
         {
             Answer = answer,

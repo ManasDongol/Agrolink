@@ -6,11 +6,7 @@ namespace Controllers;
 [ApiController]
 public class UserController
 {
-    [HttpGet("/user")]
-    public string printer()
-    {
-        return "hahaha this is being called";
-    }
+   
 
     [HttpPost("/user")]
     public void user()
