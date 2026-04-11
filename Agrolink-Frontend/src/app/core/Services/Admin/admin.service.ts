@@ -26,22 +26,30 @@ export interface AdminPost {
 }
 
 /* Rich shape that mirrors the feed Post model */
+
 export interface AdminPostFull {
   postId: string;
   title: string;
   content: string;
   created: string;
   imagePath?: string;
-  postCategory: string;
+
   author: {
     userId: string;
     username: string;
     profilePictureUrl?: string;
   };
-  likesCount: number;
-  commentsCount: number;
-}
 
+  postCategory: string;
+
+  isLiked: boolean;
+  likesCount: number;
+
+  commentsCount: number;
+
+  isBookmarked: boolean;
+  bookmarksCount: number;
+}
 export interface UnverifiedUser {
    profileId: string;          // Guid in C# → string in TS
   userId: string;             // Guid → string
@@ -64,6 +72,7 @@ export interface UnverifiedUser {
 export class AdminService {
   private http = inject(HttpClient);
   private baseUrl = 'http://localhost:5131/api/Admin';
+  private postUrl = 'http://localhost:5131/api/Posts';
 
   getStats(): Observable<AdminStats> {
     return this.http.get<AdminStats>(`${this.baseUrl}/stats`, {
@@ -84,6 +93,12 @@ export class AdminService {
   }
 
   getPosts(): Observable<AdminPostFull[]> {
+    return this.http.get<AdminPostFull[]>(`${this.baseUrl}/posts`, {
+      withCredentials: true,
+    });
+  }
+
+  getallPosts():Observable<AdminPostFull[]> {
     return this.http.get<AdminPostFull[]>(`${this.baseUrl}/posts`, {
       withCredentials: true,
     });

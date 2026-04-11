@@ -31,6 +31,8 @@ export class FeedService {
         return this.http.get<PostResponse>(this.baseUrl, { params });
     }
 
+    
+
     getPostsByID(userID:string): Observable<Post[]>{
         return this.http.get<Post[]>(`${this.baseUrl}/${userID}/all`);
 

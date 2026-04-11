@@ -1,0 +1,23 @@
+export interface AdminPostFull {
+  postId: string;
+  title: string;
+  content: string;
+  created: string;
+  imagePath?: string;
+
+  author: {
+    userId: string;
+    username: string;
+    profilePictureUrl?: string;
+  };
+
+  postCategory: string;
+
+  isLiked: boolean;
+  likesCount: number;
+
+  commentsCount: number;
+
+  isBookmarked: boolean;
+  bookmarksCount: number;
+}

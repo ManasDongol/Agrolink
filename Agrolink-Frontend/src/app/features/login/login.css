@@ -6,7 +6,6 @@ body {
   margin: 0;
 }
 
-/* ── PAGE SHELL ── */
 .login-page {
   display: flex;
   align-items: center;
@@ -15,8 +14,6 @@ body {
   background-color: #f0f4ee;
   padding: 24px;
 }
-
-/* ── CARD ── */
 .login-card {
   display: flex;
   width: 100%;
@@ -26,8 +23,6 @@ body {
   overflow: hidden;
   box-shadow: 0 8px 40px rgba(0, 0, 0, 0.12);
 }
-
-/* ── LEFT PANEL ── */
 .login-left {
   width: 50%;
   background: #ffffff;
@@ -37,7 +32,6 @@ body {
   justify-content: center;
 }
 
-/* Brand */
 .brand {
   display: flex;
  
