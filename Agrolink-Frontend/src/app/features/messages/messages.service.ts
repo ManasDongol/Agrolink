@@ -1,9 +1,10 @@
 import { Injectable } from '@angular/core';
 import * as signalR from '@microsoft/signalr';
 import { HttpClient } from '@angular/common/http';
-import { BehaviorSubject } from 'rxjs';
+import { BehaviorSubject,Subject } from 'rxjs';
 import { map,tap } from 'rxjs/operators';
 import { environment } from '../../../environments/environments';
+
 
 export interface MessageDto {
   messageId: string;
@@ -36,6 +37,8 @@ export class MessagesService {
   private hubConnection!: signalR.HubConnection;
   private messagesMap = new Map<string, MessageDto[]>();
   public messages$ = new BehaviorSubject<MessageDto[]>([]);
+  private messageError$ = new Subject<void>();
+get onMessageError$() { return this.messageError$.asObservable(); }
   currentConversationId: string = '';
 
   private apiUrl = 'http://localhost:5131/api/Message';
@@ -60,6 +63,11 @@ export class MessagesService {
       this.hubConnection.on('ReceiveMessage', (message: MessageDto) => {
         const convId = message.conversationId;
         if (!this.messagesMap.has(convId)) this.messagesMap.set(convId, []);
+
+       const cached = this.messagesMap.get(convId)!;
+
+  // 👇 skip if already exists
+  if (cached.some(m => m.messageId === message.messageId)) return;
         this.messagesMap.get(convId)!.push(message);
         if (convId === this.currentConversationId) {
           this.messages$.next([...this.messagesMap.get(convId)!]);
@@ -204,7 +212,10 @@ replaceOptimisticMessage(conversationId: string, tempId: string, replacement: Me
           }
         }
       },
-      error: err => console.error('Failed to save message:', err)
+     error: err => {
+  console.error('Failed to save message:', err);
+  this.messageError$.next();  
+}
     });
 
     this.hubConnection.invoke('SendMessage', receiverId, this.currentConversationId, content)

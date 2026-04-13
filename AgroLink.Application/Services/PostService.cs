@@ -161,17 +161,52 @@ public class PostService(PostRepo postRepo, INotificationService _service) : IPo
         return MapToDto(updatedPost, userId);
     }
 
-    public async Task ToggleLikeAsync(Guid postId, Guid userId)
+    public async Task<bool> ToggleLikeAsync(Guid postId, Guid userId)
     {
-        
-      
-       
-        await postRepo.ToggleLikeAsync(postId, userId);
+        var post = await postRepo.GetPostByIdAsync(postId);
+        var postExists = await postRepo.PostExists(postId);
+        if (!postExists) return false;
+
+        if (post == null)
+            throw new KeyNotFoundException("Post not found");
+
+        var existingLike = await postRepo.GetLike(postId, userId);
+
+        if (existingLike != null)
+        {
+            await postRepo.RemoveLike(existingLike);
+        }
+        else
+        {
+            await postRepo.AddLike(new Like
+            {
+                PostId = postId,
+                UserId = userId
+            });
+        }
+
+        await postRepo.SaveChanges();
+        return true;
     }
 
-    public async Task ToggleBookmarkAsync(Guid postId, Guid userId)
+    public async Task<bool> ToggleBookmarkAsync(Guid postId, Guid userId)
     {
-        await postRepo.ToggleBookmarkAsync(postId, userId);
+        var postExists = await postRepo.PostExists(postId);
+        if (!postExists) return false;
+
+        var bookmark = await postRepo.GetBookmark(postId, userId);
+
+        if (bookmark != null)
+            await postRepo.RemoveBookmark(bookmark);
+        else
+            await postRepo.AddBookmark(new Bookmark
+            {
+                PostId = postId,
+                UserId = userId
+            });
+
+        await postRepo.SaveChanges();
+        return true;
     }
 
     public async Task DeletePost(Guid postId)

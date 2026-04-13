@@ -41,6 +41,16 @@ public class MessageService(MessagesRepo repo,AgroLinkDbContext _dbContext,INoti
 
     public async Task<Message> SendMessage(string senderId, string conversationId, string content)
     {
+        
+
+       
+        var current = await _dbContext.Conversations
+            .FirstOrDefaultAsync(c => c.Id == Guid.Parse(conversationId));
+
+        if (current == null)
+        {
+            throw new Exception("Conversation not found");
+        }
         var message = new Message
         {
             MessageId = Guid.NewGuid(),

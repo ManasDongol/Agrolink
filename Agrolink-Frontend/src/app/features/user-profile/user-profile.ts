@@ -203,6 +203,7 @@ private loadExtras(id: string) {
 }
 
   sendConnection() {
+     if (this.isSendingRequest) return;
     const routeId = this.route.snapshot.paramMap.get('id')!;
       this.isSendingRequest = true;
     this.networkService.sendConnectionRequest(routeId).subscribe({
@@ -221,7 +222,9 @@ private loadExtras(id: string) {
   }
 
   confirmWithdraw(): void {
-    this.loading = true;
+    if (this.isSendingRequest) return; //  blocks if connect is still in-flight
+  this.isSendingRequest = true;
+   
      if (this.isSendingRequest) return;
     const routeId = this.route.snapshot.paramMap.get('id')!;
     this.networkService.withdrawRequestByReceiverId(routeId).subscribe({
@@ -230,10 +233,12 @@ private loadExtras(id: string) {
         this.networkService.removeSentRequest(routeId);
         this.showWithdrawModal = false;
         this.loading = false;
+        this.isSendingRequest = false;
          this.toast.info('request withdrawn!', '');
       },
     error: (err) => {
   this.loading = false;
+  this.isSendingRequest = false;
   console.error(err);
   this.toast.error("Failed to withdraw request", "Try again");
 }

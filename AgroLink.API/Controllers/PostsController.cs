@@ -35,11 +35,20 @@ public class PostsController(IPostService postService) : ControllerBase
     [HttpPost("{postId}/like")]
     public async Task<IActionResult> ToggleLike(Guid postId)
     {
-        var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value; // however you extract from JWT
+        var userId = Guid.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value);
 
-        await postService.ToggleLikeAsync(postId, Guid.Parse(userId));
+        try
+        {
+            var result= await postService.ToggleLikeAsync(postId, userId);
+             if (!result)
+                return NotFound(new { message = "Post not found or deleted" });
+            return Ok(new { message = "like updated" });
 
-        return Ok();
+        }
+        catch (KeyNotFoundException)
+        {
+            return NotFound(new { message = "Post not found" });
+        }
     }
 
     [HttpPost]

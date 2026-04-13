@@ -3,10 +3,12 @@ using AgroLink.Application.DTOs;
 using AgroLink.Application.DTOs.Posts;
 using AgroLink.Application.Services;
 using AgroLink.Domain.Entities;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace AgroLink.API.Controllers
 {
+    [Authorize]
     [ApiController]
     [Route("api/[controller]")]
     public class CommentController : ControllerBase
@@ -22,11 +24,19 @@ namespace AgroLink.API.Controllers
         public async Task<ActionResult<CommentReturnDto>> AddComment([FromBody] CommentCreateDto dto)
         {
             var userIdString = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
             if (!Guid.TryParse(userIdString, out var userId))
                 return Unauthorized();
 
-            var comment = await _service.AddComment(dto.PostId, userId, dto.Content, dto.ParentCommentId);
-            return Ok(comment);
+            try
+            {
+                var comment = await _service.AddComment(dto.PostId, userId, dto.Content, dto.ParentCommentId);
+                return Ok(comment);
+            }
+            catch (KeyNotFoundException)
+            {
+                return NotFound(new { message = "Post not found or deleted" });
+            }
         }
 
         [HttpGet("{postId}")]
@@ -46,8 +56,24 @@ namespace AgroLink.API.Controllers
         [HttpDelete("{commentId}")]
         public async Task<IActionResult> DeleteComment(Guid commentId)
         {
-            await _service.DeleteComment(commentId);
-            return NoContent();
+            var userIdString = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+            if (!Guid.TryParse(userIdString, out var userId))
+                return Unauthorized();
+
+            try
+            {
+                await _service.DeleteComment(commentId, userId);
+                return NoContent();
+            }
+            catch (KeyNotFoundException)
+            {
+                return NotFound(new { message = "Comment not found" });
+            }
+            catch (UnauthorizedAccessException)
+            {
+                return Forbid();
+            }
         }
     }
 }

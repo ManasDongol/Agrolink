@@ -18,6 +18,10 @@ public class CommentService
 
     public async Task<CommentReturnDto> AddComment(Guid postId, Guid userId, string content, Guid? parentCommentId = null)
     {
+        var postExists = await _context.Posts.AnyAsync(p => p.PostId == postId);
+
+        if (!postExists)
+            throw new KeyNotFoundException("Post not found");
         var user = await _context.Users
             .Include(u => u.Profile) // IMPORTANT
             .FirstOrDefaultAsync(u => u.UserId == userId);
@@ -112,14 +116,18 @@ public class CommentService
         }).ToList();
     }
     // Delete a comment
-    public async Task DeleteComment(Guid commentId)
+    public async Task DeleteComment(Guid commentId, Guid userId)
     {
         var comment = await _context.Comments.FindAsync(commentId);
-        if (comment != null)
-        {
-            _context.Comments.Remove(comment);
-            await _context.SaveChangesAsync();
-        }
+
+        if (comment == null)
+            throw new KeyNotFoundException("Comment not found");
+
+        if (comment.UserId != userId)
+            throw new UnauthorizedAccessException("Not allowed");
+
+        _context.Comments.Remove(comment);
+        await _context.SaveChangesAsync();
     }
     
     public async Task<List<CommentReturnDto>> GetRepliesByComment(Guid commentId)

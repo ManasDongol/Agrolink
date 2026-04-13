@@ -13,14 +13,23 @@ namespace AgroLink.API.Controllers;
 public class BookmarkController(IPostService postService): ControllerBase
 {
     [HttpPost("{postId}/bookmark")]
-    public async Task<IActionResult> AddBookmark(Guid postId)
+    public async Task<IActionResult> ToggleBookmark(Guid postId)
     {
-        var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value; 
+        var userId = Guid.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value);
 
-        await postService.ToggleBookmarkAsync(postId, Guid.Parse(userId));
+        try
+        {
+            var result = await postService.ToggleBookmarkAsync(postId, userId);
 
-        return Ok();
-        
+            if (!result)
+                return NotFound(new { message = "Post not found or deleted" });
+            return Ok(new { message = "Bookmark updated" });
+
+        }
+        catch (KeyNotFoundException)
+        {
+            return NotFound(new { message = "Post not found or deleted" });
+        }
     }
 
    

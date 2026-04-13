@@ -29,14 +29,22 @@ public class MessageController(MessageService _service): ControllerBase
     [HttpPost("send")]
     public async Task<IActionResult> SendMessage([FromBody] SendMessageDto dto)
     {
-        var result = await _service.SendMessage((dto.SenderId).ToString(), (dto.ConversationId).ToString(), dto.Content);
-       return Ok(new {
-            messageId = result.MessageId,
-            senderId = result.SenderId,
-            conversationId = result.ConversationId,
-            content = result.Content,
-            sent = result.Sent
-        });
+        try
+        {
+            var result = await _service.SendMessage((dto.SenderId).ToString(), (dto.ConversationId).ToString(), dto.Content);
+            return Ok(new {
+                messageId = result.MessageId,
+                senderId = result.SenderId,
+                conversationId = result.ConversationId,
+                content = result.Content,
+                sent = result.Sent
+            });
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(new { message = ex.Message });
+        }
+       
     }
     
     [HttpGet("connections/{userId}")]

@@ -209,6 +209,7 @@
       [(ngModel)]="newMessage"
       (keyup.enter)="imagePreview ? sendImage() : sendMessage()"
       [disabled]="!OpenedConversation"
+      
     />
 
     <!-- Send button: sends image if preview exists, otherwise text -->

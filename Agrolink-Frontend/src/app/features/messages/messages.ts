@@ -8,6 +8,9 @@ import { environment } from '../../../environments/environments';
 import { Subject } from 'rxjs';
 import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
 import { Spinner } from '../../shared/spinner/spinner';
+import { DestroyRef, inject } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { ToastService } from '../../shared/toast/toast.service'; // your toast path
 
 @Component({
   selector: 'app-messages',
@@ -44,6 +47,9 @@ export class MessagesComponent implements OnInit, AfterViewChecked {
   private searchSubject = new Subject<string>();
   private isStartingConversation: boolean = false;
 
+  private destroyRef = inject(DestroyRef);
+private toast = inject(ToastService);
+
   @ViewChild('messagesList') private messagesList!: ElementRef;
 
   constructor(public messagesService: MessagesService, public auth: Auth) {}
@@ -55,6 +61,27 @@ export class MessagesComponent implements OnInit, AfterViewChecked {
     ).subscribe(query => {
       this.performSearch(query);
     });
+
+    this.messagesService.onMessageError$.pipe(
+  takeUntilDestroyed(this.destroyRef)
+).subscribe(() => {
+  this.toast.error('This user is no longer a connection.',"");
+  // refresh: reload the current conversation to remove the optimistic message
+  if (this.currentConversationId) {
+    this.messagesService.openConversation(this.currentConversationId);
+  }
+   this.recentConversations = this.recentConversations.filter(
+    c => c.id !== this.currentConversationId
+  );
+
+  // Close the chat panel
+  this.OpenedConversation = false;
+  this.receiverId = '';
+  this.selectedConversationIndex = -1;
+  this.OpenedConversationUsername = '';
+  this.OpenedConversationProfile = '';
+  this.openedMessages = [];
+});
 
     this.auth.checkAuth().pipe(
       switchMap(user => {

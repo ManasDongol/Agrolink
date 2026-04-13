@@ -159,6 +159,9 @@
 
 .pending-btn {
   display: inline-flex;
+
+   cursor: not-allowed;
+  pointer-events: none;
   align-items: center;
   gap: 7px;
   background: #ffffff;

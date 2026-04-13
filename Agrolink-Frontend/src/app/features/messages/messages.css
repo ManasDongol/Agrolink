@@ -268,6 +268,7 @@
 /* Messages area */
 .messages-area {
   flex: 1;
+  min-width: 0; 
   overflow: hidden;
   display: flex;
   flex-direction: column;
@@ -332,17 +333,17 @@
 
 /* Input bar */
 .input-bar {
-  display: flex;
-  
-  align-items: center;
-  gap: 10px;
-  padding: 12px 16px;
+ display: flex;
+  flex-direction: column; /* This allows the preview bar to sit on top of the input row */
+  width: 100%;
   border-top: 1px solid #e2e8de;
 }
 
 .message-input {
-  flex: 1;
-   min-width: 0;
+  
+  width:79%;
+  min-width: 0;
+  box-sizing: border-box;
   border: 1.5px solid #e2e8de;
   border-radius: 10px;
   padding: 10px 14px;
@@ -350,8 +351,9 @@
   font-family: inherit;
   color: #1f2937;
   outline: none;
-  transition: border-color 0.2s;
+
   background: #ffffff;
+
   
 }
 
@@ -360,7 +362,10 @@
 }
 
 .message-input:focus {
-  border-color: #3ec73e;
+  border-color: #41ff08;
+
+   box-shadow: 0 0 0 2px rgba(62, 199, 62, 0.2);
+  
 }
 
 .message-input:disabled {
@@ -506,11 +511,13 @@
 
 /* Wrap existing input + buttons in a row */
 .input-row {
-  display: flex;
+display: flex;
+flex-direction: row;
   width: 100%;
   align-items: center;
   gap: 8px;
   padding: 10px 12px;
+  box-sizing: border-box;
 }
 
 .attach-btn {

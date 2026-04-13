@@ -177,28 +177,49 @@ public class PostRepo(AgroLinkDbContext dbContext)
             .ToListAsync();
     }
 
-    public async Task ToggleLikeAsync(Guid postId, Guid userId)
+   
+
+    public async Task<Like?> GetLike(Guid postId, Guid userId)
     {
-        var existingLike = await dbContext.Set<Like>()
+        return await dbContext.Set<Like>()
             .FirstOrDefaultAsync(l => l.PostId == postId && l.UserId == userId);
+    }
 
-        if (existingLike != null)
-        {
-            // Unlike
-            dbContext.Set<Like>().Remove(existingLike);
-        }
-        else
-        {
-            //  Like
-            var like = new Like()
-            {
-                PostId = postId,
-                UserId = userId
-            };
+    public async Task AddLike(Like like)
+    {
+        await dbContext.Set<Like>().AddAsync(like);
+    }
 
-            await dbContext.Set<Like>().AddAsync(like);
-        }
+    public async Task RemoveLike(Like like)
+    {
+        dbContext.Set<Like>().Remove(like);
+    }
 
+   
+    
+    public async Task<bool> PostExists(Guid postId)
+    {
+        return await dbContext.Posts.AnyAsync(p => p.PostId == postId);
+    }
+
+    public async Task<Bookmark?> GetBookmark(Guid postId, Guid userId)
+    {
+        return await dbContext.Set<Bookmark>()
+            .FirstOrDefaultAsync(b => b.PostId == postId && b.UserId == userId);
+    }
+
+    public async Task AddBookmark(Bookmark bookmark)
+    {
+        await dbContext.Set<Bookmark>().AddAsync(bookmark);
+    }
+
+    public async Task RemoveBookmark(Bookmark bookmark)
+    {
+        dbContext.Set<Bookmark>().Remove(bookmark);
+    }
+
+    public async Task SaveChanges()
+    {
         await dbContext.SaveChangesAsync();
     }
     

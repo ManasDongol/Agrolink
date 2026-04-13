@@ -279,7 +279,6 @@ this.loadPosts();
 
   return this.apiurl + path;
 }
-
 Addcomments(post: Post, content: string) {
   if (!content.trim()) return;
 
@@ -288,50 +287,99 @@ Addcomments(post: Post, content: string) {
     content: content
   };
 
-  this.commentService.addComment(dto).subscribe((res) => {
-    const newComment = new Comment(res as Partial<Comment>); //  map to class
-
-    post.comments.push(newComment);
-    post.commentsCount++;
-
-    content ="";
-    this.newCommentContent = ''; // optional clear
+  // optimistic UI
+  const tempComment = new Comment({
+    content,
+    postId: post.postId
   });
-}
 
-toggleLike(post: Post) {
+  post.comments.push(tempComment);
+  post.commentsCount++;
 
-  post.toggleLike();
-
-
-  this.feedService.toggleLike(post.postId).subscribe({
-    next: () => {
-   
+  this.commentService.addComment(dto).subscribe({
+    next: (res) => {
+      // replace temp with real comment
+      const index = post.comments.indexOf(tempComment);
+      if (index !== -1) {
+        post.comments[index] = new Comment(res as Partial<Comment>);
+      }
     },
-    error: (err: HttpErrorResponse) => {
-      console.error('Like failed', err);
 
-      post.toggleLike();
+    error: (err: HttpErrorResponse) => {
+      // rollback
+      post.comments = post.comments.filter(c => c !== tempComment);
+      post.commentsCount--;
+
+      if (err.status === 404) {
+        this.removePost(post.postId);
+        this.toast.info("Post was deleted", "");
+        return;
+      }
+
+      this.toast.error("Failed to add comment", "");
     }
   });
 }
 
-  toggleBookmark(post: Post) {
-    post.toggleBookmark();
-  
-    this.feedService.toggleBookmark(post.postId).subscribe({
-      next: () => {
-          this.toast.success("bookmarks updated!","")
-      },
-      error: (err: HttpErrorResponse) => {
-        console.error('bookmark failed', err);
+toggleLike(post: Post) {
+  const prevLiked = post.isLiked;
+  const prevCount = post.likesCount;
 
-        post.toggleBookmark();
+  post.toggleLike(); // optimistic UI
+
+  this.feedService.toggleLike(post.postId).subscribe({
+    next: () => {
+      // SUCCESS → show optional toast
+      this.toast.success("Updated", "");
+    },
+
+    error: (err: HttpErrorResponse) => {
+      console.error("Like failed", err);
+
+      // rollback
+      post.isLiked = prevLiked;
+      post.likesCount = prevCount;
+
+      if (err.status === 404) {
+        this.removePost(post.postId);
+        this.toast.info("Post was deleted by the user", "");
+        return;
       }
-    });
-  }
 
-  // Called for both top-level comments AND replies
+      this.toast.error("Failed to update like", "");
+    }
+  });
+}
+
+toggleBookmark(post: Post) {
+  const prev = post.isBookmarked;
+
+  post.toggleBookmark();
+
+  this.feedService.toggleBookmark(post.postId).subscribe({
+    next: () => {
+      this.toast.success("Bookmark updated", "");
+    },
+
+    error: (err: HttpErrorResponse) => {
+      console.error(err);
+
+      post.isBookmarked = prev;
+
+      if (err.status === 404) {
+        this.removePost(post.postId);
+        this.toast.info("Post removed by the user", "");
+        return;
+      }
+
+      this.toast.error("Bookmark failed", "");
+    }
+  });
+}
+removePost(postId: string) {
+  this.posts = this.posts.filter(p => p.postId !== postId);
+}
+
 replyTo(comment: Comment, parentComment?: Comment) {
   if (parentComment) {
     
@@ -370,12 +418,26 @@ addReply(comment: Comment, content: string) {
 
 
 deleteComment(comment: Comment) {
-  this.commentService.deleteComment(comment.commentId).subscribe(() => {
-    // Find which post owns this comment and remove it
-    const post = this.posts.find(p => p.postId === comment.postId);
-    if (post) {
-      post.comments = post.comments.filter(c => c.commentId !== comment.commentId);
-      post.commentsCount--;
+  this.commentService.deleteComment(comment.commentId).subscribe({
+    next: () => {
+      const post = this.posts.find(p => p.postId === comment.postId);
+
+      if (post) {
+        post.comments = post.comments.filter(c => c.commentId !== comment.commentId);
+        post.commentsCount--;
+      }
+
+      this.toast.success("Comment deleted", "");
+    },
+
+    error: (err: HttpErrorResponse) => {
+      if (err.status === 404) {
+        
+        this.toast.info("Comment already removed", "");
+        return;
+      }
+
+      this.toast.error("Failed to delete comment", "");
     }
   });
 }
