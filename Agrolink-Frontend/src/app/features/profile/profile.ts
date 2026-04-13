@@ -7,11 +7,11 @@ import { ActivatedRoute } from '@angular/router';
 import { environment } from '../../../environments/environments';
 import { Injectable, inject } from '@angular/core';
 import { ToastService } from '../../shared/toast/toast.service';
-
+import { Spinner } from '../../shared/spinner/spinner';
 @Component({
   selector: 'app-profile',
   standalone: true,
-  imports: [FormsModule, ReactiveFormsModule, CommonModule, RouterLink],
+  imports: [FormsModule, ReactiveFormsModule, CommonModule, RouterLink,Spinner],
   templateUrl: './profile.html',
   styleUrl: './profile.css',
 })
@@ -29,6 +29,7 @@ export class Profile implements OnInit {
   proofFile: File | null = null;
   proofFileError = '';
   apiurl: string = environment.apiUrl;
+  isloading =false;
 
   readonly MAX_FILE_SIZE = 5 * 1024 * 1024;
   readonly ALLOWED_TYPES = ['application/pdf', 'image/jpeg', 'image/jpg', 'image/png'];
@@ -215,14 +216,16 @@ export class Profile implements OnInit {
 
     if (this.profileImageFile) formData.append('ProfileImage', this.profileImageFile);
     if (this.backgroundImageFile) formData.append('BackgroundImage', this.backgroundImageFile);
-
+this.isloading=true;
     this.profile.UpdateProfile(formData).subscribe({
       next: () => { 
         this.toast.success("profile updated successfully!","");
+        this.isloading=false;
         console.log(userId);
         this.router.navigate(['/userProfile/' + userId]); },
       error: (err) => {
         console.error('Validation errors:', JSON.stringify(err.error?.errors, null, 2));
+        this.isloading = false;
           this.toast.error("profile failed to update!","try again later!");
         alert('Failed to update profile');
       }

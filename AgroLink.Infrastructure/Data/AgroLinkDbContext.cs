@@ -23,6 +23,15 @@ public class AgroLinkDbContext(DbContextOptions<AgroLinkDbContext> options) : Db
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
+        
+        modelBuilder.Entity<User>()
+            .HasIndex(u => u.Email)
+            .IsUnique();
+
+        // PROFILE PHONE UNIQUE
+        modelBuilder.Entity<Profile>()
+            .HasIndex(p => p.PhoneNumber)
+            .IsUnique();
 
         // =========================
         // USER → PROFILE

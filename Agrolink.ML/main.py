@@ -25,7 +25,7 @@ class Fertilizer(BaseModel):
 
 class CropResult(BaseModel):
     crop: str
-    crop_prob: float
+    
     yield_: float
     fertilizers: List[Fertilizer]
 

@@ -6,11 +6,12 @@ import { FormGroup, FormBuilder, FormsModule, Validators, ReactiveFormsModule } 
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { Injectable, inject } from '@angular/core';
+import { Spinner } from '../../shared/spinner/spinner';
 import { ToastService } from '../../shared/toast/toast.service';
 
 @Component({
   selector: 'app-signup',
-  imports: [FormsModule, RouterLink, ReactiveFormsModule, CommonModule],
+  imports: [FormsModule, RouterLink, ReactiveFormsModule, CommonModule,Spinner],
   templateUrl: './signup.html',
   styleUrl: './signup.css',
 })
@@ -19,6 +20,7 @@ export class Signup implements OnInit {
   signupForm!: FormGroup;
   showPassword = false;
   showConfirmPassword = false;
+  isloading = false;
    private toast = inject(ToastService);
   constructor(
     private fb: FormBuilder,
@@ -91,17 +93,22 @@ export class Signup implements OnInit {
     dto.Password = this.signupForm.value.Password;
     dto.UserType = 'user';
    
-
+this.isloading=true;
     this.auth.signup(dto).subscribe({
       next: res => {
         const currentUserID = res.userid;
         this.toast.info("User details saved!","");
+        this.isloading = false;
         this.router.navigate(['/buildProfile', currentUserID]);
       },
       error: err => {
         console.error(err);
-          this.toast.error("could not sign in, please try again!","");
-        this.router.navigate(['/']);
+        this.isloading=false;
+              const message =
+          err?.error?.message || "Email already exists!. Please try again.";
+
+        this.toast.error(message, "");
+        
       }
     });
   }

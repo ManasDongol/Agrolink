@@ -39,25 +39,18 @@ public class NetworkController(NetworkService networkService) : ControllerBase
         }
     }
 
+  
     [HttpPost("connect/{targetUserId}")]
     public async Task<IActionResult> SendConnectionRequest(Guid targetUserId)
     {
-        try
-        {
-            var userId = GetCurrentUserId();
-            var result = await networkService.SendConnectionRequestAsync(userId, targetUserId);
-           
-            if (!result) return BadRequest(new { message = "Request already pending or users already connected" });
-            return Ok(new { message = "Connection request sent" });
-        }
-        catch (UnauthorizedAccessException ex)
-        {
-            return Unauthorized(new { message = ex.Message });
-        }
-        catch (Exception ex)
-        {
-            return StatusCode(500, new { message = "Error sending request", error = ex.Message });
-        }
+        var userId = GetCurrentUserId();
+
+        var result = await networkService.SendConnectionRequestAsync(userId, targetUserId);
+
+        if (result == null)
+            return BadRequest(new { message = "Already connected or request exists" });
+
+        return Ok(result);
     }
 
     [HttpPost("accept/{requestId}")]
@@ -67,7 +60,10 @@ public class NetworkController(NetworkService networkService) : ControllerBase
         {
             var userId = GetCurrentUserId();
             var result = await networkService.AcceptConnectionRequestAsync(userId, requestId);
-            if (!result) return BadRequest(new { message = "Request not found or invalid" });
+            if (!result)
+                return Ok(new { message = "Already processed or withdrawn" });
+
+
             return Ok(new { message = "Connection request accepted" });
         }
         catch (UnauthorizedAccessException ex)
@@ -89,8 +85,11 @@ public class NetworkController(NetworkService networkService) : ControllerBase
         {
             var userId = GetCurrentUserId();
             var result = await networkService.RejectConnectionRequestAsync(userId, requestId);
-            if (!result) return BadRequest(new { message = "Request not found or invalid" });
-            return Ok(new { message = "Connection request accepted" });
+            if (!result)
+                return Ok(new { message = "Already processed or withdrawn" });
+
+          
+            return Ok(new { message = "Connection request rejected" });
         }
         catch (UnauthorizedAccessException ex)
         {
@@ -98,8 +97,7 @@ public class NetworkController(NetworkService networkService) : ControllerBase
         }
         catch (Exception ex)
         {
-            return StatusCode(500, new { message = "Error accepting request", error = ex.Message });
-        }
+            return StatusCode(500, new { message = "Error rejecting request", error = ex.Message });      }
     }
 
     [HttpGet("{userid}/all")]
@@ -119,7 +117,8 @@ public class NetworkController(NetworkService networkService) : ControllerBase
         {
             var userId = GetCurrentUserId();
             var result = await networkService.WithdrawConnectionRequestAsync(userId, requestID);
-            if (!result) return BadRequest(new { message = "Request not found or already accepted" });
+            if (!result)
+                return Ok(new { message = "Already processed or withdrawn" });
             return Ok(new { message = "Connection request withdrawn" });
         }
         catch (UnauthorizedAccessException ex)

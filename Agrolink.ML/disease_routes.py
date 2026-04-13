@@ -13,7 +13,7 @@ async def predict(file: UploadFile = File(...)):
     try:
         contents = await file.read()
 
-        # Validate it's actually an image (content_type can be None from some proxies)
+        # Validate it's actually an image
         try:
             image = Image.open(io.BytesIO(contents)).convert("RGB")
         except Exception:

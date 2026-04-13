@@ -6,6 +6,7 @@ using AgroLink.Application.Interfaces.Emails;
 using AgroLink.Domain.Entities;
 using AgroLink.Infrastructure.Repositories;
 using AgroLink.Infrastructure.Repositories.Auth;
+using Microsoft.EntityFrameworkCore;
 
 namespace AgroLink.Application.Services;
 
@@ -44,34 +45,33 @@ public class AuthService(UserRepo userRepo, HashingService hashingService,TokenS
     
     
     // no tokens generated during registration i nneed to redirect to login
-    public async Task<RegisterResponseDto> RegisterUser(RegisterRequestDto  registerDto)
+    public async Task<RegisterResponseDto?> RegisterUser(RegisterRequestDto registerDto)
     {
-        var username=registerDto.Username;
-        var email=registerDto.Email;
-       
-        var Hashresponse = hashingService.hash(registerDto.Username,registerDto.Password);
+        try
+        {
+            var hashResponse = hashingService.hash(registerDto.Username, registerDto.Password);
 
-        var password = Hashresponse.hashedPassword;
-       var storedSalt = Hashresponse.salt;
-       
-     
-        var user = new User
-        {
-            Username = registerDto.Username,
-            Email = registerDto.Email,
-            Password = password,
-            salt = storedSalt,
-            UserType = registerDto.UserType
-        };
-        var result = await userRepo.RegisterUser(user);
-        if (result != null)
-        {
-            return new RegisterResponseDto(registerDto,result.UserId,"User created successfully!");
+            var user = new User
+            {
+                Username = registerDto.Username,
+                Email = registerDto.Email,
+                Password = hashResponse.hashedPassword,
+                salt = hashResponse.salt,
+                UserType = registerDto.UserType
+            };
+
+            var result = await userRepo.RegisterUser(user);
+
+            return new RegisterResponseDto(registerDto, result.UserId, "User created successfully");
         }
+        catch (DbUpdateException ex)
+        {
+            // uniqueness violation
+            if (ex.InnerException?.Message.Contains("UNIQUE") == true)
+                return null;
 
-        return null;
-
-
+            throw;
+        }
     }
 
     

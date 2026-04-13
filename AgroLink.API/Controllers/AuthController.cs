@@ -46,15 +46,18 @@ public class AuthController(IAuthService authService, UserRepo UserRepo, Hashing
     }
 
     [HttpPost("signup")]
-    public async Task<IActionResult> SignupUser([FromBody] RegisterRequestDto dto)
+    public async Task<IActionResult> SignupUser(RegisterRequestDto dto)
     {
-        RegisterResponseDto? result = await authService.RegisterUser(dto);
+        var result = await authService.RegisterUser(dto);
 
         if (result == null)
-            return BadRequest(new { message = "Username or email already exists" });
+            return Conflict(new { message = "email already exists" });
 
-        Console.WriteLine(result.userID);
-        return Ok(new { message = "Signup successful" ,userid = result.userID});
+        return Ok(new
+        {
+            message = result.Message,
+            userid = result.userID
+        });
     }
     
     [HttpPost("logout")]

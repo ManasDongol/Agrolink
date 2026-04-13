@@ -155,10 +155,10 @@ public class NetworkService(AgroLinkDbContext context,INotificationService _noti
         TotalPages = (int)Math.Ceiling(totalUsers / (double)pageSize)
     };
 }
-    public async Task<bool> SendConnectionRequestAsync(Guid currentUserId, Guid targetUserId)
+    public async Task<SendConnectionRequestResponseDto?> SendConnectionRequestAsync(Guid currentUserId, Guid targetUserId)
     {
         bool exists = await context.Connections.AnyAsync(c => (c.UserID == currentUserId && c.ConnectionUserId == targetUserId) || (c.UserID == targetUserId && c.ConnectionUserId == currentUserId));
-        if (exists) return false;
+        if (exists) return null;
 
         var reverseRequest = await context.ConnectionRequests.FirstOrDefaultAsync(r => 
             r.UserID == targetUserId && 
@@ -178,7 +178,13 @@ public class NetworkService(AgroLinkDbContext context,INotificationService _noti
 
             context.ConnectionRequests.Remove(reverseRequest);
             await context.SaveChangesAsync();
-            return true; // autoConnected = true
+           
+            return new SendConnectionRequestResponseDto
+            {
+                RequestId = reverseRequest.ConnectionRequestID,
+                SentDate = DateTime.UtcNow,
+                AutoConnected = true
+            }; // autoConnected = true
         }
 
         var request = new ConnectionRequests
@@ -203,46 +209,52 @@ public class NetworkService(AgroLinkDbContext context,INotificationService _noti
             );
         }
        
-        return true;
+        return new SendConnectionRequestResponseDto
+        {
+            RequestId = request.ConnectionRequestID,
+            SentDate = request.SentDate,
+            AutoConnected = false
+        };
     }
 
     public async Task<bool> AcceptConnectionRequestAsync(Guid currentUserId, Guid requestId)
     {
-        var request = await context.ConnectionRequests.FirstOrDefaultAsync(r => r.ConnectionRequestID == requestId && r.ConnectionUserId == currentUserId);
-        if (request == null) return false;
+        var request = await context.ConnectionRequests
+            .FirstOrDefaultAsync(r =>
+                r.ConnectionRequestID == requestId &&
+                r.ConnectionUserId == currentUserId);
+
+        if (request == null)
+            return false; // already withdrawn or processed
+
+        // prevent double processing
+        if (request.Accepted)
+            return false;
 
         request.Accepted = true;
-        
-        var connection = new Connections
+
+        context.Connections.Add(new Connections
         {
-            UserID = request.UserID, 
-            ConnectionUserId = currentUserId, 
+            UserID = request.UserID,
+            ConnectionUserId = currentUserId,
             AceeptedDate = DateTime.UtcNow
-        };
-        
-        context.Connections.Add(connection);
+        });
+
+        context.ConnectionRequests.Remove(request);
+
         await context.SaveChangesAsync();
-        
-        
-        var user = await context.Users.FirstOrDefaultAsync(u => u.UserId == currentUserId);
-          if (user != null)
-        {
-            _notifications.SendNotificationAsync(
-                recipientUserId: request.UserID,
-                message: $"{user.Username} accepted your connection request!",
-                senderUserId: currentUserId
-            );
-        }
         return true;
     }
     
     public async Task<bool> RejectConnectionRequestAsync(Guid currentUserId, Guid requestId)
     {
         var request = await context.ConnectionRequests
-            .FirstOrDefaultAsync(r => r.ConnectionRequestID == requestId 
-                                      && r.ConnectionUserId == currentUserId);
+            .FirstOrDefaultAsync(r =>
+                r.ConnectionRequestID == requestId &&
+                r.ConnectionUserId == currentUserId);
 
-        if (request == null) return false;
+        if (request == null)
+            return false;
 
         context.ConnectionRequests.Remove(request);
 
@@ -323,4 +335,11 @@ public class NetworkService(AgroLinkDbContext context,INotificationService _noti
         await context.SaveChangesAsync();
         return true;
     }
+}
+
+public class SendConnectionRequestResponseDto
+{
+    public Guid RequestId { get; set; }
+    public DateTime SentDate { get; set; }
+    public bool AutoConnected { get; set; }
 }

@@ -79,19 +79,36 @@ onButtonClick(event: Event, user: any) {
 
 confirmWithdraw() {
   if (!this.pendingWithdrawRequest) return;
+
   const req = this.pendingWithdrawRequest;
 
   this.networkService.withdrawRequest(req.requestId).subscribe({
-    next: () => {
-      this.sentrequests = this.sentrequests.filter(r => r.requestId !== req.requestId);
-      this.networkService.removeSentRequest(req.toUserId);
+    next: (res) => {
+
+      // always update UI (whether real or already processed)
+      this.sentrequests = this.sentrequests.filter(
+        r => r.requestId !== req.requestId
+      );
+
       const user = this.users.find(u => u.userId === req.toUserId);
       if (user) user.isRequestSent = false;
 
-      this.toast.info("request withdrawn!","");
+      
+      if (res?.message?.includes("Already")) {
+        this.toast.info("Already processed", "");
+      } else {
+        this.toast.info("Request withdrawn", "");
+      }
+
       this.closeWithdrawModal();
     },
-    error: (err) => console.error(err)
+
+    error: (err) => {
+      console.error("WITHDRAW ERROR:", err);
+
+      this.toast.error("Failed to withdraw request", "");
+      this.closeWithdrawModal();
+    }
   });
 }
 
@@ -107,8 +124,7 @@ confirmWithdraw() {
           this.myProfile = data.myProfile;
           this.totalPages = data.totalPages;
           this.loading = false;
-          console.log(data.requests)
-          console.log(data.sentRequests)
+          
 
           this.networkService.updateConnectionState(data.sentRequests, data.users
   .filter(u => u.isConnected)
@@ -138,50 +154,78 @@ confirmWithdraw() {
 connect(user: NetworkUserDto) {
   if (user.isRequestSent || user.isConnected) return;
   this.networkService.sendConnectionRequest(user.userId).subscribe({
-    next: () => {
+    next: (res) => {
       user.isRequestSent = true;
-      this.networkService.addSentRequest(user.userId);
+      
+  
+      const newRequest: SentRequestDto = {
+        requestId: res.requestId,
+        toUserId: user.userId,
+        toUserName: user.username,
+        toUserRole: user.role,
+        toUserProfilePicture: user.profilePicture,
+        sentDate: new Date()
+      };
+
+      this.sentrequests = [newRequest, ...this.sentrequests];
+
+       this.toast.success("Request sent!", "");
+       
     },
-    error: (err) => console.error(err)
+    error: (err) =>  this.toast.error("failed to send please try again later !", "")
   });
 }
 
-withdrawRequest(req: SentRequestDto) {
-  this.networkService.withdrawRequest(req.requestId).subscribe({
-    next: () => {
-      this.sentrequests = this.sentrequests.filter(r => r.requestId !== req.requestId);
-      this.networkService.removeSentRequest(req.toUserId);
-      // also update users list
-      const user = this.users.find(u => u.userId === req.toUserId);
-      if (user) user.isRequestSent = false;
-    },
-    error: (err) => console.error(err)
-  });
-}
 
-  accept(req: ConnectionRequestDto) {
-    this.networkService.acceptRequest(req.requestId).subscribe({
-      next: () => {
-        this.requests = this.requests.filter(r => r.requestId !== req.requestId);
+  
+
+accept(req: ConnectionRequestDto) {
+  this.networkService.acceptRequest(req.requestId).subscribe({
+    next: (res) => {
+
+      // always remove from UI
+      this.requests = this.requests.filter(
+        r => r.requestId !== req.requestId
+      );
+
+      // update connection count ONLY if real accept
+      if (!res?.message?.includes("Already")) {
         if (this.myProfile) this.myProfile.connectionCount++;
-        this.toast.success("Request accepted!","");
-      },
-      error: (err) => {
-        console.error(err);
-         this.toast.error("unable to accept request!","the user may have withdrawn the request !");
+        this.toast.success("Request accepted!", "");
+      } else {
+        this.toast.info("Already processed", "");
       }
-    });
-  }
+    },
+
+    error: (err) => {
+      console.error(err);
+      this.toast.error("Failed to accept request", "");
+    }
+  });
+}
 
   reject(req: ConnectionRequestDto) {
-    this.networkService.rejectRequest(req.requestId).subscribe({
-      next: () => {
-        this.requests = this.requests.filter(r => r.requestId !== req.requestId);
-        if (this.myProfile) this.myProfile.connectionCount--;
-      },
-      error: (err) => console.error(err)
-    });
-  }
+  this.networkService.rejectRequest(req.requestId).subscribe({
+    next: (res) => {
+
+      // always remove from UI
+      this.requests = this.requests.filter(
+        r => r.requestId !== req.requestId
+      );
+
+      if (!res?.message?.includes("Already")) {
+        this.toast.info("Request rejected", "");
+      } else {
+        this.toast.info("Already processed", "");
+      }
+    },
+
+    error: (err) => {
+      console.error(err);
+      this.toast.error("Failed to reject request", "");
+    }
+  });
+}
 
   
 

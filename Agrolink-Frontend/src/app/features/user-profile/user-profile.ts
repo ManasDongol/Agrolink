@@ -38,6 +38,7 @@ export class UserProfile implements OnInit, OnDestroy {
   isOwnProfile: boolean = false;
   requestSent: boolean = false;
   connectionExists: boolean = false;
+  isSendingRequest: boolean = false;
 
   userposts: Post[] = [];
   activeTab: 'about' | 'posts' | 'connections' = 'about';
@@ -178,7 +179,7 @@ private loadExtras(id: string) {
     })
     .pipe(
       finalize(() => {
-        this.loading = false; // 🔥 ALWAYS runs
+        this.loading = false; // ALWAYS runs
       }),
       catchError(err => {
         console.error(err);
@@ -203,13 +204,16 @@ private loadExtras(id: string) {
 
   sendConnection() {
     const routeId = this.route.snapshot.paramMap.get('id')!;
+      this.isSendingRequest = true;
     this.networkService.sendConnectionRequest(routeId).subscribe({
       next: () => {
-      
+      this.isSendingRequest = false;
         this.networkService.addSentRequest(routeId);
+        
           this.toast.success('request sent successfully!', '');
       },
       error: (err) =>{
+        this.isSendingRequest = false;
  console.error(err);
     this.toast.error('unsuccessful request!', 'please try sending the request later!');
       }
@@ -218,6 +222,7 @@ private loadExtras(id: string) {
 
   confirmWithdraw(): void {
     this.loading = true;
+     if (this.isSendingRequest) return;
     const routeId = this.route.snapshot.paramMap.get('id')!;
     this.networkService.withdrawRequestByReceiverId(routeId).subscribe({
       next: () => {

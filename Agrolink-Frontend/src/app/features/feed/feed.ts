@@ -8,6 +8,9 @@ import { environment } from '../../../environments/environments';
 import { HttpErrorResponse } from '@angular/common/http';
 import { Auth } from '../../core/Services/Auth/auth';
 import {CommentService} from './Comments/comment.service';
+import { inject } from '@angular/core';
+
+import { ToastService } from '../../shared/toast/toast.service';
 
 
 @Component({
@@ -21,7 +24,7 @@ import {CommentService} from './Comments/comment.service';
 export class Feed implements OnInit {
 
   posts: Post[] = [];
-  
+  private toast = inject(ToastService)
  currentView: 'all' | 'my' | 'bookmarks' = 'all';
   currentPage: number = 1;
   pageSize: number = 10;
@@ -188,12 +191,13 @@ this.currentpostId=postId;
         this.toggleNewPost = false;
         this.editingPost = null;
 
-
+        this.toast.success("Post updated successfully","")
        
         this.loadPosts();
         setTimeout(() => this.successMessage = '', 3000);
       },
       error: (err) => {
+            this.toast.error("update failed please try again!","")
         console.error('Error updating post', err);
         this.isLoading = false;
       }
@@ -206,12 +210,16 @@ this.currentpostId=postId;
         this.successMessage = "Post created successfully!";
         this.toggleNewPost = false;
          this.resetForm();
-        this.loadPosts();
+        const createdPost = new Post(newPost);
+this.posts = [createdPost, ...this.posts];
+
+this.loadPosts();
+
         setTimeout(() => this.successMessage = '', 3000);
+        
       },
       error: (err) => {
-        console.error('Error creating post', err);
-        console.log(JSON.stringify(err.error, null, 2));
+           this.toast.error("failed to create post","")
         this.isLoading = false;
       }
     });
@@ -313,7 +321,7 @@ toggleLike(post: Post) {
   
     this.feedService.toggleBookmark(post.postId).subscribe({
       next: () => {
-    
+          this.toast.success("bookmarks updated!","")
       },
       error: (err: HttpErrorResponse) => {
         console.error('bookmark failed', err);

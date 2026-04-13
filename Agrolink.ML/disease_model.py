@@ -23,7 +23,7 @@ processor = transforms.Compose([
 
 print("[AgroLink] Loading disease model...")
 
-# Download model weights and labels — cached after first run
+
 model_path = hf_hub_download(
     repo_id=MODEL_REPO,
     filename="crop_veg_plant_disease_model.pth"
@@ -33,7 +33,7 @@ labels_path = hf_hub_download(
     filename="class_mapping.json"
 )
 
-# Build ResNet50 with custom classifier (2048 -> 512 -> 94)
+
 model = models.resnet50(weights=None)
 model.fc = torch.nn.Sequential(
     torch.nn.Linear(2048, 512),
@@ -51,7 +51,7 @@ if isinstance(state_dict, dict) and "model_state_dict" in state_dict:
 elif isinstance(state_dict, dict) and "state_dict" in state_dict:
     state_dict = state_dict["state_dict"]
 
-# Strip "module." prefix added by DataParallel training
+
 state_dict = {
     k.replace("module.", "", 1): v
     for k, v in state_dict.items()
@@ -61,7 +61,7 @@ model.load_state_dict(state_dict)
 model.to(device)
 model.eval()
 
-# Load class label mapping { "0": "Tomato___Late_blight", ... }
+#
 with open(labels_path, "r") as f:
     class_mapping = json.load(f)
 

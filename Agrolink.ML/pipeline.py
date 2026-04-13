@@ -116,28 +116,28 @@ def route_query(query, top_k=3, distance_threshold=0.9):
 def run_pipeline(query: str, session_id: str = "default") -> str:
     print("Query:", query)
 
-    # ─── 1. GIBBERISH CHECK ───
+    # GIBBERISH CHECK ───
     if is_gibberish(query):
         return "Could not understand, please try again."
 
-    # ─── 2. SESSION INIT ───
+    #  SESSION INIT ───
     if session_id not in session_state:
         session_state[session_id] = {"crop": None}
 
     state = session_state[session_id]
 
-    # ─── 3. CROP DETECTION + LOCK ───
+   #CROP DETECTION + LOCK 
     detected_crop = detect_crop(query)
     if detected_crop:
         state["crop"] = detected_crop
 
-    # ─── 4. DOMAIN SELECTION ───
+    #  DOMAIN SELECTION ───
     if state["crop"] and state["crop"] in domain_indexes:
         domains_to_search = [state["crop"]]
     else:
         domains_to_search = route_query(query)
 
-    # ─── 5. RETRIEVAL ───
+    #  RETRIEVAL ───
     all_results = []
 
     for domain in domains_to_search:
@@ -152,7 +152,7 @@ def run_pipeline(query: str, session_id: str = "default") -> str:
     if not all_results:
         return "No relevant information found."
 
-    # ─── 6. CLEAN + SORT ───
+    #  CLEAN + SORT ───
     all_results.sort(key=lambda x: x["distance"])
 
     seen_texts = set()
