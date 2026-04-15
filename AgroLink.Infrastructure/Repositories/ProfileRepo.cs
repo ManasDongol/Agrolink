@@ -55,9 +55,22 @@ public class ProfileRepo(AgroLinkDbContext dbContext)
         }
     }
 
+    public async Task RejectProfile(Guid userid)
+    {
+        var profile = await dbContext.Profiles.FirstOrDefaultAsync(p => p.UserId==userid);
+
+        if (profile != null)
+        {
+            profile.isChecked = true;
+            await dbContext.SaveChangesAsync();
+        }
+    }
+    
+
+
     public async Task<List<Profile>> GetAllProfiles()
     {
-        var profiles = await dbContext.Profiles.Where(x=>!x.isVerified && x.Proof!=null).ToListAsync();
+        var profiles = await dbContext.Profiles.Where(x=>!x.isVerified && x.Proof!=null && !x.isChecked).ToListAsync();
         return profiles;
     }
 }

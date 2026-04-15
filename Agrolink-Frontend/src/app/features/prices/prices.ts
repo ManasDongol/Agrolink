@@ -31,10 +31,6 @@ export class Prices {
     
     private cropService: CropService
   ) {}
-
-
-  
-
 ngOnInit() {
   this.isLoading = true;
   this.SearchControl = new FormControl('');

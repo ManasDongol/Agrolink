@@ -123,7 +123,6 @@ private toast = inject(ToastService);
     this.scrollToBottom();
   }
 
-  //  Guard added — never opens if id is missing
   selectConversation(conv: Conversation, index: number) {
     if (!conv?.id) {
       console.error('selectConversation: conv.id is missing', conv);

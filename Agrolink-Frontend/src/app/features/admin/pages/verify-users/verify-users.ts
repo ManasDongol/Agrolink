@@ -1,7 +1,7 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit,inject } from '@angular/core';
 import { AdminService, UnverifiedUser } from '../../../../core/Services/Admin/admin.service';
 import { environment } from '../../../../../environments/environments';
-
+import { ToastService } from '../../../../shared/toast/toast.service';
 @Component({
   selector: 'app-verify-users',
   standalone: false,
@@ -17,6 +17,8 @@ export class VerifyUsers implements OnInit {
   showVerifyConfirm = false;
   showRejectConfirm = false;
   pendingUserId: string | null = null;
+
+   toast = inject(ToastService);
   isProcessing = false;
 
   constructor(private adminService: AdminService) {}
@@ -31,10 +33,13 @@ export class VerifyUsers implements OnInit {
       next: (users) => {
         this.users = users;
         this.loading = false;
+        this.toast.success("Users loaded successfully","");
+        
       },
       error: () => {
         this.error = 'Unable to load pending verifications.';
         this.loading = false;
+        this.toast.error("failed to load users, try again","");
       },
     });
   }
@@ -63,9 +68,11 @@ export class VerifyUsers implements OnInit {
         this.users = this.users.filter(u => u.userId !== this.pendingUserId);
         this.cancelAction();
         this.isProcessing = false;
+        this.toast.success("user verified!","");
       },
       error: () => {
         this.isProcessing = false;
+          this.toast.error("user couldnt be verified!","");
       },
     });
   }
@@ -78,9 +85,11 @@ export class VerifyUsers implements OnInit {
         this.users = this.users.filter(u => u.userId !== this.pendingUserId);
         this.cancelAction();
         this.isProcessing = false;
+         this.toast.success("user rejected!","");
       },
       error: () => {
         this.isProcessing = false;
+          this.toast.error("user couldn't be rejected!","");
       },
     });
   }

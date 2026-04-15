@@ -21,6 +21,7 @@ public class Profile
     public string ProfileBackground { get; set; }
     public string? Proof { get; set; }
     public bool isVerified { get; set; } = false;
+    public bool isChecked {get; set;} = false;
     public string Description { get; set; }
     public string Achievement { get; set; }
     //nav properties 

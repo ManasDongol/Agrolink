@@ -114,6 +114,11 @@ public class ProfileService(ProfileRepo profileRepo)
     {
         await profileRepo.VerifyProfile(UserId);
     }
+    
+    public async Task RejectProfile(Guid UserId)
+    {
+        await profileRepo.RejectProfile(UserId);
+    }
 
     public async Task<List<ProfileResponseDto>> GetProfiles()
     {

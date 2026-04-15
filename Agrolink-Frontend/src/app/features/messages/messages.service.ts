@@ -66,7 +66,7 @@ get onMessageError$() { return this.messageError$.asObservable(); }
 
        const cached = this.messagesMap.get(convId)!;
 
-  // 👇 skip if already exists
+  //  skip if already exists
   if (cached.some(m => m.messageId === message.messageId)) return;
         this.messagesMap.get(convId)!.push(message);
         if (convId === this.currentConversationId) {

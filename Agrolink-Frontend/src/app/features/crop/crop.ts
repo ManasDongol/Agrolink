@@ -34,14 +34,11 @@ export class Crop implements OnInit {
   crop: string = "";
   fertilizer: string ="";
   priceList : WebscraperDataDto[] = [];
-
   RecomendationForm!: FormGroup;
   SearchControl !: FormControl;
   loading:Boolean = false;
  results: CropResult[] = [];
-
   isLoading : boolean = false;
-
   newRecommendationGenerated : boolean = false;
 
   constructor(
@@ -50,12 +47,8 @@ export class Crop implements OnInit {
   ) {}
 
   ngOnInit(): void {
-
     this.isLoading = true;
-
     this.SearchControl = new FormControl('');
-
-
     this.RecomendationForm = this.fb.group({
       Nitrogen: [0, Validators.required],
       Potassium: [0, Validators.required],

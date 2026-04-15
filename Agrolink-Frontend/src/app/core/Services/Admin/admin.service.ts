@@ -143,7 +143,7 @@ export class AdminService {
   }
 
   rejectUser(id: string) {
-    return this.http.post(
+    return this.http.put(
       `${this.baseUrl}/verify-users/${id}/reject`,
       {},
       { withCredentials: true }

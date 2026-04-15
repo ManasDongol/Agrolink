@@ -603,31 +603,40 @@
 .verified-badge {
   display: inline-flex;
   align-items: center;
-  gap: 4px;
-  font-size: 11px;
+  gap: 6px;
+  font-size: 12px;
   font-weight: 500;
-  color: #0f6e56;
-  background: #e1f5ee;
-  border: 1px solid #5dcaa5;
-  border-radius: 20px;
-  padding: 2px 8px;
+  color: #15803d; /* darker green text */
+  background: #dcfce7; /* soft green background */
+  border: none; /* remove harsh border */
+  border-radius: 999px;
+  padding: 4px 10px;
   margin-top: 4px;
 }
 
-.verified-badge svg { stroke: #0f6e56; flex-shrink: 0; }
-
+.verified-badge svg {
+  stroke: #16a34a;
+  width: 14px;
+  height: 14px;
+  flex-shrink: 0;
+}
 .unverified-badge {
   display: inline-flex;
   align-items: center;
-  gap: 4px;
-  font-size: 11px;
+  gap: 6px;
+  font-size: 12px;
   font-weight: 500;
-  color: #f2f2f2;
-  background: #868686;
-  border: 1px solid #5e5e5e;
-  border-radius: 20px;
-  padding: 2px 8px;
+  color: #525252; /* neutral text */
+  background: #f5f5f5; /* light grey bg */
+  border: none;
+  border-radius: 999px;
+  padding: 4px 10px;
   margin-top: 4px;
 }
 
-.unverified-badge svg { stroke: #92400e; flex-shrink: 0; }
+.unverified-badge svg {
+  stroke: #9ca3af; /* soft grey icon */
+  width: 14px;
+  height: 14px;
+  flex-shrink: 0;
+}

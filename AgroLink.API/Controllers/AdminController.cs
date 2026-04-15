@@ -82,6 +82,13 @@ public class AdminController(
         await service.VerifyProfile(userId);
         return NoContent();
     }
+    
+    [HttpPut("verify-users/{userId}/reject")]
+    public async Task<IActionResult> rejectUserProfile([FromRoute] Guid userId)
+    {
+        await service.VerifyProfile(userId);
+        return NoContent();
+    }
 
     [HttpGet("get-profiles")]
     public async Task<IActionResult> getUserProfile()

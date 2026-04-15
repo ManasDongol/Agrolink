@@ -509,7 +509,6 @@
   color: var(--color-text-secondary);
 }
 
-/* Wrap existing input + buttons in a row */
 .input-row {
 display: flex;
 flex-direction: row;
