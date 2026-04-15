@@ -1,7 +1,8 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { AdminService, AdminPostFull } from '../../../../core/Services/Admin/admin.service';
 import { environment } from '../../../../../environments/environments';
 import { PostResponse } from '../../../feed/feed.models';
+import { ToastService } from '../../../../shared/toast/toast.service';
 
 @Component({
   selector: 'app-manage-posts',
@@ -21,6 +22,7 @@ export class ManagePosts implements OnInit {
   showDeleteConfirm = false;
   pendingDeleteId: string | null = null;
   isDeleting = false;
+   toast = inject(ToastService);
 
   constructor(private adminService: AdminService) {}
 
@@ -34,9 +36,12 @@ export class ManagePosts implements OnInit {
       next: (posts) => {
         this.posts = posts;
         this.loading = false;
+         this.toast.success("admins loaded successfully!","");
+        
       },
       error: () => {
         this.error = 'Unable to load posts.';
+         this.toast.error("admins could not be loaded, try again later!","");
         this.loading = false;
       },
     });
@@ -61,9 +66,11 @@ export class ManagePosts implements OnInit {
         this.pendingDeleteId = null;
         this.showDeleteConfirm = false;
         this.isDeleting = false;
+         this.toast.success("post deleted successfully!","");
       },
       error: () => {
         this.isDeleting = false;
+         this.toast.error("post could not be deleted,try again later!","");
       },
     });
   }

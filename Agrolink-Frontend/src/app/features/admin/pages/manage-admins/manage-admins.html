@@ -24,6 +24,144 @@
   </div>
 }
 
+<!-- Add Admin modal -->
+@if(showAddAdmin) {
+  <div class="modal-backdrop">
+    <div class="modal-box modal-box-wide">
+      <div class="modal-header">
+        <div class="modal-icon-success">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/>
+            <circle cx="9" cy="7" r="4"/>
+            <line x1="19" y1="8" x2="19" y2="14"/>
+            <line x1="22" y1="11" x2="16" y2="11"/>
+          </svg>
+        </div>
+        <h3>Add New Admin</h3>
+      </div>
+
+      <div class="add-form" [formGroup]="addAdminForm">
+        <div class="form-row">
+          <!-- Username -->
+          <div class="form-group">
+            <label class="form-label">Username</label>
+            <div class="input-wrapper" [class.input-error]="f['username'].invalid && f['username'].touched">
+              <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75">
+                <circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/>
+              </svg>
+              <input type="text" placeholder="Enter username" formControlName="username" />
+            </div>
+            @if(f['username'].invalid && f['username'].touched) {
+              <span class="form-error">
+                @if(f['username'].errors?.['required']) { Username is required }
+                @else if(f['username'].errors?.['minlength']) { Minimum 3 characters }
+              </span>
+            }
+          </div>
+
+          <!-- Email -->
+          <div class="form-group">
+            <label class="form-label">Email</label>
+            <div class="input-wrapper" [class.input-error]="f['email'].invalid && f['email'].touched">
+              <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75">
+                <rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-10 7L2 7"/>
+              </svg>
+              <input type="email" placeholder="Enter email" formControlName="email" />
+            </div>
+            @if(f['email'].invalid && f['email'].touched) {
+              <span class="form-error">
+                @if(f['email'].errors?.['required']) { Email is required }
+                @else if(f['email'].errors?.['email']) { Enter a valid email }
+              </span>
+            }
+          </div>
+        </div>
+
+        <div class="form-row">
+          <!-- Password -->
+          <div class="form-group">
+            <label class="form-label">Password</label>
+            <div class="input-wrapper" [class.input-error]="f['password'].invalid && f['password'].touched">
+              <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75">
+                <rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+              </svg>
+              <input [type]="showPassword ? 'text' : 'password'" placeholder="Enter password" formControlName="password" />
+              <button type="button" class="toggle-eye" (click)="showPassword = !showPassword">
+                @if(showPassword) {
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75">
+                    <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/>
+                    <path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/>
+                    <line x1="1" y1="1" x2="23" y2="23"/>
+                  </svg>
+                } @else {
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75">
+                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>
+                  </svg>
+                }
+              </button>
+            </div>
+            @if(f['password'].invalid && f['password'].touched) {
+              <span class="form-error">
+                @if(f['password'].errors?.['required']) { Password is required }
+                @else if(f['password'].errors?.['minlength']) { Minimum 8 characters }
+              </span>
+            }
+          </div>
+
+          <!-- Confirm Password -->
+          <div class="form-group">
+            <label class="form-label">Confirm Password</label>
+            <div class="input-wrapper" [class.input-error]="(f['confirmPassword'].invalid && f['confirmPassword'].touched) || (addAdminForm.errors?.['passwordMismatch'] && f['confirmPassword'].touched)">
+              <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75">
+                <rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+              </svg>
+              <input [type]="showConfirmPassword ? 'text' : 'password'" placeholder="Re-enter password" formControlName="confirmPassword" />
+              <button type="button" class="toggle-eye" (click)="showConfirmPassword = !showConfirmPassword">
+                @if(showConfirmPassword) {
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75">
+                    <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/>
+                    <path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/>
+                    <line x1="1" y1="1" x2="23" y2="23"/>
+                  </svg>
+                } @else {
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75">
+                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>
+                  </svg>
+                }
+              </button>
+            </div>
+            @if(f['confirmPassword'].touched && addAdminForm.errors?.['passwordMismatch']) {
+              <span class="form-error">Passwords do not match</span>
+            }
+            @else if(f['confirmPassword'].invalid && f['confirmPassword'].touched) {
+              <span class="form-error">Please confirm your password</span>
+            }
+          </div>
+        </div>
+
+        <!-- UserType badge (read-only indicator) -->
+        <div class="usertype-indicator">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75">
+            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+          </svg>
+          Role will be set to <strong>Admin</strong>
+        </div>
+      </div>
+
+      <div class="modal-actions">
+        <button class="btn-ghost" (click)="closeAddAdmin()" [disabled]="isAdding">Cancel</button>
+        <button class="btn-success" (click)="submitAddAdmin()" [disabled]="isAdding">
+          @if(isAdding) {
+            <span class="btn-spinner"></span> Adding...
+          } @else {
+            Add Admin
+          }
+        </button>
+      </div>
+    </div>
+  </div>
+}
+
 <!-- Page Content -->
 <div class="page-wrapper">
   <div class="page-header">
@@ -31,7 +169,15 @@
       <h2 class="page-title">Manage Admins</h2>
       <p class="page-subtitle">View and remove platform administrators</p>
     </div>
-    <div class="header-badge">{{ admins.length }} admins</div>
+    <div class="header-right">
+      <div class="header-badge">{{ admins.length }} admins</div>
+      <button class="btn-add-admin" (click)="openAddAdmin()" title="Add new admin">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+          <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
+        </svg>
+        Add Admin
+      </button>
+    </div>
   </div>
 
   <div *ngIf="loading" class="loading-state">

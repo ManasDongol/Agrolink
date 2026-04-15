@@ -246,3 +246,240 @@
 }
 .btn-danger:hover:not(:disabled) { background: #dc2626; }
 .btn-danger:disabled { background: #fca5a5; cursor: not-allowed; }
+
+
+/* ── Add Admin Button ───────────────────────── */
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.btn-add-admin {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  padding: 9px 18px;
+  background: #4caf50;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.18s, transform 0.12s, box-shadow 0.18s;
+  box-shadow: 0 2px 8px rgba(76, 175, 80, 0.25);
+}
+
+.btn-add-admin svg {
+  width: 16px;
+  height: 16px;
+  stroke: #fff;
+}
+
+.btn-add-admin:hover {
+  background: #43a047;
+  box-shadow: 0 4px 14px rgba(76, 175, 80, 0.35);
+  transform: translateY(-1px);
+}
+
+.btn-add-admin:active {
+  transform: translateY(0);
+}
+
+/* ── Wide modal for add form ───────────────── */
+.modal-box-wide {
+  width: 100%;
+  max-width: 620px;
+}
+
+/* ── Success icon variant ──────────────────── */
+.modal-icon-success {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: #e8f5e9;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.modal-icon-success svg {
+  width: 20px;
+  height: 20px;
+  stroke: #4caf50;
+}
+
+/* ── Add form layout ───────────────────────── */
+.add-form {
+  padding: 4px 0 8px;
+}
+
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.form-label {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #4caf50;
+}
+
+.input-wrapper {
+  display: flex;
+  align-items: center;
+  border: 1.5px solid #d1d5db;
+  border-radius: 10px;
+  padding: 0 12px;
+  height: 44px;
+  background: #fff;
+  transition: border-color 0.18s, box-shadow 0.18s;
+  gap: 8px;
+}
+
+.input-wrapper:focus-within {
+  border-color: #4caf50;
+  box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.1);
+}
+
+.input-wrapper.input-error {
+  border-color: #e53935;
+}
+
+.input-wrapper.input-error:focus-within {
+  box-shadow: 0 0 0 3px rgba(229, 57, 53, 0.1);
+}
+
+.input-icon {
+  width: 16px;
+  height: 16px;
+  stroke: #9ca3af;
+  flex-shrink: 0;
+}
+
+.input-wrapper input {
+  flex: 1;
+  border: none;
+  outline: none;
+  font-size: 0.875rem;
+  color: #111827;
+  background: transparent;
+  min-width: 0;
+}
+
+.input-wrapper input::placeholder {
+  color: #b0b8c4;
+}
+
+.toggle-eye {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.toggle-eye svg {
+  width: 16px;
+  height: 16px;
+  stroke: #9ca3af;
+  transition: stroke 0.15s;
+}
+
+.toggle-eye:hover svg {
+  stroke: #4caf50;
+}
+
+.form-error {
+  font-size: 0.75rem;
+  color: #e53935;
+  margin-top: 2px;
+}
+
+
+.add-form.ng-invalid.ng-touched {
+  border: none !important;
+  box-shadow: none !important;
+}
+/* ── UserType indicator ────────────────────── */
+.usertype-indicator {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  background: #e8f5e9;
+  color: #2e7d32;
+  font-size: 0.8rem;
+  padding: 7px 14px;
+  border-radius: 20px;
+  margin-top: 4px;
+  margin-bottom: 4px;
+}
+
+.usertype-indicator svg {
+  width: 14px;
+  height: 14px;
+  stroke: #2e7d32;
+}
+
+/* ── Success button ────────────────────────── */
+.btn-success {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 9px 22px;
+  background: #4caf50;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.18s;
+}
+
+.btn-success:hover:not(:disabled) {
+  background: #43a047;
+}
+
+.btn-success:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+}
+
+/* ── Inline spinner inside button ─────────── */
+.btn-spinner {
+  width: 14px;
+  height: 14px;
+  border: 2px solid rgba(255, 255, 255, 0.4);
+  border-top-color: #fff;
+  border-radius: 50%;
+  animation: spin 0.6s linear infinite;
+  display: inline-block;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* ── Responsive ────────────────────────────── */
+@media (max-width: 540px) {
+  .form-row {
+    grid-template-columns: 1fr;
+  }
+
+  .modal-box-wide {
+    max-width: 95vw;
+  }
+}

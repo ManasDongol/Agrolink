@@ -191,6 +191,11 @@ accept(req: ConnectionRequestDto) {
       // update connection count ONLY if real accept
       if (!res?.message?.includes("Already")) {
         if (this.myProfile) this.myProfile.connectionCount++;
+          if (this.myProfile) this.myProfile.requestCount--;
+
+           this.users = this.users.filter(
+        u => u.userId !== req.fromUserId   
+      );
         this.toast.success("Request accepted!", "");
       } else {
         this.toast.info("Already processed", "");
@@ -214,6 +219,7 @@ accept(req: ConnectionRequestDto) {
       );
 
       if (!res?.message?.includes("Already")) {
+          if (this.myProfile) this.myProfile.requestCount--;
         this.toast.info("Request rejected", "");
       } else {
         this.toast.info("Already processed", "");

@@ -1,4 +1,4 @@
-﻿﻿using System.Security.Claims;
+﻿using System.Security.Claims;
 
 using AgroLink.Application.DTOs.Ai;
 using AgroLink.Domain.Entities;

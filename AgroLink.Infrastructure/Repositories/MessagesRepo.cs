@@ -11,12 +11,12 @@ public class MessagesRepo(AgroLinkDbContext _dbContext)
     {
         return await _dbContext.Conversations
             .Where(c => c.User1Id == currentUserId || c.User2Id == currentUserId)
-            .OrderByDescending(c => c.Messages               // ← sort convs by last message
+            .OrderByDescending(c => c.Messages               
                 .Max(m => (DateTime?)m.Sent) ?? c.CreatedAt)
             .Select(c => new UserConversationDto
             {
                 Id = c.Id,
-                // Determine the "other user"
+                
                 PartnerId = c.User1Id == currentUserId ? c.User2Id : c.User1Id,
                 PartnerName = c.User1Id == currentUserId ? c.User2.Username : c.User1.Username,
                 PartnerProfile = c.User1Id == currentUserId ? c.User2.Profile.ProfilePicture : c.User1.Profile.ProfilePicture,

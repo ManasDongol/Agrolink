@@ -1,6 +1,6 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit,inject } from '@angular/core';
 import { AdminService, AdminUser } from '../../../../core/Services/Admin/admin.service';
-
+import { ToastService } from '../../../../shared/toast/toast.service';
 @Component({
   selector: 'app-manage-users',
   standalone: false,
@@ -15,6 +15,7 @@ export class ManageUsers implements OnInit {
   showDeleteConfirm = false;
   pendingDeleteId: string | null = null;
   isDeleting = false;
+   toast = inject(ToastService);
 
   constructor(private adminService: AdminService) {}
 
@@ -52,9 +53,11 @@ export class ManageUsers implements OnInit {
       next: () => {
         this.users = this.users.filter(u => u.id !== this.pendingDeleteId);
         this.cancelDelete();
+        this.toast.success("user removed successfully!","");
         this.isDeleting = false;
       },
       error: () => {
+        this.toast.error("could not remove the user, try again later","");
         this.isDeleting = false;
       },
     });

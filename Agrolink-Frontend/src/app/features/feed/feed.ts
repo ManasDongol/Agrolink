@@ -39,6 +39,8 @@ export class Feed implements OnInit {
   selectedFile: File | null = null;
   imagePreview: string | null = null;
   successMessage: string = '';
+  currentUser: { id: string; username: string; profileImage?: string } | null = null;
+
 
   myuserId:string="";
   currentpostId: string ="";
@@ -71,6 +73,7 @@ export class Feed implements OnInit {
     this.auth.checkAuth().subscribe({
       next:(res)=>{
         this.myuserId=res.id
+         this.currentUser = res; 
       },
       error:(err)=>{
         console.log(err);
@@ -127,9 +130,13 @@ this.currentpostId=postId;
       next:(res)=>{
          this.deletepost=!this.deletepost;
          this.posts = this.posts.filter(p => p.postId !== this.currentpostId);
+         this.toast.success("Post was deleted successfully", "")
         this.currentpostId="";
         
 
+      },
+      error:()=>{
+        this.toast.error("unable to delete post, try again later", "")
       }
       
     })
@@ -288,10 +295,15 @@ Addcomments(post: Post, content: string) {
   };
 
   // optimistic UI
-  const tempComment = new Comment({
-    content,
-    postId: post.postId
-  });
+const tempComment = new Comment({
+  content,
+  postId: post.postId,
+  author: {
+    userId: this.currentUser?.id ?? '',
+    username: this.currentUser?.username ?? 'You',
+    profilePictureUrl: this.currentUser!.profileImage! 
+  }
+});
 
   post.comments.push(tempComment);
   post.commentsCount++;
@@ -330,7 +342,7 @@ toggleLike(post: Post) {
   this.feedService.toggleLike(post.postId).subscribe({
     next: () => {
       // SUCCESS → show optional toast
-      this.toast.success("Updated", "");
+      this.toast.success("likes Updated", "");
     },
 
     error: (err: HttpErrorResponse) => {
@@ -421,10 +433,28 @@ deleteComment(comment: Comment) {
   this.commentService.deleteComment(comment.commentId).subscribe({
     next: () => {
       const post = this.posts.find(p => p.postId === comment.postId);
+      if (!post) return;
 
-      if (post) {
+      // CASE 1: Top-level comment
+      const isTopLevel = post.comments.some(c => c.commentId === comment.commentId);
+
+      if (isTopLevel) {
         post.comments = post.comments.filter(c => c.commentId !== comment.commentId);
         post.commentsCount--;
+      } 
+      
+      // CASE 2: Reply
+      else {
+        post.comments.forEach(parent => {
+          const before = parent.replies.length;
+
+          parent.replies = parent.replies.filter(r => r.commentId !== comment.commentId);
+
+          if (parent.replies.length < before) {
+            //  reply removed → trigger UI update
+            parent.replies = [...parent.replies];
+          }
+        });
       }
 
       this.toast.success("Comment deleted", "");
@@ -432,7 +462,6 @@ deleteComment(comment: Comment) {
 
     error: (err: HttpErrorResponse) => {
       if (err.status === 404) {
-        
         this.toast.info("Comment already removed", "");
         return;
       }

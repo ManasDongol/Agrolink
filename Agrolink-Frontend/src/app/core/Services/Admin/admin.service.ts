@@ -73,6 +73,7 @@ export class AdminService {
   private http = inject(HttpClient);
   private baseUrl = 'http://localhost:5131/api/Admin';
   private postUrl = 'http://localhost:5131/api/Posts';
+  private authurl=  'http://localhost:5131/api/Auth'
 
   getStats(): Observable<AdminStats> {
     return this.http.get<AdminStats>(`${this.baseUrl}/stats`, {
@@ -85,6 +86,11 @@ export class AdminService {
       withCredentials: true,
     });
   }
+  addAdmin(payload: { Username: string; Email: string; Password: string; UserType: string }): Observable<AdminUser> {
+  return this.http.post<AdminUser>(`${this.authurl}/signup`, payload, {
+    withCredentials: true,
+  });
+}
 
   getAdmins(): Observable<AdminUser[]> {
     return this.http.get<AdminUser[]>(`${this.baseUrl}/admins`, {

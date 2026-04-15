@@ -9,6 +9,7 @@ import { ManageAdmins } from './pages/manage-admins/manage-admins';
 import { ManagePosts } from './pages/manage-posts/manage-posts';
 import { ManageUsers } from './pages/manage-users/manage-users';
 import { VerifyUsers } from './pages/verify-users/verify-users';
+import { ReactiveFormsModule } from '@angular/forms';
 
 @NgModule({
   declarations: [
@@ -23,6 +24,7 @@ import { VerifyUsers } from './pages/verify-users/verify-users';
   imports: [
     CommonModule,
     AdminRoutingModule,
+    ReactiveFormsModule
   ]
 })
 export class AdminModule { }
