@@ -20,6 +20,7 @@ public class AgroLinkDbContext(DbContextOptions<AgroLinkDbContext> options) : Db
     public DbSet<DetectionHistory> DetectionHistories { get; set; }
     public DbSet<Notification> Notifications { get; set; }
 
+    public DbSet<EmailVerificationToken> EmailVerificationTokens { get; set; }
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);

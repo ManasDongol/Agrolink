@@ -3,6 +3,7 @@ using System;
 using AgroLink.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace AgroLink.Infrastructure.Migrations
 {
     [DbContext(typeof(AgroLinkDbContext))]
-    partial class AgroLinkDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260416064137_isEmailVerified column added")]
+    partial class isEmailVerifiedcolumnadded
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -231,35 +234,6 @@ namespace AgroLink.Infrastructure.Migrations
                     b.HasIndex("UserId");
 
                     b.ToTable("DetectionHistories");
-                });
-
-            modelBuilder.Entity("AgroLink.Domain.Entities.EmailVerificationToken", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<DateTime>("ExpiresAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<bool>("IsUsed")
-                        .HasColumnType("boolean");
-
-                    b.Property<string>("TokenHash")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<Guid>("UserId")
-                        .HasColumnType("uuid");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("EmailVerificationTokens");
                 });
 
             modelBuilder.Entity("AgroLink.Domain.Entities.Like", b =>
@@ -658,17 +632,6 @@ namespace AgroLink.Infrastructure.Migrations
                 });
 
             modelBuilder.Entity("AgroLink.Domain.Entities.DetectionHistory", b =>
-                {
-                    b.HasOne("AgroLink.Domain.Entities.User", "User")
-                        .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("User");
-                });
-
-            modelBuilder.Entity("AgroLink.Domain.Entities.EmailVerificationToken", b =>
                 {
                     b.HasOne("AgroLink.Domain.Entities.User", "User")
                         .WithMany()

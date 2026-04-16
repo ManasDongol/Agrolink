@@ -91,4 +91,12 @@ public class UserRepo(AgroLinkDbContext dbContext)
         return false;
 
     }
+    // In UserRepo.cs
+    public async Task<bool> MarkEmailVerifiedAsync(Guid userId)
+    {
+        var rows = await dbContext.Users
+            .Where(u => u.UserId == userId)
+            .ExecuteUpdateAsync(s => s.SetProperty(u => u.IsEmailVerified, true));
+        return rows > 0;
+    }
 }
